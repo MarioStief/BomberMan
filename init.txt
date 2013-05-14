@@ -1,0 +1,4 @@
+width = 19
+height = 19
+cWidth = 1
+cHeight = 1
