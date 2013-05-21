@@ -14,11 +14,16 @@ namespace AssemblyCSharp
 		private int type;
 		private GameObject obj;
 		
+		private bool bombPlaced;
+		private Explosion explosion;
+		
+		private bool killOrder;
+		
 		public Cell()
 		{
 			xpos = 0;
 			zpos = 0;
-			setTypeObject();
+			setTypeObject();	
 		}
 		
 		public Cell (int xpos, int zpos, float width, float height)
@@ -43,32 +48,29 @@ namespace AssemblyCSharp
 			
 			switch(type){
 			case 0:	// Das Feld ist leer: Erstelle ein Partikelsystem an der Stelle zur Darstellung von Explosionen
+				// NÖCHTS!
 				GameObject.Destroy(obj);
-				obj = new GameObject();
-				obj.name = "cell"+xpos+""+zpos;
-				ParticleSystem pSys = obj.AddComponent<ParticleSystem>();
-				pSys.enableEmission = false;
-				pSys.startLifetime = 0.15f;
-				
-				obj.transform.position = new Vector3(xpos * width +0.5f, 0.5f, zpos * height +0.5f);
-				obj.transform.Rotate(new Vector3(-90.0f,0.0f,0.0f));
 				break;
-				
 			case 1:	// Das Feld enthält eine zerstörbare Kiste ( gefärbter Würfel)
+				
 				GameObject.Destroy(obj);
-				obj = GameObject.CreatePrimitive(PrimitiveType.Cube);
-				obj.name = "cell"+xpos+""+zpos;
-				obj.transform.position = new Vector3(xpos * width +0.5f, 0.5f, zpos * height +0.5f);
-				obj.renderer.material.color = new Color(0.7f,0.3f,0.3f,1.0f);
+				obj = GameObject.Instantiate(Data.boxCube, new Vector3(xpos * width +0.5f, 0.5f, zpos * height +0.5f), Quaternion.identity) as GameObject;
+				obj.name = "Box"+xpos+zpos;
 				break;
 				
 			case 2:	// Das Feld enthält einen nicht-zerstörbaren Würfel
 				GameObject.Destroy(obj);
-				obj = GameObject.CreatePrimitive(PrimitiveType.Cube);
-				obj.name = "cell"+xpos+""+zpos;
-				obj.transform.position = new Vector3(xpos * width +0.5f, 0.5f, zpos * height +0.5f);
+				obj = GameObject.Instantiate(Data.solidCube, new Vector3(xpos * width +0.5f, 0.5f, zpos * height +0.5f), Quaternion.identity) as GameObject;
+				obj.name = "Solid"+xpos+zpos;
 				break;
-				
+			case 3:
+				/* GameObject.Destroy(obj);
+				obj = GameObject.CreatePrimitive(PrimitiveType.Cube);
+				obj = GameObject.Instantiate(Data.solidCube, new Vector3(xpos * width +0.5f, 0.5f, zpos * height +0.5f), Quaternion.identity) as GameObject;
+				obj.renderer.material.color = Color.blue;
+				obj.name = "Spawn"+xpos+zpos;//*/
+				break;//*/
+				//type = 1;
 			default:
 				Debug.Log("No such type!");
 				break;
@@ -95,6 +97,34 @@ namespace AssemblyCSharp
 			return height;	
 		}
 		
+		public bool setBomb(bool val, Explosion ex){
+			if ( bombPlaced == false){
+				bombPlaced = val;	
+				//Debug.Log("Explo: " + ex);
+				explosion = ex;
+				return true;
+			}	else{
+				bombPlaced = val;
+				return false;	
+			}
+		}
+		
+		public void setKillOrder(bool kill){
+			killOrder = kill;
+			if ( killOrder){
+				if ( bombPlaced){
+				//Debug.Log("Explo: " + explosion +"("+ xpos + "," + zpos +")");
+				if ( explosion != null){
+					bombPlaced = false;
+					explosion.startExplosion();
+				}
+				}
+				if ( type == 1){
+					setType(0);	
+				}
+			} 			
+		}
+		
 		public GameObject getGameObject(){
 			return obj;	
 		}
@@ -118,6 +148,14 @@ namespace AssemblyCSharp
 		
 		public void setHeight(float aHeight){
 			height = aHeight;	
+		}
+		
+		public bool hasBomb(){
+			return bombPlaced;
+		}
+		
+		public bool getKillOrder(){
+			return killOrder;	
 		}
 	}
 }

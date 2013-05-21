@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 //using AssemblyCSharp;
 
@@ -10,15 +11,16 @@ namespace AssemblyCSharp
 	public class GameArea
 	{
 		private Cell[][] plane;
+				
+		public int xMax, zMax;
+		public static float cWidth, cHeight;
 		
-		private float cWidth, cHeight;
-		
-		//private GameObject subPlane;
 		
 		public GameArea (int xMax, int zMax, float width, float height)
 		{
-			//subPlane = GameObject.Find("Plane");
-			//subPlane.transform.localScale = new Vector3( xMax/10f, subPlane.transform.localScale.y, zMax/10f);
+			
+			this.xMax = xMax;
+			this.zMax = zMax;
 			
 			cWidth = width;
 			cHeight = height;
@@ -30,9 +32,11 @@ namespace AssemblyCSharp
 					plane[i][j] = new Cell(i,j,width,height,0);	
 				}
 			}
+			
 		}
 		
 		public Cell getCell(int x, int z){
+			//Debug.Log(x + "," + z);
 			return plane[x][z];	
 		}
 		
@@ -41,12 +45,20 @@ namespace AssemblyCSharp
 		 * */
 		public Cell getCell(float x, float z){
 		
-			int x_m = (int)((x+0.5f - cWidth/2 )/ cWidth);
-			int z_m = (int)((z+0.5f - cHeight/2)/ cHeight);
+			int x_m = (int)(x); // TODO!!
+			int z_m = (int)(z);
 				
-			Debug.Log(x_m + ", " + z_m + ": Cell-Type: " + plane[x_m][z_m].getType());
+			//Debug.Log(x_m + ", " + z_m + ": Cell-Type: " + plane[x_m][z_m].getType());
 			
 			return plane[x_m][z_m];
+		}
+		
+		public int getWidth(){
+			return xMax;	
+		}
+		
+		public int getHeight(){
+			return zMax;	
 		}
 	}
 }

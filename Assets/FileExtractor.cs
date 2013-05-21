@@ -31,8 +31,8 @@ namespace AssemblyCSharp
 					line = reader.ReadLine();
 					line2 = line.Substring(line.IndexOf('=') + 2);
 					line = line.Remove(line.IndexOf('=') - 1);
+		
 					val = (float)Double.Parse(line2);
-					
 					values.Add(line, val);
 				}
 			}
