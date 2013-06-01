@@ -3,6 +3,7 @@ using System.Collections;
 
 public class SphereBuilder : MonoBehaviour {
 	
+		
 	
 	private Vector3 [] sphereVertices;
 	private Vector2[] sphereUV;
@@ -10,12 +11,12 @@ public class SphereBuilder : MonoBehaviour {
 	int k = 0;
 	float r = 1; // Radius, todo: implement in spherecreation!
 	
-	private int n_B = 32; // Auflösung Breitenkreise; NET KLEINER ALS 4
+	private int n_B = 128; // Auflösung Breitenkreise; NET KLEINER ALS 4
 	private int n_L = 16; // Auflösung Längenkreise ; ""     ""
 	
 	// Use this for initialization
 	void Start () {
-		
+				
 		tesselateSphere();
 
 		Mesh mesh = new Mesh();
@@ -30,8 +31,8 @@ public class SphereBuilder : MonoBehaviour {
 	
 	private void tesselateSphere(){
 	
-		sphereVertices = new Vector3[(n_L-2)*n_B +2];
-		sphereUV = new Vector2[(n_L-2)*n_B +2];
+		sphereVertices = new Vector3[(n_L)*n_B +2];
+		sphereUV = new Vector2[(n_L)*n_B +2];
 		sphereTriangles = new int[((n_L-2)*n_B +2)*12];
 		
 		calcSphereCoordinates();
@@ -129,8 +130,8 @@ public class SphereBuilder : MonoBehaviour {
 					sphereUV[k++] = new Vector2( u/(2*Mathf.PI) , (Mathf.PI/2 - v)/ Mathf.PI);
 				}
 				
-				if ( j == 0) break;
-				if ( j == n_L-1) break;
+				//if ( j == 0) break;
+				//if ( j == n_L-1) break;
 			}
 		}	
 	}
@@ -175,7 +176,7 @@ public class SphereBuilder : MonoBehaviour {
 		mesh = GetComponent<MeshFilter>().mesh;
 		meshTriangles = mesh.vertices;
 		
-		moveDirection = new Vector3(Input.GetAxis("Vertical"), 0, Input.GetAxis("Horizontal"));
+		moveDirection = new Vector3((-1)*Input.GetAxis("Vertical"), 0, Input.GetAxis("Horizontal"));
 		
 		Debug.Log("hoz: " + moveDirection.z + " vert: " +moveDirection.x);
 		
@@ -194,14 +195,25 @@ public class SphereBuilder : MonoBehaviour {
 		
 		//if ( moveDirection.x != 0){
 			//Debug.Log("vert: " +moveDirection.x);
-			verticalAngle += Mathf.Sign(moveDirection.x) * Mathf.Acos( 1.0f - (moveDirection.x* moveDirection.x) / ( 2 * r * r));
+			verticalAngle += .001f;//Mathf.Sign(moveDirection.x) * Mathf.Acos( 1.0f - (moveDirection.x* moveDirection.x) / ( 2 * r * r));
 			
+			if ( verticalAngle > 2*2.0f/n_B* Mathf.PI){
 			
-			for(int i = 0; i < sphereVertices.Length; i++){
+				verticalAngle -= 2.0f/n_B* Mathf.PI;
+			
+				Vector2[] uv = new Vector2[sphereUV.Length];
+				for(int i = 0; i < k; i++){
+					uv[i] = sphereUV[(i+n_B)%k];
+				}
+				sphereUV = uv;
+				mesh.uv = uv;
+	
+			}
+			for(int i = 1; i < sphereVertices.Length-1; i++){
 				
-				meshTriangles[i] = new Vector3(Mathf.Cos( verticalAngle)*meshTriangles[i].x + Mathf.Sin( verticalAngle)*meshTriangles[i].z ,
-								 	  		   meshTriangles[i].y ,
-							      	  		   -Mathf.Sin( verticalAngle)*meshTriangles[i].x + Mathf.Cos( verticalAngle)*meshTriangles[i].z);
+				meshTriangles[i] = new Vector3(Mathf.Cos( -verticalAngle)*sphereVertices[i].x + Mathf.Sin( -verticalAngle)*sphereVertices[i].z ,
+								 	  		   sphereVertices[i].y ,
+							      	  		   -Mathf.Sin( -verticalAngle)*sphereVertices[i].x + Mathf.Cos( -verticalAngle)*sphereVertices[i].z);
 			}
 			
 		//}//*/
