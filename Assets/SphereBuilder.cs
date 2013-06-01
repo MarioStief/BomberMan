@@ -8,6 +8,7 @@ public class SphereBuilder : MonoBehaviour {
 	private Vector2[] sphereUV;
 	private int [] sphereTriangles;
 	int k = 0;
+	float r = 1; // Radius, todo: implement in spherecreation!
 	
 	private int n_B = 32; // Auflösung Breitenkreise; NET KLEINER ALS 4
 	private int n_L = 16; // Auflösung Längenkreise ; ""     ""
@@ -16,11 +17,7 @@ public class SphereBuilder : MonoBehaviour {
 	void Start () {
 		
 		tesselateSphere();
-		
-		for(int i = 0; i < (n_L-2)*n_B +2; i++){
-			Debug.Log(i + ": " + sphereVertices[i]);	
-		}
-		
+
 		Mesh mesh = new Mesh();
 		mesh.vertices = sphereVertices;
         mesh.uv = sphereUV;
@@ -102,11 +99,7 @@ public class SphereBuilder : MonoBehaviour {
 				
 			}			
 		}//*/
-		
-				
-		for(int i = 0; i < n; i++){
-			Debug.Log(sphereTriangles[i]);	
-		}
+
 	}
 	
 	// Alle Punkte für gegebenes n_B, n_L berechnen
@@ -129,7 +122,7 @@ public class SphereBuilder : MonoBehaviour {
 				}
 				
 				val = F(u,v);
-				Debug.Log(u + " , " + v + ": " + F(u,v));
+
 				if ( val != Vector3.zero){
 					sphereVertices[k] = F(u,v);	// Get Vertices
 					
@@ -149,7 +142,6 @@ public class SphereBuilder : MonoBehaviour {
 		
 		if ( u < 0 || u > 2*Mathf.PI ||  v < (-1)*Mathf.PI/2 || v > Mathf.PI/2) {
 			
-			Debug.Log("jo");
 			return Vector3.zero;
 		}
 		
@@ -158,5 +150,63 @@ public class SphereBuilder : MonoBehaviour {
 							Mathf.Sin(v));
 	}
 	
+	
+//-------------------------------------------------------------
+//>>>>>>>>>>>>>>>>>>>>>>>> UPDATE <<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+//-------------------------------------------------------------
+	
+	float x, y, z;
+	
+	Vector3 moveDirection;
+	Vector3 rotation;
+	
+	float verticalAngle;
+	float horizontalAngle;
+	
+	Mesh mesh;
+	Vector3[] meshTriangles;
+	
+	public void Update(){
+	
+		x = transform.position.x;
+		y = transform.position.y;
+		z = transform.position.z;
+		
+		mesh = GetComponent<MeshFilter>().mesh;
+		meshTriangles = mesh.vertices;
+		
+		moveDirection = new Vector3(Input.GetAxis("Vertical"), 0, Input.GetAxis("Horizontal"));
+		
+		Debug.Log("hoz: " + moveDirection.z + " vert: " +moveDirection.x);
+		
+		//if ( moveDirection.z != 0){
+			
+			horizontalAngle += Mathf.Sign(moveDirection.z) * Mathf.Acos( 1.0f - (moveDirection.z* moveDirection.z) / ( 2 * r * r));
+			
+			for(int i = 0; i < sphereVertices.Length; i++){
+				
+				meshTriangles[i] = new Vector3(Mathf.Cos( horizontalAngle)*sphereVertices[i].x - Mathf.Sin( horizontalAngle)*sphereVertices[i].y ,
+								 	   		   Mathf.Sin( horizontalAngle)*sphereVertices[i].x + Mathf.Cos( horizontalAngle)*sphereVertices[i].y ,
+							      	  		   sphereVertices[i].z);
+			}
+			
+		//}
+		
+		//if ( moveDirection.x != 0){
+			//Debug.Log("vert: " +moveDirection.x);
+			verticalAngle += Mathf.Sign(moveDirection.x) * Mathf.Acos( 1.0f - (moveDirection.x* moveDirection.x) / ( 2 * r * r));
+			
+			
+			for(int i = 0; i < sphereVertices.Length; i++){
+				
+				meshTriangles[i] = new Vector3(Mathf.Cos( verticalAngle)*meshTriangles[i].x + Mathf.Sin( verticalAngle)*meshTriangles[i].z ,
+								 	  		   meshTriangles[i].y ,
+							      	  		   -Mathf.Sin( verticalAngle)*meshTriangles[i].x + Mathf.Cos( verticalAngle)*meshTriangles[i].z);
+			}
+			
+		//}//*/
+		
+		mesh.vertices = meshTriangles;
+	}
 	
 }
