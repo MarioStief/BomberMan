@@ -3,104 +3,35 @@ using System.Collections;
 
 public class SphereBuilder : MonoBehaviour {
 	
+	private GameObject []spCubes;	
+	
+	public Vector3 [][][] sphereVertices;
+	private MeshManipulator []spCubeMeshHandler;
+	
+	int r = 2; // Radius, todo: implement in spherecreation!
+	
+	public int n_B = 8; // Auflösung Breitenkreise; NET KLEINER ALS 4
+	public int n_L = 8; // Auflösung Längenkreise ; ""     ""
 		
-	
-	private Vector3 [] sphereVertices;
-	private Vector2[] sphereUV;
-	private int [] sphereTriangles;
-	int k = 0;
-	float r = 1; // Radius, todo: implement in spherecreation!
-	
-	private int n_B = 128; // Auflösung Breitenkreise; NET KLEINER ALS 4
-	private int n_L = 16; // Auflösung Längenkreise ; ""     ""
-	
 	// Use this for initialization
 	void Start () {
-				
-		tesselateSphere();
-
-		Mesh mesh = new Mesh();
-		mesh.vertices = sphereVertices;
-        mesh.uv = sphereUV;
-        mesh.triangles = sphereTriangles;
-		mesh.RecalculateNormals();
-		
-		GetComponent<MeshFilter>().mesh = mesh;
-		
+						
+		tesselateSphere();		
 	}
 	
 	private void tesselateSphere(){
 	
-		sphereVertices = new Vector3[(n_L)*n_B +2];
-		sphereUV = new Vector2[(n_L)*n_B +2];
-		sphereTriangles = new int[((n_L-2)*n_B +2)*12];
+		sphereVertices = new Vector3[r][][];
+		for(int i = 0; i < r; i++){
+			sphereVertices[i] = new Vector3[n_L][];
+			for(int j = 0; j < n_L; j++){
+				sphereVertices[i][j] = new Vector3[n_B/2+1];	
+			}
+		}
 		
 		calcSphereCoordinates();
 		
-		assignTriangles();
-	}
-	
-	private void assignTriangles(){
-	
-		// Bereich am Nordpol
-		int n = 0; 
-		for(int i = 1; i <= n_B; i++){
-		
-			sphereTriangles[n] 	 = 0;				// POL
-			if ( i+1 == n_B+1){
-				sphereTriangles[n+1] = 1;
-			} else{
-				sphereTriangles[n+1] = i+1;
-			}
-			sphereTriangles[n+2] = i;
-			
-			n += 3;
-		}//*/
-		
-		// Bereich am Südpol
-		for(int i = 1; i <= n_B; i++){
-		
-			sphereTriangles[n] 	 = k-1;				// POL
-			if ( i+1 == n_B+1){
-				sphereTriangles[n+1] =  k - 2;
-			} else{
-				sphereTriangles[n+1] = k-1 -(i+1);
-			}
-			sphereTriangles[n+2] = k-1 -i;
-			n += 3;
-
-		}//*/
-
-		// Alles zwischen den Polen
-		for(int i = 1; i <= n_B; i++){
-			for(int j = 0; j < n_L -3; j++){
-				
-				// Dreieck NE, NW, SW
-				sphereTriangles[n] 	 = j*(n_B) + i;
-				if ( i+1 == n_B+1){
-					sphereTriangles[n+1] = j*(n_B) + 1;
-					sphereTriangles[n+2] = (j+1)*(n_B) + 1;
-				} else{
-					sphereTriangles[n+1] = j*(n_B) + i + 1;
-					sphereTriangles[n+2] = (j+1)*(n_B) + i + 1;
-				}
-				
-				n += 3;
-				
-				// Dreieck NE, SE, SW
-				sphereTriangles[n] 	 = j*(n_B) + i;
-				if ( i+1 == n_B+1){
-					sphereTriangles[n+1] = (j+1)*(n_B) + 1;
-				} else{
-					sphereTriangles[n+1] = (j+1)*(n_B) + i + 1;
-				}
-				sphereTriangles[n+2] = (j+1)*(n_B) + i;
-				
-				n += 3;	
-				
-			}			
-		}//*/
-
+		initializeCubes();
 	}
 	
 	// Alle Punkte für gegebenes n_B, n_L berechnen
@@ -109,12 +40,12 @@ public class SphereBuilder : MonoBehaviour {
 		float u,v;		
 		Vector3 val;
 
-		
+		int m = 0;
 		for( int j = 0; j < n_L; j++){
 			
 			v = (j*Mathf.PI/(n_L-1)) - Mathf.PI/2;
 			
-			for( int i = 0; i < n_B; i++){
+			for( int i = 0; i < n_B/2+1; i++){
 			
 				if ( n_B != 0){
 					u = (i*2.0f/n_B) * Mathf.PI;
@@ -122,16 +53,18 @@ public class SphereBuilder : MonoBehaviour {
 					u = 0;	
 				}
 				
-				val = F(u,v);
+				val = F(1,u,v);
 
 				if ( val != Vector3.zero){
-					sphereVertices[k] = F(u,v);	// Get Vertices
-					
-					sphereUV[k++] = new Vector2( u/(2*Mathf.PI) , (Mathf.PI/2 - v)/ Mathf.PI);
+					sphereVertices[0][j][i] = F(1,u,v);	// Get Vertices	
+					sphereVertices[1][j][i] = F(2,u,v);	// Get Vertices	
 				}
 				
-				//if ( j == 0) break;
-				//if ( j == n_L-1) break;
+				if ( j == 0) break;
+				if ( j == n_L-1) break;
+				
+				if ( m == 0) m = 1;
+				else if ( m == 1) m = 0;
 			}
 		}	
 	}
@@ -139,86 +72,95 @@ public class SphereBuilder : MonoBehaviour {
 	// Berechnet Kugelkoordinate für
 	// Längengrad u
 	// und Breitengrad v
-	private Vector3 F(float u, float v){
+	private Vector3 F(float r, float u, float v){
 		
 		if ( u < 0 || u > 2*Mathf.PI ||  v < (-1)*Mathf.PI/2 || v > Mathf.PI/2) {
 			
 			return Vector3.zero;
 		}
 		
-		return new Vector3(	Mathf.Cos(u) * Mathf.Cos(v),
-							Mathf.Sin(u) * Mathf.Cos(v),
-							Mathf.Sin(v));
+		return new Vector3(	r* Mathf.Cos(u) * Mathf.Cos(v),
+							r* Mathf.Sin(u) * Mathf.Cos(v),
+							r* Mathf.Sin(v));
 	}
 	
 	
-//-------------------------------------------------------------
-//>>>>>>>>>>>>>>>>>>>>>>>> UPDATE <<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-//-------------------------------------------------------------
-	
-	float x, y, z;
-	
-	Vector3 moveDirection;
-	Vector3 rotation;
-	
-	float verticalAngle;
-	float horizontalAngle;
-	
-	Mesh mesh;
-	Vector3[] meshTriangles;
-	
-	public void Update(){
-	
-		x = transform.position.x;
-		y = transform.position.y;
-		z = transform.position.z;
+	private void initializeCubes(){
 		
-		mesh = GetComponent<MeshFilter>().mesh;
-		meshTriangles = mesh.vertices;
+		spCubes = new GameObject[n_B/2*n_L+1];
+		spCubeMeshHandler = new MeshManipulator[n_B/2*n_L+1];
 		
-		moveDirection = new Vector3((-1)*Input.GetAxis("Vertical"), 0, Input.GetAxis("Horizontal"));
 		
-		Debug.Log("hoz: " + moveDirection.z + " vert: " +moveDirection.x);
+		// Northpole		
+		spCubes[0] = createSphereCube(Vector3.zero);	// Vector3.zero = no rotation!
+		spCubeMeshHandler[0] = addMeshManipulator(spCubes[0], 
+												new Vector3(1,0,0), new Vector3(1,0,0), new Vector3(0,0,0), new Vector3(0,0,0),
+												new Vector3(1,1,1), new Vector3(1,1,0), new Vector3(0,1,1), new Vector3(0,1,0));	
 		
-		//if ( moveDirection.z != 0){
+		// All Cubes adjacent to the pole equal this one!
+		
+		for( int i = 1; i < n_B/2+1; i++){
 			
-			horizontalAngle += Mathf.Sign(moveDirection.z) * Mathf.Acos( 1.0f - (moveDirection.z* moveDirection.z) / ( 2 * r * r));
+			spCubes[i] = createSphereCube( new Vector3(0.0f,0.0f,360.0f/n_B*i)); 
+			spCubeMeshHandler[i] = addMeshManipulator(spCubes[i],
+														new Vector3(1,0,0), new Vector3(1,0,0), new Vector3(0,0,0), new Vector3(0,0,0),
+														new Vector3(1,1,1), new Vector3(1,1,0), new Vector3(0,1,1), new Vector3(0,1,0));
+		}
+		
+		// Southpole
+		
+		spCubes[n_B/2*n_L] = createSphereCube( Vector3.zero);	
+		spCubeMeshHandler[n_B/2*n_L] = addMeshManipulator(spCubes[n_B/2*n_L],
+															new Vector3(1,n_L-2,1), new Vector3(1,n_L-2,0), new Vector3(0,n_L-2,1), new Vector3(0,n_L-2,0),
+															new Vector3(1,n_L-1,0), new Vector3(1,n_L-1,0), new Vector3(0,n_L-1,0), new Vector3(0,n_L-1,0));
+
+		// All Cubes adjacent to the pole equal this one!
+		
+		for( int i = 1; i < n_B/2+1; i++){
 			
-			for(int i = 0; i < sphereVertices.Length; i++){
-				
-				meshTriangles[i] = new Vector3(Mathf.Cos( horizontalAngle)*sphereVertices[i].x - Mathf.Sin( horizontalAngle)*sphereVertices[i].y ,
-								 	   		   Mathf.Sin( horizontalAngle)*sphereVertices[i].x + Mathf.Cos( horizontalAngle)*sphereVertices[i].y ,
-							      	  		   sphereVertices[i].z);
+			spCubes[n_B/2*n_L - i] = createSphereCube( new Vector3(0.0f,0.0f,360.0f/n_B*i)) ;
+			spCubeMeshHandler[n_B/2*n_L - i] = addMeshManipulator(spCubes[n_B/2*n_L - i],
+																	new Vector3(1,n_L-2,1), new Vector3(1,n_L-2,0), new Vector3(0,n_L-2,1), new Vector3(0,n_L-2,0),
+																	new Vector3(1,n_L-1,0), new Vector3(1,n_L-1,0), new Vector3(0,n_L-1,0), new Vector3(0,n_L-1,0));	
+		}
+		
+		// All Cubes in between
+		for( int l = 1; l < n_L-2; l++){
+
+			spCubes[l*n_B/2+1] = createSphereCube( Vector3.zero);
+			spCubeMeshHandler[l*n_B/2+1] = addMeshManipulator(spCubes[l*n_B/2+1],
+															new Vector3(1,l,1), new Vector3(1,l,0), new Vector3(0,l,1), new Vector3(0,l,0),
+															new Vector3(1,l+1,1), new Vector3(1,l+1,0), new Vector3(0,l+1,1), new Vector3(0,l+1,0));
+
+			for( int i = 1; i < n_B/2+1; i++){
+	
+				spCubes[l*n_B/2+i+1] = createSphereCube( new Vector3(0.0f,0.0f,360.0f/n_B*i));
+				spCubeMeshHandler[l*n_B/2+i+1] = addMeshManipulator(spCubes[l*n_B/2+i+1],
+																	new Vector3(1,l,1), new Vector3(1,l,0), new Vector3(0,l,1), new Vector3(0,l,0),
+																	new Vector3(1,l+1,1), new Vector3(1,l+1,0), new Vector3(0,l+1,1), new Vector3(0,l+1,0));
 			}
-			
-		//}
+		}	
+	}
+
+	public GameObject createSphereCube(Vector3 quaternionEuler){
 		
-		//if ( moveDirection.x != 0){
-			//Debug.Log("vert: " +moveDirection.x);
-			verticalAngle += .001f;//Mathf.Sign(moveDirection.x) * Mathf.Acos( 1.0f - (moveDirection.x* moveDirection.x) / ( 2 * r * r));
-			
-			if ( verticalAngle > 2*2.0f/n_B* Mathf.PI){
-			
-				verticalAngle -= 2.0f/n_B* Mathf.PI;
-			
-				Vector2[] uv = new Vector2[sphereUV.Length];
-				for(int i = 0; i < k; i++){
-					uv[i] = sphereUV[(i+n_B)%k];
-				}
-				sphereUV = uv;
-				mesh.uv = uv;
+		GameObject c = GameObject.CreatePrimitive(PrimitiveType.Cube);
+		c.transform.position = new Vector3(0,0,1);
+		c.transform.rotation = Quaternion.Euler(quaternionEuler); // Rotation längs zum Äquator, d.h. auf momentanem breitengerad
+		c.renderer.receiveShadows = false;
+		c.renderer.castShadows = false;
+		
+		return c;
+	}
 	
-			}
-			for(int i = 1; i < sphereVertices.Length-1; i++){
-				
-				meshTriangles[i] = new Vector3(Mathf.Cos( -verticalAngle)*sphereVertices[i].x + Mathf.Sin( -verticalAngle)*sphereVertices[i].z ,
-								 	  		   sphereVertices[i].y ,
-							      	  		   -Mathf.Sin( -verticalAngle)*sphereVertices[i].x + Mathf.Cos( -verticalAngle)*sphereVertices[i].z);
-			}
-			
-		//}//*/
+	public MeshManipulator addMeshManipulator(GameObject c,
+												Vector3 BNE, Vector3 BNW, Vector3 BSE, Vector3 BSW,
+												Vector3 FNE, Vector3 FNW, Vector3 FSE, Vector3 FSW){
+		MeshManipulator m = c.AddComponent<MeshManipulator>();
+		m.setVertexPosition( BNE, BNW, BSE, BSW, FNE,  FNW,  FSE,  FSW);	// Eckpunkte	
+		m.updateCoordinates();
 		
-		mesh.vertices = meshTriangles;
+		return m;
 	}
 	
 }
