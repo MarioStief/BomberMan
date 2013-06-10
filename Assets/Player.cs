@@ -5,7 +5,7 @@ namespace AssemblyCSharp
 {
 	public static class Player
 	{
-		private const int MAXSPEED = 4.0f;
+		private const float MAXSPEED = 4.0f;
 		
 		private static int bombs = 1;
 		private static int bombsActive = 0;
