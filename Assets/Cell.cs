@@ -17,6 +17,10 @@ namespace AssemblyCSharp
 		private bool bombPlaced;
 		private Explosion explosion;
 		
+		private bool powerupOnCell;
+		private PowerupType powerupType;
+		private GameObject powerup;
+		
 		private bool killOrder;
 		
 		public Cell()
@@ -65,7 +69,8 @@ namespace AssemblyCSharp
 				break;
 			case 3:
 				/* GameObject.Destroy(obj);
-				obj = GameObject.CreatePrimitive(PrimitiveType.Cube);
+				obj = GameObject.CreatePrimitive(Primitive
+				.Cube);
 				obj = GameObject.Instantiate(Data.solidCube, new Vector3(xpos * width +0.5f, 0.5f, zpos * height +0.5f), Quaternion.identity) as GameObject;
 				obj.renderer.material.color = Color.blue;
 				obj.name = "Spawn"+xpos+zpos;//*/
@@ -113,7 +118,7 @@ namespace AssemblyCSharp
 			killOrder = kill;
 			if ( killOrder){
 				if ( bombPlaced){
-				//Debug.Log("Explo: " + explosion +"("+ xpos + "," + zpos +")");
+				Debug.Log("Explo: " + explosion +"("+ xpos + "," + zpos +")");
 				if ( explosion != null){
 					bombPlaced = false;
 					explosion.startExplosion();
@@ -124,6 +129,20 @@ namespace AssemblyCSharp
 				}
 			} 			
 		}
+		
+		public void addPowerup(GameObject powerup, PowerupType powerupType) {
+			this.powerup = powerup;
+			this.powerupType = powerupType;
+			powerupOnCell = true;
+		}
+
+		public PowerupType destroyPowerup() {
+			GameObject.Destroy(powerup);
+			powerup = null;
+			powerupOnCell = false;
+			return powerupType;
+		}
+
 		
 		public GameObject getGameObject(){
 			return obj;	
@@ -152,6 +171,10 @@ namespace AssemblyCSharp
 		
 		public bool hasBomb(){
 			return bombPlaced;
+		}
+		
+		public bool hasPowerup() {
+			return powerupOnCell;
 		}
 		
 		public bool getKillOrder(){

@@ -2,11 +2,10 @@ using System;
 
 namespace AssemblyCSharp
 {
-	public class PowerupType
+	public enum PowerupType
 	{
-		public PowerupType ()
-		{
-		}
+		BombUp,
+		FlameUp,
+		PlayerSpeedUp
 	}
 }
-

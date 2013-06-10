@@ -31,7 +31,7 @@ public class Explosion
 		timer = 0.0f;
 		
 		dists = new int[4];
-				instantiatePSystems();
+		instantiatePSystems();
 
 		Data.explosions.Add(this);
 		Data.area.getCell(xpos,zpos).setBomb(true, this);
@@ -62,6 +62,11 @@ public class Explosion
 		GameObject.Destroy(exploDown); exploDown = null;
 		GameObject.Destroy(exploLeft); exploLeft = null;
 		GameObject.Destroy(exploRight); exploRight = null;
+		
+		// DEBUG: Bombe nach Explosion erzeugen mit 25 %
+		Player.destroyBomb();
+		if (new System.Random().Next(0, 1) == 0)
+			Pool.setPowerup(xpos, zpos);
 		
 		updateCells(false);
 		Data.area.getCell(xpos, zpos).setKillOrder(false);
@@ -98,7 +103,7 @@ public class Explosion
 		
 		explo0 = GameObject.Instantiate(Data.explo0, new Vector3( xpos + 0.5f, 0.5f, zpos + 0.5f), Quaternion.Euler(270,0,0)) as GameObject; 
 		
-		//Debug.Log(dists[0] + "," + dists[1] + "," + dists[2] + "," + dists[3]);
+		Debug.Log(dists[0] + "," + dists[1] + "," + dists[2] + "," + dists[3]);
 		
 		if ( dists[0] == 0){
 			exploUp = null;	
@@ -143,7 +148,7 @@ public class Explosion
 	
 	private int[] getDistances(){
 		
-		int range = 3; // TODO: Player.range
+		int range = Player.getFlamePower();
 		
 		// Right
 		int z = zpos+1;

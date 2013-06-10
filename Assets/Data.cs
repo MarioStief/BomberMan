@@ -11,6 +11,9 @@ public class Data : MonoBehaviour
 	public static int width, height;
 	
 	public static GameObject bombPrefab;
+	public static GameObject bombUpPowerupPreftab;
+	public static GameObject flameUpPowerupPrefab;
+	public static GameObject playerSpeedUpPowerupPrefab;
 	public static GameObject explo0;
 	public static GameObject explo1;
 	public static GameObject explo2;
@@ -44,6 +47,9 @@ public class Data : MonoBehaviour
 		boxCube = GameObject.Find("BoxCube");
 		
 		bombPrefab = GameObject.Find("bomb");
+		bombUpPowerupPreftab = GameObject.Find("BombUp");
+		flameUpPowerupPrefab = GameObject.Find("FlameUp");
+		playerSpeedUpPowerupPrefab = GameObject.Find("PlayerSpeedUp");
 		
 		explo0 = GameObject.Find("Explo0");
 		explo1 = GameObject.Find("Explo1");
@@ -53,6 +59,10 @@ public class Data : MonoBehaviour
 		createArea();
 		
 		explosions = new List<Explosion>();
+		
+		// Erstelle Pool aus Powerups
+		// Mit dem Parameter lässt sich die Poolgröße variieren
+		Pool.createPool(1);
 		
 		initialized = true;
 	}
