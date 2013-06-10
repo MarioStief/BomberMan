@@ -26,7 +26,3 @@ function OnGUI () {
 function OnConnectedToServer () {
     //Network.Instantiate(playerPrefab, transform.position, transform.rotation, 0);
 }
-
-// SERVER ONLY
-function OnPlayerConnected (player: NetworkPlayer) {
-}
