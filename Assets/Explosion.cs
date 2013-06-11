@@ -106,7 +106,7 @@ public class Explosion : MonoBehaviour
 					if (explosionField.getDelay() == 0) {
 						explosionField.getExplosion().GetComponent<ParticleEmitter>().enabled = true;
 						stillRunning = true;
-					} else if (explosionField.getDelay() == -2) {
+					} else if (explosionField.getDelay() == -5) {
 						explosionField.getExplosion().GetComponent<ParticleEmitter>().maxEmission = 0;
 					}
 
@@ -173,7 +173,7 @@ public class Explosion : MonoBehaviour
 		
 		GameObject explosion;
 		
-		explosion = GameObject.Instantiate(Data.explotionBombPrefab, new Vector3( xpos + 0.5f, 0.5f, zpos + 0.5f), Quaternion.Euler(270,0,0)) as GameObject;
+		explosion = GameObject.Instantiate(Data.explotionBombPrefab, new Vector3( xpos + 0.5f, 0.5f, zpos + 0.5f), Quaternion.Euler(0,0,0)) as GameObject;
 		explosion.GetComponent<ParticleEmitter>().enabled = false;
 		explosionChain.Add(new ExplosionField(explosion,0));
 
@@ -181,25 +181,25 @@ public class Explosion : MonoBehaviour
 		
 		for (int i = 1; i <= Player.getFlamePower(); i++) {
 			if (i <= dists[0]) {
-				explosion = GameObject.Instantiate(Data.explotionUpPrefab, new Vector3( (xpos-i) + 0.5f, 0.5f, zpos + 0.5f), Quaternion.Euler(0,-90,0)) as GameObject;
+				explosion = GameObject.Instantiate(Data.explotionUpPrefab, new Vector3( (xpos-i) + 0.5f, 0.5f, zpos + 0.5f), Quaternion.Euler(0,0,0)) as GameObject;
 				explosion.GetComponent<ParticleEmitter>().enabled = false;
 				explosionChain.Add(new ExplosionField(explosion,i));
 			}
 
 			if (i <= dists[1]) {
-				explosion = GameObject.Instantiate(Data.explotionDownPrefab, new Vector3( (xpos+i) + 0.5f, 0.5f, zpos + 0.5f), Quaternion.Euler(0,-90,0)) as GameObject;
+				explosion = GameObject.Instantiate(Data.explotionDownPrefab, new Vector3( (xpos+i) + 0.5f, 0.5f, zpos + 0.5f), Quaternion.Euler(0,0,0)) as GameObject;
 				explosion.GetComponent<ParticleEmitter>().enabled = false;
 				explosionChain.Add(new ExplosionField(explosion,i));
 			}
 
 			if (i <= dists[2]) {
-				explosion = GameObject.Instantiate(Data.explotionLeftPrefab, new Vector3( xpos + 0.5f, 0.5f, (zpos-i) + 0.5f), Quaternion.Euler(0,-90,0)) as GameObject;
+				explosion = GameObject.Instantiate(Data.explotionLeftPrefab, new Vector3( xpos + 0.5f, 0.5f, (zpos-i) + 0.5f), Quaternion.Euler(0,0,0)) as GameObject;
 				explosion.GetComponent<ParticleEmitter>().enabled = false;
 				explosionChain.Add(new ExplosionField(explosion,i));
 			}
 
 			if (i <= dists[3]) {
-				explosion = GameObject.Instantiate(Data.explotionRightPrefab, new Vector3( xpos + 0.5f, 0.5f, (zpos+i) + 0.5f), Quaternion.Euler(0,-90,0)) as GameObject;
+				explosion = GameObject.Instantiate(Data.explotionRightPrefab, new Vector3( xpos + 0.5f, 0.5f, (zpos+i) + 0.5f), Quaternion.Euler(0,0,0)) as GameObject;
 				explosion.GetComponent<ParticleEmitter>().enabled = false;
 				explosionChain.Add(new ExplosionField(explosion,i));
 			}
