@@ -12,15 +12,18 @@ public class PlayerMoveScript : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 	
-		if ( !Data.initialized) return;
+		if (!Data.initialized) return;
 		
-        if (Data.controller.isGrounded) {
+        if (Data.controller.isGrounded && !Player.isDead()) {
             moveDirection = new Vector3((-1)*Input.GetAxis("Vertical"), 0, Input.GetAxis("Horizontal"));
             moveDirection *= Player.getSpeed();     
 			
 			currCell = Data.area.getCell(Data.controller.transform.position.x, Data.controller.transform.position.z);
 			if ( currCell.getKillOrder()){
-				renderer.material.color = Color.black;		
+				renderer.material.color = Color.black;
+				moveDirection = new Vector3(0, 0, 0);
+				Player.setDead(true);
+				GameObject deadPlayer = GameObject.Instantiate(Data.deadPlayerPrefab, new Vector3(currCell.getXPos() + 0.5f, 0.3f, currCell.getZPos() + 0.5f), Quaternion.identity) as GameObject; 
 			}
 			
 			if (currCell.hasPowerup()) {
@@ -31,8 +34,10 @@ public class PlayerMoveScript : MonoBehaviour {
 					
 				//TODO: CHange to TryAddExplosion!
 				if ( !currCell.hasBomb())
-					if (Player.addBomb())
-						new Explosion(currCell.getXPos(), currCell.getZPos());
+					if (Player.addBomb()) {
+						GameObject explosion = new GameObject("explosion");
+						explosion.AddComponent<Explosion>();
+				}
 			}
         }
     

@@ -4,8 +4,11 @@ using System.Collections.Generic;
 
 public class ExplosionTimer : MonoBehaviour {
 	
+	// ########## DEPRECATED ##########
+	
 	// Update is called once per frame
 	void Update () {
+		/* Auskommentierter Code Henning
 	
 		List<Explosion> delExplosions = new List<Explosion>();
 		
@@ -19,5 +22,6 @@ public class ExplosionTimer : MonoBehaviour {
 		foreach(Explosion e in delExplosions){
 			Data.explosions.Remove(e);	
 		}
+		*/
 	}
 }

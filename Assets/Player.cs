@@ -12,6 +12,8 @@ namespace AssemblyCSharp
 		private static int flamePower = 1;
 		private static float speed = 1.0f;
 		
+		private static bool dead = false;
+		
 		public static void powerupCollected(PowerupType type)
 		{
 			if (type == PowerupType.BombUp)
@@ -43,6 +45,14 @@ namespace AssemblyCSharp
 
 		public static float getSpeed() {
 			return speed;
+		}
+		
+		public static void setDead(bool d) {
+			dead = d;
+		}
+		
+		public static bool isDead() {
+			return dead;
 		}
 	}
 }
