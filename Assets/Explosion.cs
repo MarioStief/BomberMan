@@ -49,11 +49,11 @@ public class Explosion : MonoBehaviour
 		
 		for (int i = 1; i <= 4; i++) {
 			explosion[i].GetComponent<ParticleEmitter>().minSize = 0.0f;
-			explosion[i].GetComponent<ParticleEmitter>().maxSize = 1.5f;
+			explosion[i].GetComponent<ParticleEmitter>().maxSize = 2.5f;
 			explosion[i].GetComponent<ParticleEmitter>().minEnergy = 0.2f;
 			explosion[i].GetComponent<ParticleEmitter>().maxEnergy = 0.2f * reach[i];
-			explosion[i].GetComponent<ParticleEmitter>().minEmission = 10000;
-			explosion[i].GetComponent<ParticleEmitter>().maxEmission = 10000;
+			explosion[i].GetComponent<ParticleEmitter>().minEmission = 2000;
+			explosion[i].GetComponent<ParticleEmitter>().maxEmission = 2000;
 		}
 		foreach (ExplosionField explosionField in explosionChain) {
 			explosionField.decrement(); // Zähle Delay-Ticker runter
@@ -81,7 +81,8 @@ public class Explosion : MonoBehaviour
 
 				foreach (ExplosionField explosionField in explosionChain) {
 					for (int i = 1; i <= 4; i++) {
-						explosion[i].GetComponent<ParticleEmitter>().maxEmission = 0;
+						if (explosion[i] != null)
+							explosion[i].GetComponent<ParticleEmitter>().maxEmission = 0;
 					}
 					explosionField.getCell().setExploding(false);
 				}
