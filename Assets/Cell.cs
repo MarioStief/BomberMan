@@ -21,7 +21,8 @@ namespace AssemblyCSharp
 		private PowerupType powerupType;
 		private GameObject powerup;
 		
-		private bool killOrder;
+		private bool exploding;
+		private bool deadlyCell;
 		
 		public Cell()
 		{
@@ -114,20 +115,24 @@ namespace AssemblyCSharp
 			}
 		}
 		
-		public void setKillOrder(bool kill){
-			killOrder = kill;
-			if ( killOrder){
-				if ( bombPlaced){
-				Debug.Log("Explo: " + explosion +"("+ xpos + "," + zpos +")");
-				if ( explosion != null){
-					bombPlaced = false;
-					explosion.startExplosion();
+		public void setExploding(bool kill){
+			exploding = kill;
+			if (exploding) {
+				if (bombPlaced) {
+					Debug.Log("Explo: " + explosion +"("+ xpos + "," + zpos +")");
+					if (explosion != null) {
+						bombPlaced = false;
+						explosion.startExplosion();
+					}
 				}
-				}
-				if ( type == 1){
+				if (type == 1){
 					setType(0);	
 				}
 			} 			
+		}
+		
+		public bool isExploding(){
+			return exploding;	
 		}
 		
 		public void addPowerup(GameObject powerup, PowerupType powerupType) {
@@ -177,9 +182,5 @@ namespace AssemblyCSharp
 			return powerupOnCell;
 		}
 		
-		public bool getKillOrder(){
-			return killOrder;	
-		}
-	}
 }
-
+}
