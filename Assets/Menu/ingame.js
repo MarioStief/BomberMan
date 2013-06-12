@@ -10,9 +10,19 @@ function Update () {
 
 }
 
+var showMenu = false;
 function OnGUI () {
 	if (GUI.Button(Rect(10,10,80,20), "MENU")) {
-		Application.LoadLevel(0);
+		showMenu = !showMenu;
+	}
+	if (showMenu) {
+		GUI.Box(Rect(10,30,50,20), "Sure?");
+		if (GUI.Button(Rect(60,30,50,20),"NO")) {
+			showMenu = false;
+		}
+		if (GUI.Button(Rect(110,30,50,20),"YES")) {
+			Application.LoadLevel(0);
+		}
 	}
 	
 	// List of all Players

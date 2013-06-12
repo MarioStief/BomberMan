@@ -9,10 +9,19 @@ var serverName : String = "Galaxy 42";
 private var port   : int = 25000;
 var maxPlayers  : int = 4;
 
-private var nickname : String = "";
+private var nickname : String = "Player 42";
 private var chat : String = "";
 
+private var players = new Array();
+
 function Start () {
+	// load settings
+	if (PlayerPrefs.GetString("Player Name"))
+		nickname = PlayerPrefs.GetString("Player Name");
+	if (PlayerPrefs.GetString("Server Name"))
+		serverName = PlayerPrefs.GetString("Server Name");
+	if (PlayerPrefs.GetInt("Server MaxPlayers"))
+		maxPlayers = PlayerPrefs.GetInt("Server MaxPlayers");
 }
 
 function Update () {
@@ -43,16 +52,16 @@ function OnGUI () {
 }
 
 function OnConnectedToServer() {
-	networkView.RPC("newPlayer", RPCMode.Server, nickname);
+	networkView.RPC("newPlayer", RPCMode.All, nickname);
+	networkView.RPC("incommingChatMessage", RPCMode.All, nickname + " joined");
+	screen = "waitingForStart";
 }
 
 function joinScreen() {
 	var width = 150;
-	//GUI.Label(Rect(x, Screen.height/2-50, width, 20), "Server-IP:");
-	//server = GUI.TextField(Rect(x, Screen.height/2-30,width,20), server);
-	//GUI.Label(Rect(x, Screen.height/2-50, width, 20), "Server-IP:");
-	//port = GUI.TextField(Rect(x, Screen.height/2-30,width,20), port);
 	GUI.BeginGroup(Rect(Screen.width/2-width/2,10,width+75,500));
+	
+	// REFRESH BUTTON
     if (GUI.Button(Rect(0,10,width,20),"Refresh Serverlist")) {
 	    MasterServer.updateRate = 3;
     	MasterServer.ClearHostList();
@@ -78,28 +87,41 @@ function joinScreen() {
 		if (GUI.Button(Rect(width,100+25*i,75,20), "Connect")) {
 			if (nickname.Length > 0) {
 				try {
+					PlayerPrefs.SetString("Player Name", nickname);
 					Network.Connect(srv);
 				} catch(err) {
 					Debug.Log("Server unreachable!");
 				}
-				screen = "waitingForStart";
 			}
 		}
 		i++;
 	}
+	
+	// NO SERVERS
+	if (i == 1) {
+		GUI.Box(Rect(0,200,width,24), "no servers found");
+	}
+	
 	GUI.EndGroup();
-	//GUILayout.TextField(Network.player.externalIP);
 }
 
 private var chatMsg : String = "";
 function waitingForStartScreen() {
 	// display a chat and the list of currently conntected players
 	// ..
-	chatArea(Screen.width/2-200, 20);
+	GUI.Box(Rect(Screen.width/2-100, 50, 200, 24), "Waiting for server to start game");
+	chatArea(Screen.width-210, 100);
 }
 
 @RPC
 function incommingChatMessage(text : String, info: NetworkMessageInfo) {
+	// max 18 lines
+	if (chat.Replace("\n","").Length + 18 <= chat.Length) {
+		var lines = new Array();
+		lines = chat.Split("\n"[0]);
+		lines.shift();
+		chat = lines.join("\n");
+	}
 	chat += "\n" + text;
 	Debug.Log(text + " from: "+info.sender);
 }
@@ -110,8 +132,10 @@ function startGame() {
 }
 
 @RPC
-function newPlayer(player : String) {
-	Debug.Log("new player "+player+" connected");
+function newPlayer(nick : String, info: NetworkMessageInfo) {
+	Debug.Log("new player (" + nick + ") connected");
+	
+	//players.Push(nick);
 }
 
 private var showMaxPlayers = false;
@@ -143,15 +167,21 @@ function serverScreen() {
     
     // START SERVER
 	if (GUI.Button(Rect(50,300,100,30),"Start Game")) {
-	    Application.LoadLevel(1);
+		// save settings
+		PlayerPrefs.SetInt("Server MaxPlayers", maxPlayers);
+		PlayerPrefs.SetString("Server Name", serverName);
+		PlayerPrefs.SetString("Player Name", nickname);
+		
+		networkView.RPC("startGame", RPCMode.AllBuffered);
+	    //Application.LoadLevel(1);
 	}
 	GUI.EndGroup();
 	
 	// CONNECTED PLAYERS
 	// ...
+	
 	// CHAT
 	chatArea(Screen.width-210, 10);
-
 }
 
 function startScreen() {
@@ -198,8 +228,14 @@ function helpScreen() {
 function backButton() {
 	if (GUI.Button(Rect(10,Screen.height-40,80,30), "Back")) {
 		if (screen == "server") { // cancel the server
+			Network.Disconnect();
 			MasterServer.UnregisterHost();
 			CancelInvoke("refreshServerName");
+			Debug.Log("UNREGISTER!");
+		} else if (screen == "waitingForStart") {
+			Debug.Log("waitingForStart");
+			networkView.RPC("incommingChatMessage", RPCMode.Others, nickname + " leaved");
+			Network.Disconnect();
 		}
 		screen = "";
 	}
@@ -209,7 +245,7 @@ function chatArea(x:int, y:int) {
 	if ((GUI.Button(Rect(x+160,y+300,50,20), "Send")
 			|| Event.current.keyCode == KeyCode.Return)
 			&& chatMsg.Length > 0) {
-		networkView.RPC("incommingChatMessage", RPCMode.All, chatMsg);
+		networkView.RPC("incommingChatMessage", RPCMode.All, nickname + ": " + chatMsg);
 		chatMsg = "";
 	}
 	GUI.Label(Rect(x,y,150,300), chat);
