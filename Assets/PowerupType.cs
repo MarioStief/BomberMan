@@ -4,8 +4,9 @@ namespace AssemblyCSharp
 {
 	public enum PowerupType
 	{
-		BombUp,
-		FlameUp,
-		PlayerSpeedUp
+		BOMB_UP,
+		FLAME_UP,
+		GOLDEN_FLAME,
+		PLAYER_SPEED_UP
 	}
 }

@@ -15,18 +15,9 @@ public class Data : MonoBehaviour
 	public static GameObject bombUpPowerupPreftab;
 	public static GameObject flameUpPowerupPrefab;
 	public static GameObject playerSpeedUpPowerupPrefab;
-	public static GameObject explotionBombPrefab;
-	public static GameObject explotionUpPrefab;
-	public static GameObject explotionDownPrefab;
-	public static GameObject explotionLeftPrefab;
-	public static GameObject explotionRightPrefab;
+	public static GameObject goldenFlamePowerupPrefab;
 	
-	/* Auskommentierte Explosion Henning
-	public static GameObject explo0;
-	public static GameObject explo1;
-	public static GameObject explo2;
-	public static GameObject explo3;
-	*/
+	public static GameObject explotionPrefab;
 	
 	public static GameObject player;
 	public static CharacterController controller;
@@ -61,20 +52,10 @@ public class Data : MonoBehaviour
 		bombUpPowerupPreftab = GameObject.Find("BombUp");
 		flameUpPowerupPrefab = GameObject.Find("FlameUp");
 		playerSpeedUpPowerupPrefab = GameObject.Find("PlayerSpeedUp");
+		goldenFlamePowerupPrefab = GameObject.Find("GoldenFlame");
 		
-		explotionBombPrefab = GameObject.Find("ExplotionBomb");
-		explotionUpPrefab = GameObject.Find("ExplotionUp");
-		explotionDownPrefab = GameObject.Find("ExplotionDown");
-		explotionLeftPrefab = GameObject.Find("ExplotionLeft");
-		explotionRightPrefab = GameObject.Find("ExplotionRight");
+		explotionPrefab = GameObject.Find("Explotion");
 
-		/* Auskommentierte Explosion Henning
-		explo0 = GameObject.Find("Explo0");
-		explo1 = GameObject.Find("Explo1");
-		explo2 = GameObject.Find("Explo2");
-		explo3 = GameObject.Find("Explo3");
-		*/
-		
 		createArea();
 		
 		explosions = new List<Explosion>();

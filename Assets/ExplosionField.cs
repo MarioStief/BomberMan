@@ -7,10 +7,13 @@ namespace AssemblyCSharp
 	{
 		private GameObject explosion;
 		private int delay;
+		private Cell cell;
 		
-		public ExplosionField(GameObject explosion, int delay) {
-			this.explosion = explosion;
+		public ExplosionField(int delay, Cell cell) {
+			//this.explosion = explosion;
+			//this.direction = direction;
 			this.delay = delay;
+			this.cell = cell;
 		}
 		
 		public GameObject getExplosion() {
@@ -20,7 +23,11 @@ namespace AssemblyCSharp
 		public int getDelay() {
 			return delay;
 		}
-		
+
+		public Cell getCell() {
+			return cell;
+		}
+
 		public void decrement() {
 			delay--;
 		}

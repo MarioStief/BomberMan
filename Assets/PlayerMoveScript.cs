@@ -19,7 +19,7 @@ public class PlayerMoveScript : MonoBehaviour {
             moveDirection *= Player.getSpeed();     
 			
 			currCell = Data.area.getCell(Data.controller.transform.position.x, Data.controller.transform.position.z);
-			if ( currCell.getKillOrder()){
+			if (currCell.isExploding()){
 				renderer.material.color = Color.black;
 				moveDirection = new Vector3(0, 0, 0);
 				Player.setDead(true);
@@ -32,11 +32,11 @@ public class PlayerMoveScript : MonoBehaviour {
 			
 			if ( Input.GetKeyDown(KeyCode.Space)){ // Lege Bombe -- erstelle Partikelwolke
 					
-				//TODO: CHange to TryAddExplosion!
-				if ( !currCell.hasBomb())
+				if ( !currCell.hasBomb()) {
 					if (Player.addBomb()) {
 						GameObject explosion = new GameObject("explosion");
 						explosion.AddComponent<Explosion>();
+					}
 				}
 			}
         }

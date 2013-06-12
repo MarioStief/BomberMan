@@ -6,6 +6,7 @@ namespace AssemblyCSharp
 	public static class Player
 	{
 		private const float MAXSPEED = 4.0f;
+		private const int MAXFLAMEPOWER = 10;
 		
 		private static int bombs = 1;
 		private static int bombsActive = 0;
@@ -16,13 +17,18 @@ namespace AssemblyCSharp
 		
 		public static void powerupCollected(PowerupType type)
 		{
-			if (type == PowerupType.BombUp)
+			Debug.Log (type == PowerupType.GOLDEN_FLAME);
+			if (type == PowerupType.BOMB_UP) {
 				bombs++;
-			else if (type == PowerupType.FlameUp)
-				flamePower++;
-			else if (type == PowerupType.PlayerSpeedUp)
+			} else if (type == PowerupType.FLAME_UP) {
+				if (flamePower < MAXFLAMEPOWER)
+					flamePower++;
+			} else if (type == PowerupType.GOLDEN_FLAME) {
+					flamePower = MAXFLAMEPOWER;
+			} else if (type == PowerupType.PLAYER_SPEED_UP) {
 				if (speed < MAXSPEED)
 					speed += 0.5f;
+			}
 			Debug.Log("bombs: " + bombs + ", flamePower: " + flamePower + ", speed: " + speed);
 		}
 		

@@ -8,17 +8,20 @@ namespace AssemblyCSharp
 	public static class PowerupPool
 	{
 		private static List<Powerup> pool = new List<Powerup>();
+		private static bool destroyable = true;
 		
 		public static void createPool(int size)
 		{
 			for (int i = 0; i < size; i++)
 			{
-				for (int j = 0; j < 3; j++)
-					pool.Add(new Powerup(PowerupType.BombUp));
-				for (int j = 0; j < 3; j++)
-					pool.Add(new Powerup(PowerupType.FlameUp));
-				for (int j = 0; j < 3; j++)
-					pool.Add(new Powerup(PowerupType.PlayerSpeedUp));
+				for (int j = 0; j < 10; j++)
+					pool.Add(new Powerup(PowerupType.BOMB_UP));
+				for (int j = 0; j < 10; j++)
+					pool.Add(new Powerup(PowerupType.FLAME_UP));
+				for (int j = 0; j < 10; j++)
+					pool.Add(new Powerup(PowerupType.PLAYER_SPEED_UP));
+				for (int j = 0; j < 1; j++)
+					pool.Add(new Powerup(PowerupType.GOLDEN_FLAME));
 			}
 			pool = shuffleList(pool);
 			
@@ -56,12 +59,15 @@ namespace AssemblyCSharp
 				createPool(1);
 			
 			GameObject powerup = null;
-			if (p.getType() == PowerupType.BombUp)
+			
+				 if	(p.getType() == PowerupType.BOMB_UP)
 					powerup = GameObject.Instantiate(Data.bombUpPowerupPreftab, new Vector3(xpos + 0.5f, 0.3f, zpos + 0.5f), Quaternion.identity) as GameObject; 
-			else if (p.getType() == PowerupType.FlameUp)
+			else if (p.getType() == PowerupType.FLAME_UP)
 					powerup = GameObject.Instantiate(Data.flameUpPowerupPrefab, new Vector3(xpos + 0.5f, 0.3f, zpos + 0.5f), Quaternion.identity) as GameObject; 
-			else if (p.getType() == PowerupType.PlayerSpeedUp)
+			else if (p.getType() == PowerupType.PLAYER_SPEED_UP)
 					powerup = GameObject.Instantiate(Data.playerSpeedUpPowerupPrefab, new Vector3(xpos + 0.5f, 0.3f, zpos + 0.5f), Quaternion.identity) as GameObject; 
+			else if (p.getType() == PowerupType.GOLDEN_FLAME)
+					powerup = GameObject.Instantiate(Data.goldenFlamePowerupPrefab, new Vector3(xpos + 0.5f, 0.3f, zpos + 0.5f), Quaternion.identity) as GameObject; 
 			
 			Cell currCell = Data.area.getCell(xpos, zpos);
 			currCell.addPowerup(powerup, type);
@@ -79,6 +85,14 @@ namespace AssemblyCSharp
 			}
 			string result = "New Pool: " + builder.ToString();
 			Debug.Log(result);
+		}
+		
+		public static void setDestroyable(bool d) {
+			destroyable = d;
+		}
+		
+		public static bool getDestroyable() {
+			return destroyable;
 		}
 	}
 }
