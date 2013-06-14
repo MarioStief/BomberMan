@@ -7,11 +7,13 @@ namespace AssemblyCSharp
 	{
 		private const float MAXSPEED = 4.0f;
 		private const int MAXFLAMEPOWER = 10;
+		private const int MAXHP = 100;
 		
 		private static int bombs = 1;
 		private static int bombsActive = 0;
 		private static int flamePower = 1;
 		private static float speed = 1.0f;
+		private static int hp = MAXHP;
 		
 		private static bool dead = false;
 		
@@ -60,6 +62,28 @@ namespace AssemblyCSharp
 		public static bool isDead() {
 			return dead;
 		}
-	}
+		
+		public static void decreaseHP() {
+			hp--;
+			Debug.Log("Life: " + hp);
+			if (hp == 0)
+				dead = true;
+		}
+
+		public static void increaseHP() {
+			if (hp < 100) {
+				hp++;
+				Debug.Log("Life: " + hp);
+			}
+		}
+		
+		public static int getHP() {
+			return hp;
+		}
+
+		public static int getMaxHP() {
+			return MAXHP;
+		}
+}
 }
 

@@ -19,6 +19,7 @@ public class Data : MonoBehaviour
 	
 	public static GameObject explotionPrefab;
 	
+	public static GameObject []players = new GameObject[1];
 	public static GameObject player;
 	public static CharacterController controller;
 	
@@ -40,7 +41,8 @@ public class Data : MonoBehaviour
 		width = (int)initFile.getValue("width");
 		height = (int)initFile.getValue("height");
 				
-		player = GameObject.Find("Sphere");
+		player = GameObject.Find("Player");
+		players[0] = player;
 		controller = player.GetComponent<CharacterController>();
 		
 		solidCube = GameObject.Find("SolidCube");
@@ -322,6 +324,10 @@ public class Data : MonoBehaviour
 				}
 			}			
 		}
+	}
+	
+	public static GameObject[] getPlayers() {
+		return players;
 	}
 }
 

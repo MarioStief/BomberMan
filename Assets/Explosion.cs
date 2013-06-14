@@ -139,29 +139,21 @@ public class Explosion : MonoBehaviour
 		
 		for (int i = 1; i <= Player.getFlamePower(); i++) {
 			if (i <= dists[0]) {
-				//explosion = GameObject.Instantiate(Data.explotionUpPrefab, new Vector3( (xpos-i) + 0.5f, 0.5f, zpos + 0.5f), Quaternion.identity) as GameObject;
-				//explosion.GetComponent<ParticleEmitter>().maxEmission = 0;
 				reach[1]++;
 				explosionChain.Add(new ExplosionField(i,Data.area.getCell((xpos-i), zpos)));
 			}
 
 			if (i <= dists[1]) {
-				//explosion = GameObject.Instantiate(Data.explotionDownPrefab, new Vector3( (xpos+i) + 0.5f, 0.5f, zpos + 0.5f), Quaternion.identity) as GameObject;
-				//explosion.GetComponent<ParticleEmitter>().maxEmission = 0;
 				reach[2]++;
 				explosionChain.Add(new ExplosionField(i,Data.area.getCell((xpos+i), zpos)));
 			}
 
 			if (i <= dists[2]) {
-				//explosion = GameObject.Instantiate(Data.explotionLeftPrefab, new Vector3( xpos + 0.5f, 0.5f, (zpos-i) + 0.5f), Quaternion.identity) as GameObject;
-				//explosion.GetComponent<ParticleEmitter>().maxEmission = 0;
 				reach[3]++;
 				explosionChain.Add(new ExplosionField(i,Data.area.getCell(xpos, (zpos-i))));
 			}
 
 			if (i <= dists[3]) {
-				//explosion = GameObject.Instantiate(Data.explotionRightPrefab, new Vector3( xpos + 0.5f, 0.5f, (zpos+i) + 0.5f), Quaternion.identity) as GameObject;
-				//explosion.GetComponent<ParticleEmitter>().maxEmission = 0;
 				reach[4]++;
 				explosionChain.Add(new ExplosionField(i,Data.area.getCell(xpos, (zpos+i))));
 			}
