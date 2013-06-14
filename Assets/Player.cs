@@ -22,14 +22,23 @@ namespace AssemblyCSharp
 			Debug.Log (type == PowerupType.GOLDEN_FLAME);
 			if (type == PowerupType.BOMB_UP) {
 				bombs++;
+			} else if (type == PowerupType.BOMB_DOWN) {
+				if (bombs > 1)
+					bombs--;
 			} else if (type == PowerupType.FLAME_UP) {
 				if (flamePower < MAXFLAMEPOWER)
 					flamePower++;
+			} else if (type == PowerupType.FLAME_DOWN) {
+				if (flamePower > 1)
+					flamePower--;
 			} else if (type == PowerupType.GOLDEN_FLAME) {
 					flamePower = MAXFLAMEPOWER;
 			} else if (type == PowerupType.PLAYER_SPEED_UP) {
 				if (speed < MAXSPEED)
 					speed += 0.5f;
+			} else if (type == PowerupType.PLAYER_SPEED_DOWN) {
+				if (speed > 1.0f)
+					speed -= 0.5f;
 			}
 			Debug.Log("bombs: " + bombs + ", flamePower: " + flamePower + ", speed: " + speed);
 		}

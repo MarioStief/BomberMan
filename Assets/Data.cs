@@ -12,10 +12,6 @@ public class Data : MonoBehaviour
 	
 	public static GameObject deadPlayerPrefab;
 	public static GameObject bombPrefab;
-	public static GameObject bombUpPowerupPreftab;
-	public static GameObject flameUpPowerupPrefab;
-	public static GameObject playerSpeedUpPowerupPrefab;
-	public static GameObject goldenFlamePowerupPrefab;
 	
 	public static GameObject explotionPrefab;
 	
@@ -51,10 +47,6 @@ public class Data : MonoBehaviour
 		deadPlayerPrefab = GameObject.Find("DeadPlayer");
 
 		bombPrefab = GameObject.Find("bomb");
-		bombUpPowerupPreftab = GameObject.Find("BombUp");
-		flameUpPowerupPrefab = GameObject.Find("FlameUp");
-		playerSpeedUpPowerupPrefab = GameObject.Find("PlayerSpeedUp");
-		goldenFlamePowerupPrefab = GameObject.Find("GoldenFlame");
 		
 		explotionPrefab = GameObject.Find("Explotion");
 

@@ -7,8 +7,28 @@ namespace AssemblyCSharp
 {
 	public static class PowerupPool
 	{
-		private static List<Powerup> pool = new List<Powerup>();
 		private static bool destroyable = true;
+		private static bool negative = true;
+
+		private static List<Powerup> pool = new List<Powerup>();
+		public static GameObject bombUpPowerupPreftab = GameObject.Find("BombUp");
+		public static GameObject bombDownPowerupPreftab = GameObject.Find("BombDown");
+		public static GameObject flameUpPowerupPrefab = GameObject.Find("FlameUp");
+		public static GameObject flameDownPowerupPrefab = GameObject.Find("FlameDown");
+		public static GameObject playerSpeedUpPowerupPrefab = GameObject.Find("PlayerSpeedUp");
+		public static GameObject playerSpeedDownPowerupPrefab = GameObject.Find("PlayerSpeedDown");
+		public static GameObject goldenFlamePowerupPrefab = GameObject.Find("GoldenFlame");
+		
+		static PowerupPool() {
+			/*
+			bombUpPowerupPreftab = GameObject.Find("BombUp");
+			bombDownPowerupPreftab = bombUpPowerupPreftab;
+			bombDownPowerupPreftab.GetComponent("RenderSettings").haloStrength = 0.5;
+			((Behaviour)bombUpPowerupPreftab.GetComponent("Halo")).color = Color.red; // Does not work
+			// IDEE: Ohne Halo starten und diesen langsam vergrößern.
+			// So weiß man am Anfang noch nicht, ob es ein positives oder negatives Powerup ist.
+			*/
+		}
 		
 		public static void createPool(int size)
 		{
@@ -22,6 +42,14 @@ namespace AssemblyCSharp
 					pool.Add(new Powerup(PowerupType.PLAYER_SPEED_UP));
 				for (int j = 0; j < 1; j++)
 					pool.Add(new Powerup(PowerupType.GOLDEN_FLAME));
+				if (negative) {
+					for (int j = 0; j < 2; j++)
+						pool.Add(new Powerup(PowerupType.BOMB_DOWN));
+					for (int j = 0; j < 2; j++)
+						pool.Add(new Powerup(PowerupType.FLAME_DOWN));
+					for (int j = 0; j < 2; j++)
+						pool.Add(new Powerup(PowerupType.PLAYER_SPEED_DOWN));
+				}
 			}
 			pool = shuffleList(pool);
 			
@@ -61,13 +89,19 @@ namespace AssemblyCSharp
 			GameObject powerup = null;
 			
 				 if	(p.getType() == PowerupType.BOMB_UP)
-					powerup = GameObject.Instantiate(Data.bombUpPowerupPreftab, new Vector3(xpos + 0.5f, 0.3f, zpos + 0.5f), Quaternion.identity) as GameObject; 
+					powerup = GameObject.Instantiate(bombUpPowerupPreftab, new Vector3(xpos + 0.5f, 0.3f, zpos + 0.5f), Quaternion.identity) as GameObject; 
+			else if	(p.getType() == PowerupType.BOMB_DOWN)
+					powerup = GameObject.Instantiate(bombDownPowerupPreftab, new Vector3(xpos + 0.5f, 0.3f, zpos + 0.5f), Quaternion.identity) as GameObject; 
 			else if (p.getType() == PowerupType.FLAME_UP)
-					powerup = GameObject.Instantiate(Data.flameUpPowerupPrefab, new Vector3(xpos + 0.5f, 0.3f, zpos + 0.5f), Quaternion.identity) as GameObject; 
+					powerup = GameObject.Instantiate(flameUpPowerupPrefab, new Vector3(xpos + 0.5f, 0.3f, zpos + 0.5f), Quaternion.identity) as GameObject; 
+			else if (p.getType() == PowerupType.FLAME_DOWN)
+					powerup = GameObject.Instantiate(flameDownPowerupPrefab, new Vector3(xpos + 0.5f, 0.3f, zpos + 0.5f), Quaternion.identity) as GameObject; 
 			else if (p.getType() == PowerupType.PLAYER_SPEED_UP)
-					powerup = GameObject.Instantiate(Data.playerSpeedUpPowerupPrefab, new Vector3(xpos + 0.5f, 0.3f, zpos + 0.5f), Quaternion.identity) as GameObject; 
+					powerup = GameObject.Instantiate(playerSpeedUpPowerupPrefab, new Vector3(xpos + 0.5f, 0.3f, zpos + 0.5f), Quaternion.identity) as GameObject; 
+			else if (p.getType() == PowerupType.PLAYER_SPEED_DOWN)
+					powerup = GameObject.Instantiate(playerSpeedDownPowerupPrefab, new Vector3(xpos + 0.5f, 0.3f, zpos + 0.5f), Quaternion.identity) as GameObject; 
 			else if (p.getType() == PowerupType.GOLDEN_FLAME)
-					powerup = GameObject.Instantiate(Data.goldenFlamePowerupPrefab, new Vector3(xpos + 0.5f, 0.3f, zpos + 0.5f), Quaternion.identity) as GameObject; 
+					powerup = GameObject.Instantiate(goldenFlamePowerupPrefab, new Vector3(xpos + 0.5f, 0.3f, zpos + 0.5f), Quaternion.identity) as GameObject; 
 			
 			Cell currCell = Data.area.getCell(xpos, zpos);
 			currCell.addPowerup(powerup, type);
@@ -91,9 +125,17 @@ namespace AssemblyCSharp
 			destroyable = d;
 		}
 		
-		public static bool getDestroyable() {
+		public static bool getDestroyable() { 
 			return destroyable;
 		}
-	}
+
+		public static void setNegative(bool n) {
+			negative = n;
+		}
+		
+		public static bool getNegative() {
+			return negative;
+		}
+}
 }
 
