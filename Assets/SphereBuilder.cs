@@ -25,9 +25,9 @@ public class SphereBuilder : MonoBehaviour {
 
 
 	public Vector3[/*r*/][/*n_L*/][/*n_B*/] sphereVertices;	// 3dim Array für alle Punkte auf der Kugel:
-															// r == 0: Punkte für Unterseite der Würfel
-															// r == 1: Punkte für (sichtbare) Oberseite der Würfel
-															// [n_L][n_B] geben für jeweiligen Längen- und Breitenkreis den Punkt im Raum an
+																				// r == 0: Punkte für Unterseite der Würfel
+																				// r == 1: Punkte für (sichtbare) Oberseite der Würfel
+																				// [n_L][n_B] geben für jeweiligen Längen- und Breitenkreis den Punkt im Raum an
 	public float [/*r*/][/*n_L*/][/*n_B*/] vertexAngles;	// Wird _NUR_ für Update-Alternative II benötigt!
 	
 	
@@ -216,6 +216,8 @@ public class SphereBuilder : MonoBehaviour {
 	int adjSouthPole;
 	int adjEast;
 	
+	bool vChange = false;
+	
 	// <summary>
 	// Handling der Bewegung; Schnittstelle zu InputHandler
 	//
@@ -226,7 +228,29 @@ public class SphereBuilder : MonoBehaviour {
 	// </summary>
 	public void move(Vector2 moveDirection){
 		
-		// Rotiere den Würfel normal weiter		
+		// Bestimme Bewegungsrichtungen und setze ggf. Startwerte für Winkelverschiebung
+		
+		if ( vDirection != (int) Mathf.Sign(moveDirection.x) && (int) Mathf.Sign(moveDirection.x) != 0){
+			vChange = true;	
+		}
+		
+		vDirection = (int) Mathf.Sign(moveDirection.x);
+		if ( vDirection == 1 && offset == 0.0f){
+			offset = -Mathf.PI/(2*(n_L-1));
+		} else if ( vDirection == -1 && offset == 0.0f){
+			offset = Mathf.PI/(2*(n_L-1));	
+		}
+		
+		//if ( hDirection != (int) Mathf.Sign(moveDirection.y)) hOffset = 0;
+		hDirection = (int) Mathf.Sign(moveDirection.y);
+		if ( hDirection == 1 && hOffset == 0.0f){
+			hOffset = -(1.0f/n_B) * Mathf.PI;
+		} else if ( hDirection == -1 && hOffset == 0.0f){
+			hOffset = (1.0f/n_B) * Mathf.PI;	
+		}
+		
+		
+		// Rotiere den Würfel 	
 		deltaOffset = speed * moveDirection.x * Time.deltaTime;
 		offset = offset + deltaOffset;
 		
@@ -235,8 +259,8 @@ public class SphereBuilder : MonoBehaviour {
 		
 		rotateCubes	();
 		
-		vDirection = (int) Mathf.Sign(moveDirection.x);
 		
+		// Würfel-Shift an Darstellungsrändern
 		if ( vDirection == 0) return;
 		if ( vDirection == 1){
 			if (	Mathf.Abs(offset) >= Mathf.PI/(n_L-1) ){
@@ -250,18 +274,15 @@ public class SphereBuilder : MonoBehaviour {
 			}
 		}
 		
-		// baustelle...
-		/*hDirection = (int) Mathf.Sign(moveDirection.y);
-		
 		if ( hDirection == 0) return;
 		if ( hDirection == 1){
-			if (	Mathf.Abs(hOffset) >= 2.0f/n_B ){
-				hOffset -= 2.0f/n_B;		
+			if (	Mathf.Abs(hOffset) >= (2.0f/n_B) * Mathf.PI ){
+				hOffset += (2.0f/n_B) * Mathf.PI ;		
 				churnOutCubesHorizontal();
 			}
 		} else{
-			if (	Mathf.Abs(hOffset) >= 2.0f/n_B ){
-				hOffset += 2.0f/n_B;		
+			if (	Mathf.Abs(hOffset) >= (2.0f/n_B) * Mathf.PI ){
+				hOffset -= (2.0f/n_B) * Mathf.PI ;		
 				churnOutCubesHorizontal();
 			}
 		}//*/
@@ -274,14 +295,18 @@ public class SphereBuilder : MonoBehaviour {
 	private void churnOutCubesVertical(){
 				
 		
-		if ( vDirection == 1){
-			gameArea.incrPositionHeight();
+		if ( vDirection == -1){
+			gameArea.decrPositionHeight();
 		
-			Debug.Log("HEY");
+			if (vChange){
+				//adjSouthPole = (adjSouthPole + n_L-2);
+				vChange = false;
+			}
+			
 			// Verschiebe Würfel, die am Nordpol anliegen zum Südpol!
 			for( int i = 0; i <  n_B/2; i++){
 
-				verticalOffset[adjSouthPole] [ i] =  verticalOffset[adjSouthPole] [ i]  - Mathf.PI;//vertexAngles[0][adjSouthPole][ i] - Mathf.PI/2;	
+				verticalOffset[adjSouthPole] [ i] =  vertexAngles[0][adjSouthPole] [ i]  + Mathf.PI/2;//vertexAngles[0][adjSouthPole][ i] - Mathf.PI/2;	
 				
 				gameArea.updateHeight(adjSouthPole , i);
 			}
@@ -290,19 +315,19 @@ public class SphereBuilder : MonoBehaviour {
 			if ( --adjSouthPole < 0) {
 				adjSouthPole = n_L-2;	
 			}
-		} else if ( vDirection == -1){
+		} else if ( vDirection == 1){
 			
-			gameArea.decrPositionHeight();
-			Debug.Log("HO");
+			gameArea.incrPositionHeight();
 			// Verschiebe Würfel, die am Nordpol anliegen zum Südpol!
 			for( int i = 0; i <  n_B/2; i++){
-
-				verticalOffset[n_L-2 - adjSouthPole] [ i] =  verticalOffset[n_L-2 - adjSouthPole] [ i]  + Mathf.PI;// + Mathf.PI/2;
-				gameArea.updateHeight(n_L-2 - adjSouthPole, i);
+				//Debug.Log("döna");
+				//if (adjSouthPole == 0) Debug.Log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+				verticalOffset[(n_L-2 + adjSouthPole-1)%(n_L-2)] [ i] =  verticalOffset[(n_L-2 + adjSouthPole-1)%(n_L-2)] [ i]  - Mathf.PI;// + Mathf.PI/2;
+				gameArea.updateHeight((n_L-2 + adjSouthPole-1)%(n_L-2), i);
 			}
 			
 			
-			if ( ++adjSouthPole > n_L-2) {
+			if ( ++adjSouthPole >  n_L-2) {
 				adjSouthPole = 0;	
 			}
 		}
@@ -320,30 +345,31 @@ public class SphereBuilder : MonoBehaviour {
 		
 			Debug.Log("HEY");
 			// Verschiebe Würfel, die am Nordpol anliegen zum Südpol!
-			for( int i = 0; i <  n_L; i++){
+			for( int i = 0; i <  n_L-1; i++){
 
-				horizontalOffset[i] [ adjEast] =  horizontalOffset[i] [ adjEast]  + Mathf.PI;//vertexAngles[0][adjSouthPole][ i] - Mathf.PI/2;	
+				horizontalOffset[i] [ adjEast] =  horizontalOffset[i] [ adjEast]  - Mathf.PI;//vertexAngles[0][adjSouthPole][ i] - Mathf.PI/2;	
 				
 				gameArea.updateHeight(i , adjEast);
 			}
 			
 			
-			if ( --adjEast < 0) {
-				adjEast = n_B/2;	
+			if ( ++adjEast > n_B/2-1) {
+				adjEast = n_B/2-1;	
 			}
+			
 		} else if ( hDirection == 1){
 			
 			gameArea.decrPositionWidth();
 			Debug.Log("HO");
 			// Verschiebe Würfel, die am Nordpol anliegen zum Südpol!
-			for( int i = 0; i <  n_L; i++){
+			for( int i = 0; i <  n_L-1; i++){
 
-				horizontalOffset[i] [ n_B/2-adjEast] =  horizontalOffset[i] [ n_B/2-adjEast]  - Mathf.PI;// + Mathf.PI/2;
-				gameArea.updateHeight(i, n_B/2-adjEast);
+				horizontalOffset[i] [ n_B/2-1-adjEast] =  horizontalOffset[i][ n_B/2-1-adjEast]  + Mathf.PI;// + Mathf.PI/2;
+				gameArea.updateHeight(i, n_B/2-1-adjEast);
 			}
 			
 			
-			if ( ++adjEast > n_B/2) {
+			if ( --adjEast < 0) {
 				adjEast = 0;	
 			}
 		}
@@ -373,12 +399,10 @@ public class SphereBuilder : MonoBehaviour {
 				
 				float vr,ur;
 				
-				
-				verticalOffset[j][i] = ((verticalOffset[j][i]  + deltaOffset) % (Mathf.PI*2));
+				verticalOffset[j][i] = ((verticalOffset[j][i]  + deltaOffset) );
 				vr = v - verticalOffset[j][i];
 				
-				
-				horizontalOffset[j][i] = ((horizontalOffset[j][i]  + hDeltaOffset) % (Mathf.PI*2));
+				horizontalOffset[j][i] = ((horizontalOffset[j][i]  + hDeltaOffset) );
 				ur = u - horizontalOffset[j][i];
 				
 				val = F(ur,vr);					// berechne Punkt für Winkel u und v

@@ -106,7 +106,12 @@ namespace AssemblyCSharp
 		// </summary>
 		public void updateHeight(int i, int j){
 			
-			drawnArea[i][j].setHeight(gameArea[i][(((int)rinkPosition.y+j)%(gameArea[0].Length/2))].getHeight());
+			//Debug.Log("drawnArea: " +drawnArea + "," + drawnArea[0].Length());
+			//Debug.Log("gameArea: "  +gameArea.Length + "," + gameArea[0].Length());
+			//Debug.Log("Input: "  + i + "," + j);
+
+
+			drawnArea[i][j].setHeight(gameArea[i][/*(((int)rinkPosition.y+j)%(gameArea[0].Length/2))*/j].getHeight());
 		}
 		
 		// <summary>
@@ -167,7 +172,7 @@ namespace AssemblyCSharp
 			
 			if ( mark){
 				
-				Debug.Log("RedCube- Position: " + ((x+gameArea.Length/2)%(gameArea.Length)) + ", " + ((y+gameArea[0].Length/4)%(gameArea[0].Length/2)));
+				//Debug.Log("RedCube- Position: " + ((x+gameArea.Length/2)%(gameArea.Length)) + ", " + ((y+gameArea[0].Length/4)%(gameArea[0].Length/2)));
 				drawnArea[((x+gameArea.Length/2)%(gameArea.Length))][((y+gameArea[0].Length/4)%(gameArea[0].Length/2))].renderer.material.color = Color.red;	
 			} else{
 				drawnArea[((x+gameArea.Length/2)%(gameArea.Length))][((y+gameArea[0].Length/4)%(gameArea[0].Length/2))].renderer.material.color = Color.white;	
