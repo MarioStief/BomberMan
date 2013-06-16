@@ -5,7 +5,7 @@ namespace AssemblyCSharp
 {
 	// <summary>
 	// Rink ist die Schnittstelle zwischen dem dargestellten Ausschnitt (drawnArea) der Gesamtspielfläche (gameArea)
-	// Ihre Hauptaufgabe besteht darin die Konsistenz zwischen beiden zu wahren. Als FixElement dient dazu die
+	// Ihre Hauptaufgabe besteht darin die Konsistenz zwischen beiden zu wahren. Als Orientierung dient dazu die
 	// Parzelle rinkPosition. Dieser Punkt ist im gezeichneten Ausschnitt IMMER am Pol, am äußersten rechten Rand.
 	// Welche logische Parzelle im sich im Bild befindet wird über rinkPosition bestimmt. 
 	//
@@ -15,15 +15,14 @@ namespace AssemblyCSharp
 	//
 	// Im DEBUG-Modus wird ausgehen von dem Fixpunkt rinkPosition gezielt die mittlere Parzelle im dargestellten Ausschnitt
 	// ROT gefärbt. Zugleich gibt die Konsole die Parzellen-Nr. im dargestellten Bildbereich aus. Es dient also zur Orientierung
-	
 	// </summary>
 	//
 	public class Rink
 	{
 		private bool DEBUG = true;					// Debug-Modus aktivieren/ deaktivieren (s.o.)
 		
-		public Parcel[][] gameArea;					// Gesamtspielfläche
-		public MeshManipulator[][] drawnArea;		// dargestellte Spielfläche, ebenso hoch wie Gesamtspielfläche, aber nur halb so breit.
+		public Parcel[][] gameArea;					// Gesamtspielfläche LOGIK
+		public MeshManipulator[][] drawnArea;		// Gesamtspielfläche WÜRFEL-Transform
 		
 		private Vector2 rinkPosition;				// Die Orientierungs-Parzelle (s.o.);
 		
@@ -60,7 +59,7 @@ namespace AssemblyCSharp
 			// Init der gezeichneten Fläche
 			drawnArea = new MeshManipulator[height-1][];
 			for(int j = 0; j < height-1; j++){
-				drawnArea[j] = new MeshManipulator[width/2];
+				drawnArea[j] = new MeshManipulator[width];
 			}
 		}
 		
@@ -172,7 +171,7 @@ namespace AssemblyCSharp
 			
 			if ( mark){
 				
-				//Debug.Log("RedCube- Position: " + ((x+gameArea.Length/2)%(gameArea.Length)) + ", " + ((y+gameArea[0].Length/4)%(gameArea[0].Length/2)));
+				Debug.Log("RedCube- Position: " + ((x+gameArea.Length/2)%(gameArea.Length)) + ", " + ((y+gameArea[0].Length/4)%(gameArea[0].Length/2)));
 				drawnArea[((x+gameArea.Length/2)%(gameArea.Length))][((y+gameArea[0].Length/4)%(gameArea[0].Length/2))].renderer.material.color = Color.red;	
 			} else{
 				drawnArea[((x+gameArea.Length/2)%(gameArea.Length))][((y+gameArea[0].Length/4)%(gameArea[0].Length/2))].renderer.material.color = Color.white;	

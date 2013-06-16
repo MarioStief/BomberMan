@@ -38,7 +38,7 @@ public class SphereBuilder : MonoBehaviour {
 	void Start () {
 				
 		leftAngleBound = 0;
-		rightAngleBound = n_B/2;
+		rightAngleBound = n_B;
 		
 		adjSouthPole = n_L-2;
 		adjEast = 0;
@@ -64,8 +64,8 @@ public class SphereBuilder : MonoBehaviour {
 			horizontalOffset = new float[n_L][];
 			
 			for(int j = 0; j < n_L; j++){
-				sphereVertices[i][j] = new Vector3[n_B/2];	
-				vertexAngles[i][j] = new float[n_B/2];	
+				sphereVertices[i][j] = new Vector3[n_B];	
+				vertexAngles[i][j] = new float[n_B];	
 				verticalOffset[j] = new float[n_B];
 				horizontalOffset[j] = new float[n_B];
 			}
@@ -91,7 +91,7 @@ public class SphereBuilder : MonoBehaviour {
 			
 			v = (j*Mathf.PI/(n_L-1)) - Mathf.PI/2;
 			
-			for( int i = 0; i < n_B/2; i++){	// Schleife über alle Breitengeraden
+			for( int i = 0; i < n_B; i++){	// Schleife über alle Breitengeraden
 			
 				if ( n_B != 0){				// durch Null teilen ist böse...
 					u = (i*2.0f/n_B) * Mathf.PI;
@@ -136,22 +136,22 @@ public class SphereBuilder : MonoBehaviour {
 	private void initializeCubes(){
 		
 		// Init der Arrays
-		spCubes = new GameObject[n_B/2*(n_L+1)];
+		spCubes = new GameObject[n_B*(n_L+1)];
 		
 		// All Cubes in between
 		for( int l = 0; l < n_L-1; l++){
 
-			spCubes[l*n_B/2] = createSphereCube( Vector3.zero);
-			spCubes[l*n_B/2].name = "cube " + l + "," +0;
-			gameArea.drawnArea[l][0] = addMeshManipulator(spCubes[l*n_B/2],
+			spCubes[l*n_B] = createSphereCube( Vector3.zero);
+			spCubes[l*n_B].name = "cube " + l + "," +0;
+			gameArea.drawnArea[l][0] = addMeshManipulator(spCubes[l*n_B],
 															new Vector3(1,l,1), new Vector3(1,l,0), new Vector3(0,l,1), new Vector3(0,l,0),
 															new Vector3(1,l+1,1), new Vector3(1,l+1,0), new Vector3(0,l+1,1), new Vector3(0,l+1,0));
 			
-			for( int i = 1; i < n_B/2; i++){
+			for( int i = 1; i < n_B; i++){
 	
-				spCubes[l*n_B/2+i] = createSphereCube( new Vector3(0.0f,0.0f,360.0f/n_B*i));
-				spCubes[l*n_B/2+i].name = "cube " + l + "," +i;
-				gameArea.drawnArea[l][i] = addMeshManipulator(spCubes[l*n_B/2+i],
+				spCubes[l*n_B+i] = createSphereCube( new Vector3(0.0f,0.0f,360.0f/n_B*i));
+				spCubes[l*n_B+i].name = "cube " + l + "," +i;
+				gameArea.drawnArea[l][i] = addMeshManipulator(spCubes[l*n_B+i],
 																	new Vector3(1,l,1), new Vector3(1,l,0), new Vector3(0,l,1), new Vector3(0,l,0),
 																	new Vector3(1,l+1,1), new Vector3(1,l+1,0), new Vector3(0,l+1,1), new Vector3(0,l+1,0));
 			}
@@ -226,15 +226,15 @@ public class SphereBuilder : MonoBehaviour {
 	// - Schneide Würfel an einer Seite ab und hänge sie vorn wieder an.
 	// - Schlage in Rink.cs nach, welche Höhe die Würfel haben müssen ( da sie ne neue Parzelle darstellen könnten)
 	// </summary>
-	public void move(Vector2 moveDirection){
+	public void move(float moveDirection){
 		
 		// Bestimme Bewegungsrichtungen und setze ggf. Startwerte für Winkelverschiebung
 		
-		if ( vDirection != (int) Mathf.Sign(moveDirection.x) && (int) Mathf.Sign(moveDirection.x) != 0){
-			vChange = true;	
-		}
+		//if ( vDirection != (int) Mathf.Sign(moveDirection.x) && (int) Mathf.Sign(moveDirection.x) != 0){
+		//	vChange = true;	
+		//}
 		
-		vDirection = (int) Mathf.Sign(moveDirection.x);
+		vDirection = (int) Mathf.Sign(moveDirection);
 		if ( vDirection == 1 && offset == 0.0f){
 			offset = -Mathf.PI/(2*(n_L-1));
 		} else if ( vDirection == -1 && offset == 0.0f){
@@ -242,20 +242,20 @@ public class SphereBuilder : MonoBehaviour {
 		}
 		
 		//if ( hDirection != (int) Mathf.Sign(moveDirection.y)) hOffset = 0;
-		hDirection = (int) Mathf.Sign(moveDirection.y);
+		/*hDirection = (int) Mathf.Sign(moveDirection.y);
 		if ( hDirection == 1 && hOffset == 0.0f){
 			hOffset = -(1.0f/n_B) * Mathf.PI;
 		} else if ( hDirection == -1 && hOffset == 0.0f){
 			hOffset = (1.0f/n_B) * Mathf.PI;	
-		}
+		}//*/
 		
 		
 		// Rotiere den Würfel 	
-		deltaOffset = speed * moveDirection.x * Time.deltaTime;
+		deltaOffset = speed * moveDirection * Time.deltaTime;
 		offset = offset + deltaOffset;
 		
-		hDeltaOffset = speed * (-1)*moveDirection.y * Time.deltaTime;
-		hOffset = hOffset + hDeltaOffset;
+		//hDeltaOffset = speed * (-1)*moveDirection.y * Time.deltaTime;
+		//hOffset = hOffset + hDeltaOffset;
 		
 		rotateCubes	();
 		
@@ -274,7 +274,7 @@ public class SphereBuilder : MonoBehaviour {
 			}
 		}
 		
-		if ( hDirection == 0) return;
+		/*if ( hDirection == 0) return;
 		if ( hDirection == 1){
 			if (	Mathf.Abs(hOffset) >= (2.0f/n_B) * Mathf.PI ){
 				hOffset += (2.0f/n_B) * Mathf.PI ;		
@@ -304,7 +304,7 @@ public class SphereBuilder : MonoBehaviour {
 			}
 			
 			// Verschiebe Würfel, die am Nordpol anliegen zum Südpol!
-			for( int i = 0; i <  n_B/2; i++){
+			for( int i = 0; i <  n_B; i++){
 
 				verticalOffset[adjSouthPole] [ i] =  vertexAngles[0][adjSouthPole] [ i]  + Mathf.PI/2;//vertexAngles[0][adjSouthPole][ i] - Mathf.PI/2;	
 				
@@ -319,18 +319,18 @@ public class SphereBuilder : MonoBehaviour {
 			
 			gameArea.incrPositionHeight();
 			// Verschiebe Würfel, die am Nordpol anliegen zum Südpol!
-			for( int i = 0; i <  n_B/2; i++){
+			for( int i = 0; i <  n_B; i++){
 				//Debug.Log("döna");
 				//if (adjSouthPole == 0) Debug.Log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-				verticalOffset[(n_L-2 + adjSouthPole-1)%(n_L-2)] [ i] =  verticalOffset[(n_L-2 + adjSouthPole-1)%(n_L-2)] [ i]  - Mathf.PI;// + Mathf.PI/2;
-				gameArea.updateHeight((n_L-2 + adjSouthPole-1)%(n_L-2), i);
+				verticalOffset[(n_L-2 + adjSouthPole)%(n_L-2)] [ i] =  verticalOffset[(n_L-2 + adjSouthPole)%(n_L-2)] [ i]  - Mathf.PI;// + Mathf.PI/2;
+				gameArea.updateHeight((n_L-2 + adjSouthPole)%(n_L-2), i);
 			}
 			
 			
 			if ( ++adjSouthPole >  n_L-2) {
 				adjSouthPole = 0;	
 			}
-		}
+		}//*/
 	}
 	
 	// <summary>
@@ -343,34 +343,34 @@ public class SphereBuilder : MonoBehaviour {
 		if ( hDirection == -1){
 			gameArea.incrPositionWidth();
 		
-			Debug.Log("HEY");
+			Debug.Log("aaaa");
+			
 			// Verschiebe Würfel, die am Nordpol anliegen zum Südpol!
 			for( int i = 0; i <  n_L-1; i++){
 
 				horizontalOffset[i] [ adjEast] =  horizontalOffset[i] [ adjEast]  - Mathf.PI;//vertexAngles[0][adjSouthPole][ i] - Mathf.PI/2;	
 				
-				gameArea.updateHeight(i , adjEast);
+				//gameArea.updateHeight(i , adjEast);
 			}
 			
-			
-			if ( ++adjEast > n_B/2-1) {
-				adjEast = n_B/2-1;	
+			if ( ++adjEast < n_B) {
+				adjEast = 0;	
 			}
 			
 		} else if ( hDirection == 1){
 			
 			gameArea.decrPositionWidth();
-			Debug.Log("HO");
+
 			// Verschiebe Würfel, die am Nordpol anliegen zum Südpol!
 			for( int i = 0; i <  n_L-1; i++){
 
-				horizontalOffset[i] [ n_B/2-1-adjEast] =  horizontalOffset[i][ n_B/2-1-adjEast]  + Mathf.PI;// + Mathf.PI/2;
-				gameArea.updateHeight(i, n_B/2-1-adjEast);
+				horizontalOffset[i] [ (n_B-1+adjEast)%(n_B)] =  horizontalOffset[i][ (n_B-1+adjEast)%(n_B)]  + Mathf.PI;// + Mathf.PI/2;
+				//gameArea.updateHeight(i, (n_B-1+adjEast)%(n_B));
 			}
 			
 			
 			if ( --adjEast < 0) {
-				adjEast = 0;	
+				adjEast = n_B;	
 			}
 		}
 	}
@@ -389,7 +389,7 @@ public class SphereBuilder : MonoBehaviour {
 			
 			v = (j*Mathf.PI/(n_L-1)) - Mathf.PI/2;
 						
-			for( int i = 0; i < n_B/2; i++){	// Schleife über alle Breitengeraden
+			for( int i = 0; i < n_B; i++){	// Schleife über alle Breitengeraden
 				
 				if ( n_B != 0){					// durch Null teilen ist böse...
 					u = (i*2.0f/n_B) * Mathf.PI;
@@ -402,10 +402,10 @@ public class SphereBuilder : MonoBehaviour {
 				verticalOffset[j][i] = ((verticalOffset[j][i]  + deltaOffset) );
 				vr = v - verticalOffset[j][i];
 				
-				horizontalOffset[j][i] = ((horizontalOffset[j][i]  + hDeltaOffset) );
-				ur = u - horizontalOffset[j][i];
+				//horizontalOffset[j][i] = ((horizontalOffset[j][i]  + hDeltaOffset) );
+				//ur = u - horizontalOffset[j][i];
 				
-				val = F(ur,vr);					// berechne Punkt für Winkel u und v
+				val = F(u,vr);					// berechne Punkt für Winkel u und v
 
 				if ( val != Vector3.zero){
 					sphereVertices[0][j][i] = val * 1;	
