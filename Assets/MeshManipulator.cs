@@ -3,24 +3,47 @@ using System.Collections;
 
 public class MeshManipulator : MonoBehaviour {
 	
-	SphereBuilder sphere;
-	Mesh cubeMesh;
 	
-	Vector3 []vertexPosition;
-
+	SphereBuilder sphere;		// Der Spherebuilder, um ggf. eigene Ecken nachzufragen
+	Mesh cubeMesh;				// Der eigene Mesh
+	
+	Vector3 []vertexPosition;	// Position der eigenen Punkte in 3-dimensionalem Array im Spherebuilder.
+		
+	float height;
+	
 	// Use this for initialization
 	void Awake () {
-		
+				
 		sphere = GameObject.Find("Sphere").GetComponent<SphereBuilder>();
 		cubeMesh = GetComponent<MeshFilter>().mesh;
 		vertexPosition = new Vector3[8];
 	}
 	
-	// Update is called once per frame
-	void Update () {
-	
+	// <summary>
+	// Setze Höhe auf h;
+	// h ist prozentuale Höhe zur Ausgangshöhe.
+	// Würfel zeichnet sich im Anschluss neu.
+	// </summary>
+	public void setHeight(float h){
+		
+		this.height = h;
+		
+		Vector3 []v = cubeMesh.vertices;
+		for(int i = 0; i < v.Length; i++){
+			v[i] *= h;
+		}
+				
+		cubeMesh.vertices = v;
+		cubeMesh.RecalculateNormals();
+		cubeMesh.RecalculateBounds();
+		cubeMesh.Optimize();
+		
 	}
 	
+	// <summary>
+	// Übergabe der aller Eckpunkte des Würfels über die  _POSITION_ im 3-dim Vertex-Array
+	// der Kugel
+	// </summary>
 	public void setVertexPosition(Vector3 BNE, Vector3 BNW, Vector3 BSE, Vector3 BSW,
 							Vector3 FNE, Vector3 FNW, Vector3 FSE, Vector3 FSW){
 
@@ -36,18 +59,33 @@ public class MeshManipulator : MonoBehaviour {
 		
 	}
 	
+	// <summary>
+	// Schlägt aktuelle Eck-Koordinaten in Sphere-Klasse nach und ersetzt mit diesen seine eigenen.
+	// Die Höhe des Würfels wird im Aktualisierungsschritt beachtet.
+	// </summary>
 	public void updateCoordinates(){
 		
-		cubeMesh.RecalculateBounds();
-		setVertices(sphere.sphereVertices[(int)vertexPosition[0].x][(int)vertexPosition[0].y][(int)vertexPosition[0].z],
-					sphere.sphereVertices[(int)vertexPosition[1].x][(int)vertexPosition[1].y][(int)vertexPosition[1].z],
-					sphere.sphereVertices[(int)vertexPosition[2].x][(int)vertexPosition[2].y][(int)vertexPosition[2].z],
-					sphere.sphereVertices[(int)vertexPosition[3].x][(int)vertexPosition[3].y][(int)vertexPosition[3].z],
-					sphere.sphereVertices[(int)vertexPosition[4].x][(int)vertexPosition[4].y][(int)vertexPosition[4].z],
-					sphere.sphereVertices[(int)vertexPosition[5].x][(int)vertexPosition[5].y][(int)vertexPosition[5].z],
-					sphere.sphereVertices[(int)vertexPosition[6].x][(int)vertexPosition[6].y][(int)vertexPosition[6].z],
-					sphere.sphereVertices[(int)vertexPosition[7].x][(int)vertexPosition[7].y][(int)vertexPosition[7].z]
-		);	
+		
+		if (height == 0)
+			setVertices(sphere.sphereVertices[(int)vertexPosition[0].x][(int)vertexPosition[0].y][(int)vertexPosition[0].z],
+						sphere.sphereVertices[(int)vertexPosition[1].x][(int)vertexPosition[1].y][(int)vertexPosition[1].z],
+						sphere.sphereVertices[(int)vertexPosition[2].x][(int)vertexPosition[2].y][(int)vertexPosition[2].z],
+						sphere.sphereVertices[(int)vertexPosition[3].x][(int)vertexPosition[3].y][(int)vertexPosition[3].z],
+						sphere.sphereVertices[(int)vertexPosition[4].x][(int)vertexPosition[4].y][(int)vertexPosition[4].z],
+						sphere.sphereVertices[(int)vertexPosition[5].x][(int)vertexPosition[5].y][(int)vertexPosition[5].z],
+						sphere.sphereVertices[(int)vertexPosition[6].x][(int)vertexPosition[6].y][(int)vertexPosition[6].z],
+						sphere.sphereVertices[(int)vertexPosition[7].x][(int)vertexPosition[7].y][(int)vertexPosition[7].z]
+			);	
+		else
+			setVertices(sphere.sphereVertices[(int)vertexPosition[0].x][(int)vertexPosition[0].y][(int)vertexPosition[0].z]*height,
+						sphere.sphereVertices[(int)vertexPosition[1].x][(int)vertexPosition[1].y][(int)vertexPosition[1].z]*height,
+						sphere.sphereVertices[(int)vertexPosition[2].x][(int)vertexPosition[2].y][(int)vertexPosition[2].z]*height,
+						sphere.sphereVertices[(int)vertexPosition[3].x][(int)vertexPosition[3].y][(int)vertexPosition[3].z]*height,
+						sphere.sphereVertices[(int)vertexPosition[4].x][(int)vertexPosition[4].y][(int)vertexPosition[4].z]*height,
+						sphere.sphereVertices[(int)vertexPosition[5].x][(int)vertexPosition[5].y][(int)vertexPosition[5].z]*height,
+						sphere.sphereVertices[(int)vertexPosition[6].x][(int)vertexPosition[6].y][(int)vertexPosition[6].z]*height,
+						sphere.sphereVertices[(int)vertexPosition[7].x][(int)vertexPosition[7].y][(int)vertexPosition[7].z]*height
+			);
 	}
 	
 	// <summary>
@@ -65,7 +103,7 @@ public class MeshManipulator : MonoBehaviour {
 		}
 		
 		setVertices(v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7] );
-	}
+	}	
 	
 	// <summary>
 	// Sets all 24 vertices of an Unity-Cube by placing all eight different.
@@ -84,7 +122,8 @@ public class MeshManipulator : MonoBehaviour {
 				
 		Vector3[] verts = new Vector3[]{
 			
-		
+			// JA: Die Eckfolge beim Unity-Würfel ist echt so bescheuert! :-D
+			
 			/* #0 */ BSE,
 			/* #1 */ BSW,
 			/* #2 */ BNE,
@@ -119,5 +158,8 @@ public class MeshManipulator : MonoBehaviour {
 			
 		//Debug.Log("set em!");
 		cubeMesh.vertices = verts;
+		cubeMesh.RecalculateNormals();
+		cubeMesh.RecalculateBounds();
+		cubeMesh.Optimize();
 	}
 }
