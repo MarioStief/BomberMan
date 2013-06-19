@@ -12,11 +12,13 @@ public class InputHandler : MonoBehaviour {
 	private SphereBuilder sphereHandler;
 	
 	public GameObject camera;
+	private Quaternion cameraRotation;
 	
 	// Use this for initialization
 	void Start () {
 	
 		sphereHandler = sphere.GetComponent<SphereBuilder>();
+		cameraRotation = camera.transform.rotation;
 	}
 	
 	// Update is called once per frame
@@ -42,6 +44,6 @@ public class InputHandler : MonoBehaviour {
 										Mathf.Sin(movement) * camera.transform.position.x + Mathf.Cos(movement) * camera.transform.position.y,
 										camera.transform.position.z);
 		
-		camera.transform.LookAt(transform);
+		camera.transform.rotation.SetLookRotation(Vector3.zero);
 	}
 }

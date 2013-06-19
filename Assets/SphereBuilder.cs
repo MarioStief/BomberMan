@@ -302,7 +302,7 @@ public class SphereBuilder : MonoBehaviour {
 				//adjSouthPole = (adjSouthPole + n_L-2);
 				vChange = false;
 			}
-			
+			Debug.Log("harra");
 			// Verschiebe Würfel, die am Nordpol anliegen zum Südpol!
 			for( int i = 0; i <  n_B; i++){
 
@@ -317,13 +317,16 @@ public class SphereBuilder : MonoBehaviour {
 			}
 		} else if ( vDirection == 1){
 			
+			//Debug.Log("lololol");
+			
 			gameArea.incrPositionHeight();
 			// Verschiebe Würfel, die am Nordpol anliegen zum Südpol!
 			for( int i = 0; i <  n_B; i++){
-				//Debug.Log("döna");
-				//if (adjSouthPole == 0) Debug.Log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-				verticalOffset[(n_L-2 + adjSouthPole)%(n_L-2)] [ i] =  verticalOffset[(n_L-2 + adjSouthPole)%(n_L-2)] [ i]  - Mathf.PI;// + Mathf.PI/2;
-				gameArea.updateHeight((n_L-2 + adjSouthPole)%(n_L-2), i);
+				
+				//Debug.Log((n_L-1 + adjSouthPole+1)%(n_L-1));
+				
+				verticalOffset[(n_L-1 + adjSouthPole+1)%(n_L-1)] [ i] =  verticalOffset[(n_L-1 + adjSouthPole+1)%(n_L-1)] [ i]  - Mathf.PI;// + Mathf.PI/2;
+				gameArea.updateHeight((n_L-1 + adjSouthPole+1)%(n_L-1), i);
 			}
 			
 			
@@ -331,48 +334,6 @@ public class SphereBuilder : MonoBehaviour {
 				adjSouthPole = 0;	
 			}
 		}//*/
-	}
-	
-	// <summary>
-	// Verschiebe Würfel bei Horizontalbewegung:
-	// Setze Winkel zurück, passe rinkPosition in Rink.cs an und frage die korrekten Höhenwerte nach.
-	// </summary>
-	private void churnOutCubesHorizontal(){
-				
-		
-		if ( hDirection == -1){
-			gameArea.incrPositionWidth();
-		
-			Debug.Log("aaaa");
-			
-			// Verschiebe Würfel, die am Nordpol anliegen zum Südpol!
-			for( int i = 0; i <  n_L-1; i++){
-
-				horizontalOffset[i] [ adjEast] =  horizontalOffset[i] [ adjEast]  - Mathf.PI;//vertexAngles[0][adjSouthPole][ i] - Mathf.PI/2;	
-				
-				//gameArea.updateHeight(i , adjEast);
-			}
-			
-			if ( ++adjEast < n_B) {
-				adjEast = 0;	
-			}
-			
-		} else if ( hDirection == 1){
-			
-			gameArea.decrPositionWidth();
-
-			// Verschiebe Würfel, die am Nordpol anliegen zum Südpol!
-			for( int i = 0; i <  n_L-1; i++){
-
-				horizontalOffset[i] [ (n_B-1+adjEast)%(n_B)] =  horizontalOffset[i][ (n_B-1+adjEast)%(n_B)]  + Mathf.PI;// + Mathf.PI/2;
-				//gameArea.updateHeight(i, (n_B-1+adjEast)%(n_B));
-			}
-			
-			
-			if ( --adjEast < 0) {
-				adjEast = n_B;	
-			}
-		}
 	}
 
 	

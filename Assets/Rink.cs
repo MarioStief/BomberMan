@@ -171,7 +171,7 @@ namespace AssemblyCSharp
 			
 			if ( mark){
 				
-				Debug.Log("RedCube- Position: " + ((x+gameArea.Length/2)%(gameArea.Length)) + ", " + ((y+gameArea[0].Length/4)%(gameArea[0].Length/2)));
+				//Debug.Log("RedCube- Position: " + ((x+gameArea.Length/2)%(gameArea.Length)) + ", " + ((y+gameArea[0].Length/4)%(gameArea[0].Length/2)));
 				drawnArea[((x+gameArea.Length/2)%(gameArea.Length))][((y+gameArea[0].Length/4)%(gameArea[0].Length/2))].renderer.material.color = Color.red;	
 			} else{
 				drawnArea[((x+gameArea.Length/2)%(gameArea.Length))][((y+gameArea[0].Length/4)%(gameArea[0].Length/2))].renderer.material.color = Color.white;	
