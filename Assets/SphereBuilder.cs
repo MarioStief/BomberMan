@@ -10,17 +10,8 @@ public class SphereBuilder : MonoBehaviour {
 	
 	private Rink gameArea;							// 2D-Spielfläche;
 	
-	private int firstLeftCube = 0;					// Die Parzellennr. in gameArea der obersten, linken Parzelle auf dem Cube
-													// ( wird stets korrektem Eintrag in 2d-Array gameArea zugeordnet)
-	
-	private int leftAngleBound, rightAngleBound;
-	
-	private GameObject camera;						// Kameraobjekt Nr.1, für BewegungsHack; in Update() verwendet
-	private GameObject camera2;						// Kameraobjekt Nr.2, für BewegungsHack; in Update() verwendet
-		
 	public GameObject sphereCube;					// Cube-Prefab, von dem sich alle Cubes der Kugel ableiten
 
-	
 	private GameObject []spCubes;					// Array aller Würfel der Kugel
 
 
@@ -34,19 +25,8 @@ public class SphereBuilder : MonoBehaviour {
 	public int n_B = 8; 							// Auflösung der Breitenkreise; !! >= 4 !!
 	public int n_L = 8; 							// Auflösung der Längenkreise ; !! >= 4 !!
 	
-	public static GameObject deadPlayerPrefab;
-	public static GameObject bombPrefab;
-	public static GameObject explotionPrefab;
-	//public static List<Explosion> explosions;
-	
-	public static GameObject []players = new GameObject[1];
-	public static GameObject player;
-	
 	// Use this for initialization
 	void Start () {
-				
-		leftAngleBound = 0;
-		rightAngleBound = n_B;
 		
 		adjSouthPole = n_L-2;
 		adjEast = 0;
@@ -58,17 +38,6 @@ public class SphereBuilder : MonoBehaviour {
 		
 		// Gebe den Würfeln korrekte Höhen gemäß der Werte aus gameArea
 		gameArea.updateHeight();
-
-		// Prefabs
-		deadPlayerPrefab = GameObject.Find("DeadPlayer");
-		bombPrefab = GameObject.Find("bomb");
-		explotionPrefab = GameObject.Find("Explotion");
-		//explosions = new List<Explosion>();
-		
-		// Erstelle Pool aus Powerups
-		// Mit dem Parameter lässt sich die Poolgröße variieren
-		PowerupPool.createPool(1);
-
 	}
 	
 	private void tesselateSphere(){
@@ -368,7 +337,7 @@ public class SphereBuilder : MonoBehaviour {
 		for( int j = 0; j < n_L; j++){		// Schleife über alle  Längengeraden
 			
 			v = (j*Mathf.PI/(n_L-1)) - Mathf.PI/2;
-						
+			
 			for( int i = 0; i < n_B; i++){	// Schleife über alle Breitengeraden
 				
 				if ( n_B != 0){					// durch Null teilen ist böse...
@@ -397,7 +366,5 @@ public class SphereBuilder : MonoBehaviour {
 		gameArea.renderAll();
 	}	//*/
 	
-		public static GameObject[] getPlayers() {
-		return players;
-	}
+
 }

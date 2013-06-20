@@ -12,7 +12,7 @@ namespace AssemblyCSharp
 		private static int bombs = 1;
 		private static int bombsActive = 0;
 		private static int flamePower = 1;
-		private static float speed = 0.5f;
+		private static float speed = 3;
 		private static int hp = MAXHP;
 		
 		private static bool dead = false;

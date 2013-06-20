@@ -26,12 +26,34 @@ namespace AssemblyCSharp
 		
 		private Vector2 rinkPosition;				// Die Orientierungs-Parzelle (s.o.);
 		
+		
+		public static GameObject deadPlayerPrefab;
+		public static GameObject bombPrefab;
+		public static GameObject explotionPrefab;
+		//public static List<Explosion> explosions;
+		
+		public static GameObject []players = new GameObject[1];
+		public static GameObject player;
+		
+		
 		// KONSTRUKTOREN
 		
 		public Rink (int width, int height, Vector2 rinkPosition)
 		{
 			initializeRink(width, height);
 			this.rinkPosition = rinkPosition;
+			
+			
+			// Prefabs
+			deadPlayerPrefab = GameObject.Find("DeadPlayer");
+			bombPrefab = GameObject.Find("bomb");
+			explotionPrefab = GameObject.Find("Explotion");
+			//explosions = new List<Explosion>();
+			
+			// Erstelle Pool aus Powerups
+			// Mit dem Parameter lässt sich die Poolgröße variieren
+			PowerupPool.createPool(1);
+
 		}
 		
 		// <summary>
@@ -177,6 +199,10 @@ namespace AssemblyCSharp
 				drawnArea[((x+gameArea.Length/2)%(gameArea.Length))][((y+gameArea[0].Length/4)%(gameArea[0].Length/2))].renderer.material.color = Color.white;	
 			}
 		
+		}
+		
+		public static GameObject[] getPlayers() {
+			return players;
 		}
 	}
 }
