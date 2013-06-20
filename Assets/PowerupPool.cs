@@ -121,7 +121,7 @@ namespace AssemblyCSharp
 			else if (p.getType() == PowerupType.GOLDEN_FLAME)
 					powerup = GameObject.Instantiate(goldenFlamePowerupPrefab, new Vector3(x, y, z), Quaternion.identity) as GameObject; 
 
-			Parcel cell = sphereHandler.getGameArea().getCurrentParcel(x, y);
+			Parcel cell = sphereHandler.getGameArea().getCurrentParcel(0, 0);
 			cell.addPowerup(powerup, type);
 			
 

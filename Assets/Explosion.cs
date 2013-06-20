@@ -34,7 +34,7 @@ public class Explosion : MonoBehaviour
 		explotionPrefab.transform.localScale *= SCALE;
 		sphere = GameObject.Find("Sphere");
 		sphereHandler = sphere.GetComponent<SphereBuilder>();
-		cell = sphereHandler.getGameArea().getCurrentParcel((int) transform.position.x, (int)transform.position.y);
+		cell = sphereHandler.getGameArea().getCurrentParcel(0, 0);
 		xpos = GameObject.Find("Player").GetComponent<InputHandler>().getXPos();
 		ypos = GameObject.Find("Player").GetComponent<InputHandler>().getYPos();
 		zpos = GameObject.Find("Player").GetComponent<InputHandler>().getZPos();
@@ -166,7 +166,7 @@ public class Explosion : MonoBehaviour
 				//explosionChain.Add(new ExplosionField(i,Data.area.getCell((xpos-i), zpos)));
 				int x = (int) transform.position.x;
 				int z = (int) transform.position.z;
-				Parcel cell = sphereHandler.getGameArea().getCurrentParcel(x-i, z);
+				Parcel cell = sphereHandler.getGameArea().getCurrentParcel(-i, 0);
 				explosionChain.Add(new ExplosionField(i,cell));
 			}
 
@@ -175,7 +175,7 @@ public class Explosion : MonoBehaviour
 				//explosionChain.Add(new ExplosionField(i,Data.area.getCell((xpos+i), zpos)));
 				int x = (int) transform.position.x;
 				int z = (int) transform.position.z;
-				Parcel cell = sphereHandler.getGameArea().getCurrentParcel(x+i, z);
+				Parcel cell = sphereHandler.getGameArea().getCurrentParcel(i, 0);
 				explosionChain.Add(new ExplosionField(i,cell));
 			}
 
@@ -184,7 +184,7 @@ public class Explosion : MonoBehaviour
 				//explosionChain.Add(new ExplosionField(i,Data.area.getCell(xpos, (zpos-i))));
 				int x = (int) transform.position.x;
 				int z = (int) transform.position.z;
-				Parcel cell = sphereHandler.getGameArea().getCurrentParcel(x, z-i);
+				Parcel cell = sphereHandler.getGameArea().getCurrentParcel(0, -i);
 				explosionChain.Add(new ExplosionField(i,cell));
 			}
 
@@ -193,7 +193,7 @@ public class Explosion : MonoBehaviour
 				//explosionChain.Add(new ExplosionField(i,Data.area.getCell(xpos, (zpos+i))));
 				int x = (int) transform.position.x;
 				int z = (int) transform.position.z;
-				Parcel cell = sphereHandler.getGameArea().getCurrentParcel(x, z+i);
+				Parcel cell = sphereHandler.getGameArea().getCurrentParcel(0, i);
 				explosionChain.Add(new ExplosionField(i,cell));
 			}
 		}

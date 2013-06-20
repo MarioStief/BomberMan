@@ -188,11 +188,13 @@ namespace AssemblyCSharp
 		
 		}
 		
-		public Parcel getCurrentParcel(float x, float y) {
-			int xpos = (int) ((x+gameArea.Length/2)%(gameArea.Length));
-			int ypos = (int) ((y+gameArea[0].Length/4)%(gameArea[0].Length/2));
+		public Parcel getCurrentParcel(int xDiff, int yDiff) {
+			int x = (int)rinkPosition.x + xDiff;
+			int y = (int)rinkPosition.y + yDiff;
+			Debug.Log("CurrCell-Position: " + ((x+gameArea.Length/2)%(gameArea.Length)) + ", " + ((y+gameArea[0].Length/4)%(gameArea[0].Length/2)));
+			int xpos = ((x+gameArea.Length/2)%(gameArea.Length));
+			int ypos = ((y+gameArea[0].Length/4)%(gameArea[0].Length/2));
 			Parcel currentParcel = gameArea[xpos][ypos];
-			//Debug.Log ("Current Cell is " + xpos + "," + ypos);
 			return currentParcel;
 		}
 		
