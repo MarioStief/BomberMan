@@ -1,3 +1,4 @@
+/*
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,7 +9,7 @@ namespace AssemblyCSharp
 	/**
 	 * Die Spielfläche eist ein Array aus Zellen ( Cell-Objekten)
 	 * */
-	public class GameArea
+/*	public class GameArea
 	{
 		private Cell[][] plane;
 				
@@ -43,7 +44,7 @@ namespace AssemblyCSharp
 		/**
 		 * Gibt Zelle zurück, die x,z enthält. 
 		 * */
-		public Cell getCell(float x, float z){
+/*		public Cell getCell(float x, float z){
 		
 			int x_m = (int)(x); // TODO!!
 			int z_m = (int)(z);
@@ -62,4 +63,4 @@ namespace AssemblyCSharp
 		}
 	}
 }
-
+*/

@@ -1,3 +1,4 @@
+/*
 using System;
 using UnityEngine;
 
@@ -6,6 +7,7 @@ namespace AssemblyCSharp
 	/**
 	 * Cell-Objekte zu
 	 * */
+/*
 	public class Cell
 	{
 		private int xpos, zpos;
@@ -75,9 +77,9 @@ namespace AssemblyCSharp
 				obj = GameObject.Instantiate(Data.solidCube, new Vector3(xpos * width +0.5f, 0.5f, zpos * height +0.5f), Quaternion.identity) as GameObject;
 				obj.renderer.material.color = Color.blue;
 				obj.name = "Spawn"+xpos+zpos;//*/
-				break;//*/
+//				break;//*/
 				//type = 1;
-			default:
+/*			default:
 				Debug.Log("No such type!");
 				break;
 			}
@@ -184,3 +186,4 @@ namespace AssemblyCSharp
 		
 }
 }
+*/

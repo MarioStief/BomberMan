@@ -366,5 +366,8 @@ public class SphereBuilder : MonoBehaviour {
 		gameArea.renderAll();
 	}	//*/
 	
+	public Rink getGameArea() {
+		return gameArea;
+	}
 
 }

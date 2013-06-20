@@ -1,3 +1,4 @@
+/*
 using System;
 using UnityEngine;
 
@@ -30,7 +31,7 @@ namespace AssemblyCSharp
 			 * ___?
 			 * #_#?
 			 * */
-			case CellBlockType.FOURDICE:
+/*			case CellBlockType.FOURDICE:
 				
 				block[0] = new int[]{0,0,0,0};
 				block[1] = new int[]{2,0,2,0};
@@ -86,7 +87,7 @@ namespace AssemblyCSharp
 			 * _#__
 			 * #_#_
 			 * */
-			case CellBlockType.FIVEDICE:
+/*			case CellBlockType.FIVEDICE:
 				
 				block[0] = new int[]{0,0,0,0};
 				block[1] = new int[]{2,0,2,0};
@@ -99,7 +100,7 @@ namespace AssemblyCSharp
 			 * ____
 			 * #_#_
 			 * */
-			case CellBlockType.TRIANGELDOWNLEFT:
+/*			case CellBlockType.TRIANGELDOWNLEFT:
 		
 				block[0] = new int[]{0,0,0,0};
 				block[1] = new int[]{2,0,0,0};
@@ -112,7 +113,7 @@ namespace AssemblyCSharp
 			 * ____
 			 * #___
 			 * */
-			case CellBlockType.TRIANGLEUPLEFT:
+/*			case CellBlockType.TRIANGLEUPLEFT:
 				
 				block[0] = new int[]{0,0,0,0};
 				block[1] = new int[]{2,0,2,0};
@@ -125,7 +126,7 @@ namespace AssemblyCSharp
 			 * ___?
 			 * __#_
 			 * */
-			case CellBlockType.TRIANGLEUPRIGHT:
+/*			case CellBlockType.TRIANGLEUPRIGHT:
 		
 				block[0] = new int[]{0,0,0,0};
 				block[1] = new int[]{2,0,2,0};
@@ -138,7 +139,7 @@ namespace AssemblyCSharp
 			 * ___?
 			 * #_#_
 			 * */
-			case CellBlockType.TRIANGLEDOWNRIGHT:
+/*			case CellBlockType.TRIANGLEDOWNRIGHT:
 		
 				block[0] = new int[]{0,0,0,0};
 				block[1] = new int[]{0,0,2,0};
@@ -151,7 +152,7 @@ namespace AssemblyCSharp
 			 * Up to three random placed stones 
 			 * 
 			 * */
-			case CellBlockType.ARTIFAKT:	
+/*			case CellBlockType.ARTIFAKT:	
 				
 				block[0] = new int[]{0,0,0,0};
 				block[1] = new int[]{0,0,0,0};
@@ -194,7 +195,7 @@ namespace AssemblyCSharp
 				 * 333?
 				 * #3#?
 				 * */
-				rand = (int)(UnityEngine.Random.value *4);
+/*				rand = (int)(UnityEngine.Random.value *4);
 				switch(rand){
 				case 0:
 					spawnPoint = Data.area.getCell(xpos+1,zpos+1);
@@ -238,7 +239,7 @@ namespace AssemblyCSharp
 				 * #_#_
 				 * */
 				
-				rand = (int)(UnityEngine.Random.value *2);
+/*				rand = (int)(UnityEngine.Random.value *2);
 				switch(rand){
 				case 0:
 					spawnPoint = Data.area.getCell(xpos+2,zpos);
@@ -260,7 +261,7 @@ namespace AssemblyCSharp
 				 * 33__
 				 * #_#_
 				 * */
-				rand = (int)(UnityEngine.Random.value *3);
+/*				rand = (int)(UnityEngine.Random.value *3);
 
 				switch(rand){
 				case 0:
@@ -297,7 +298,7 @@ namespace AssemblyCSharp
 				 * #_3_
 				 * */
 				
-				rand = (int)(UnityEngine.Random.value *3);
+/*				rand = (int)(UnityEngine.Random.value *3);
 				
 				switch(rand){
 				case 0:
@@ -334,7 +335,7 @@ namespace AssemblyCSharp
 				 * __#_
 				 * */
 				
-				rand = (int)(UnityEngine.Random.value *2);
+/*				rand = (int)(UnityEngine.Random.value *2);
 				
 				switch(rand){
 				case 0:
@@ -363,7 +364,7 @@ namespace AssemblyCSharp
 				 * 330?
 				 * #_#_
 				 * */
-				rand = (int)(UnityEngine.Random.value *2);
+/*				rand = (int)(UnityEngine.Random.value *2);
 				
 				switch(rand){
 				case 0:
@@ -393,7 +394,7 @@ namespace AssemblyCSharp
 				 * Up to three random placed stones 
 				 * 
 				 * */
-				spawnPoint = Data.area.getCell(xpos,zpos+2);
+/*				spawnPoint = Data.area.getCell(xpos,zpos+2);
 				block[0][2] = 3;
 				block[1][2] = 3;
 				block[1][1] = 3;
@@ -430,4 +431,4 @@ namespace AssemblyCSharp
 		
 	}
 }
-
+*/

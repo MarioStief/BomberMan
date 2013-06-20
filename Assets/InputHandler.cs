@@ -9,19 +9,28 @@ using AssemblyCSharp;
 
 public class InputHandler : MonoBehaviour {
 	
-	public GameObject sphere;			
+	public GameObject sphere;
+	private GameObject playerHandler;
 	private SphereBuilder sphereHandler;
 	
 	public GameObject camera;
 	private Quaternion cameraRotation;
 	
-	// Cell currCell = ?
-	// Henning, ich brauche die Zellen wieder! xD
+	private Parcel cell;
+	private static GameObject deadPlayerPrefab;
+	private float xpos;
+	private float ypos;
+	private float zpos;
+	
+	private float createTime;
 	
 	// Use this for initialization
 	void Start () {
-	
+		createTime = Time.time;
+		deadPlayerPrefab = GameObject.Find("DeadPlayer");
+		sphere = playerHandler = GameObject.Find("Sphere");
 		sphereHandler = sphere.GetComponent<SphereBuilder>();
+		playerHandler = GameObject.Find("Player");
 		cameraRotation = camera.transform.rotation;
 	}
 	
@@ -29,6 +38,13 @@ public class InputHandler : MonoBehaviour {
 	void Update () {
 	
 		if (!Player.isDead()) {
+			
+			xpos = transform.position.x;
+			ypos = transform.position.y;
+			zpos = transform.position.z;
+			
+			// Spieler befindet sich in Zelle:
+			cell = sphereHandler.getGameArea().getCurrentParcel((int) transform.position.x, (int)transform.position.y);
 			
 			// Lese Bewegungsrichtung aus und lasse die Kugel entsprechend bewegen.
 			float verticalMovement = Input.GetAxis("Vertical") * Player.getSpeed();
@@ -39,22 +55,13 @@ public class InputHandler : MonoBehaviour {
 				moveAlongEquator( horizontalMovement/(-2)*Time.deltaTime);
 			
 			// Falls die Zelle ein Powerup enthält -> aufsammeln
-			/*
-			if (currCell.hasPowerup()) {
-				Player.powerupCollected(currCell.destroyPowerup());
+			if (cell.hasPowerup()) {
+				Player.powerupCollected(cell.destroyPowerup());
 			}
-			*/
 			
 			// Leertaste -> Bombe legen
 			if ( Input.GetKeyDown(KeyCode.Space)){
-				if (Player.addBomb()) {
-					GameObject explosion = new GameObject("explosion");
-					explosion.AddComponent<Explosion>();
-				}
-			}
-			/*
-			if ( Input.GetKeyDown(KeyCode.Space)){
-				if ( !currCell.hasBomb()) {
+				if ( !cell.hasBomb()) {
 					if (Player.addBomb()) {
 						GameObject explosion = new GameObject("explosion");
 						explosion.AddComponent<Explosion>();
@@ -65,7 +72,6 @@ public class InputHandler : MonoBehaviour {
 				createTime = Time.time;
 				Player.increaseHP();
 			}
-			*/
 		}
 	}
 	
@@ -87,7 +93,19 @@ public class InputHandler : MonoBehaviour {
 		if (Player.getHP() == 0) {
 			renderer.material.color = Color.black;
 			//moveDirection = new Vector3(0, 0, 0);
-			//GameObject deadPlayer = GameObject.Instantiate(Data.deadPlayerPrefab, new Vector3(currCell.getXPos() + 0.5f, 0.3f, currCell.getZPos() + 0.5f), Quaternion.identity) as GameObject; 
+			//GameObject deadPlayer = GameObject.Instantiate(deadPlayerPrefab, new Vector3(currCell.getXPos() + 0.5f, 0.3f, currCell.getZPos() + 0.5f), Quaternion.identity) as GameObject; 
 		}
+	}
+	
+	public float getXPos() {
+		return xpos;
+	}
+
+	public float getYPos() {
+		return ypos;
+	}
+
+	public float getZPos() {
+		return zpos;
 	}
 }

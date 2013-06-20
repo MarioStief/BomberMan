@@ -26,14 +26,8 @@ namespace AssemblyCSharp
 		
 		private Vector2 rinkPosition;				// Die Orientierungs-Parzelle (s.o.);
 		
-		
-		public static GameObject deadPlayerPrefab;
-		public static GameObject bombPrefab;
-		public static GameObject explotionPrefab;
-		//public static List<Explosion> explosions;
-		
-		public static GameObject []players = new GameObject[1];
-		public static GameObject player;
+		public GameObject []players = new GameObject[1];
+		public GameObject player;
 		
 		
 		// KONSTRUKTOREN
@@ -42,13 +36,6 @@ namespace AssemblyCSharp
 		{
 			initializeRink(width, height);
 			this.rinkPosition = rinkPosition;
-			
-			
-			// Prefabs
-			deadPlayerPrefab = GameObject.Find("DeadPlayer");
-			bombPrefab = GameObject.Find("bomb");
-			explotionPrefab = GameObject.Find("Explotion");
-			//explosions = new List<Explosion>();
 			
 			// Erstelle Pool aus Powerups
 			// Mit dem Parameter lässt sich die Poolgröße variieren
@@ -193,7 +180,7 @@ namespace AssemblyCSharp
 			
 			if ( mark){
 				
-				//Debug.Log("RedCube- Position: " + ((x+gameArea.Length/2)%(gameArea.Length)) + ", " + ((y+gameArea[0].Length/4)%(gameArea[0].Length/2)));
+				Debug.Log("RedCube-Position: " + ((x+gameArea.Length/2)%(gameArea.Length)) + ", " + ((y+gameArea[0].Length/4)%(gameArea[0].Length/2)));
 				drawnArea[((x+gameArea.Length/2)%(gameArea.Length))][((y+gameArea[0].Length/4)%(gameArea[0].Length/2))].renderer.material.color = Color.red;	
 			} else{
 				drawnArea[((x+gameArea.Length/2)%(gameArea.Length))][((y+gameArea[0].Length/4)%(gameArea[0].Length/2))].renderer.material.color = Color.white;	
@@ -201,7 +188,15 @@ namespace AssemblyCSharp
 		
 		}
 		
-		public static GameObject[] getPlayers() {
+		public Parcel getCurrentParcel(int x, int y) {
+			int xpos = ((x+gameArea.Length/2)%(gameArea.Length));
+			int ypos = ((y+gameArea[0].Length/4)%(gameArea[0].Length/2));
+			Parcel currentParcel = gameArea[xpos][ypos];
+			//Debug.Log ("Current Cell is " + xpos + "," + ypos);
+			return currentParcel;
+		}
+		
+		public GameObject[] getPlayers() {
 			return players;
 		}
 	}

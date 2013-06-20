@@ -14,6 +14,11 @@ namespace AssemblyCSharp
 		
 		GameObject obj;		// Object auf der Parzelle, das gezeichnet werden soll.
 		
+		private bool bombOnCell; // Beschränkung von einer Bombe pro Feld überhaupt notwendig?
+		private bool powerupOnCell;
+		private PowerupType powerupType;
+		private GameObject powerup;
+		
 		public Parcel (){
 			height = 1.0f;
 		}
@@ -61,7 +66,32 @@ namespace AssemblyCSharp
 		public float getHeight(){
 			return height;	
 		}
+		
+		public void addPowerup(GameObject powerup, PowerupType powerupType) {
+			this.powerup = powerup;
+			this.powerupType = powerupType;
+			powerupOnCell = true;
+		}
 
+		public PowerupType destroyPowerup() {
+			GameObject.Destroy(powerup);
+			powerup = null;
+			powerupOnCell = false;
+			return powerupType;
+		}
+		
+		public void setBomb(bool bombOnCell) {
+			this.bombOnCell = bombOnCell;
+		}
+		
+		public bool hasBomb() {
+			return bombOnCell;
+		}
+
+		public bool hasPowerup() {
+			return powerupOnCell;
+		}
+		
 	}
 }
 

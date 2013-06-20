@@ -1,3 +1,4 @@
+/*
 using UnityEngine;
 using System.Collections;
 using AssemblyCSharp;
@@ -53,3 +54,4 @@ public class InstGame : MonoBehaviour {
 	void Update () {
 	}
 }
+*/

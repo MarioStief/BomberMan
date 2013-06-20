@@ -7,9 +7,13 @@ public class Explosion : MonoBehaviour
 {
 	private const int DELAY = 100;
 	private const float EXPLOSIONTIMER = 3.0f;
-	private Cell currCell;
-	private int xpos, zpos;
+	public GameObject sphere;
+	private SphereBuilder sphereHandler;
+	private Parcel cell;
+	private int xpos, ypos, zpos;
 	
+	public static GameObject bombPrefab;
+	public static GameObject explotionPrefab;
 	private GameObject bomb;
 	GameObject []explosion = new GameObject[5];
 	private int []reach = {0, 0, 0, 0, 0};
@@ -24,24 +28,30 @@ public class Explosion : MonoBehaviour
 	private float createTime;
 	
 	void Start() {
-		currCell = Data.area.getCell(Data.controller.transform.position.x, Data.controller.transform.position.z);
-		xpos = currCell.getXPos();
-		zpos = currCell.getZPos();
+		bombPrefab = GameObject.Find("bomb");
+		explotionPrefab = GameObject.Find("Explotion");
 		
-		bomb = GameObject.Instantiate(Data.bombPrefab, new Vector3(xpos + 0.5f, 0.3f, zpos + 0.5f), Quaternion.identity) as GameObject; 
+		sphereHandler = sphere.GetComponent<SphereBuilder>();
+		cell = sphereHandler.getGameArea().getCurrentParcel((int) transform.position.x, (int)transform.position.y);
+		xpos = (int) transform.position.x;
+		ypos = (int) transform.position.y;
+		zpos = (int) transform.position.z;
+		
+		//bomb = GameObject.Instantiate(bombPrefab, new Vector3(xpos + 0.5f, 0.3f, zpos + 0.5f), Quaternion.identity) as GameObject; 
+		bomb = GameObject.Instantiate(bombPrefab, new Vector3(xpos, ypos, zpos), Quaternion.identity) as GameObject; 
 		timer = 0.0f;
 		createTime = Time.time;
 		
 		dists = new int[4];
 		instantiatePSystems();
 
-		Data.explosions.Add(this);
-		Data.area.getCell(xpos,zpos).setBomb(true, this);
+		//explosions.Add(this);
+		cell.setBomb(true);
 	}
 	
 	public void startExplosion(){
 		
-		Data.area.getCell(xpos,zpos).setBomb(false, this);
+		cell.setBomb(false);
 		GameObject.Destroy(bomb);
 		bomb = null;
 		
@@ -73,7 +83,7 @@ public class Explosion : MonoBehaviour
 				startExplosion();
 			}
 		} else {
-			if (elapsedTime > 0.5f) // ist eine halbe Sekunde nichts passiert: GameObjekt zerstören
+			if (elapsedTime > 1.0f) // ist eine halbe Sekunde nichts passiert: GameObjekt zerstören
 				Destroy (this);
 
 			if (elapsedTime > 0.3f) { // nach 300 ms ohne Aktualisierung: keine neuen Partikel mehr
@@ -84,7 +94,7 @@ public class Explosion : MonoBehaviour
 						if (explosion[i] != null)
 							explosion[i].GetComponent<ParticleEmitter>().maxEmission = 0;
 					}
-					explosionField.getCell().setExploding(false);
+					//explosionField.getCell().setExploding(false);
 				}
 			}
 
@@ -93,7 +103,7 @@ public class Explosion : MonoBehaviour
 				foreach (ExplosionField explosionField in explosionChain) {
 					bool stillRunning = false;
 					if (explosionField.getDelay() == 0) {
-						explosionField.getCell().setExploding(true);
+						//explosionField.getCell().setExploding(true);
 						if (PowerupPool.getDestroyable())
 							if (explosionField.getCell().hasPowerup())
 								explosionField.getCell().destroyPowerup();
@@ -112,7 +122,7 @@ public class Explosion : MonoBehaviour
 	
 	private void dropPowerup() {
 		if (!itemDrop) {
-			if (!currCell.hasPowerup()) {
+			if (!cell.hasPowerup()) {
 				Player.destroyBomb();
 				if (new System.Random().Next(0, 1) == 0) // DEBUG: Bombe nach Explosion erzeugen mit 25 %
 					PowerupPool.setPowerup(xpos, zpos);
@@ -124,9 +134,9 @@ public class Explosion : MonoBehaviour
 	private void instantiatePSystems(){
 		
 		for (int i = 0; i < 5; i++) {
-			explosion[i] = GameObject.Instantiate(Data.explotionPrefab, new Vector3( xpos + 0.5f, 0.5f, zpos + 0.5f), Quaternion.identity) as GameObject;
+			explosion[i] = GameObject.Instantiate(explotionPrefab, new Vector3( xpos + 0.5f, 0.5f, zpos + 0.5f), Quaternion.identity) as GameObject;
 			explosion[i].GetComponent<ParticleEmitter>().maxEmission = 0;
-			explosionChain.Add(new ExplosionField(0,Data.area.getCell(xpos, zpos)));
+			explosionChain.Add(new ExplosionField(0,cell));
 		}
 		
 		explosion[1].GetComponent<ParticleEmitter>().worldVelocity = new Vector3(-5.0f, 0.3f, 0.0f);
@@ -134,32 +144,56 @@ public class Explosion : MonoBehaviour
 		explosion[3].GetComponent<ParticleEmitter>().worldVelocity = new Vector3(0.0f, 0.3f, -5.0f);
 		explosion[4].GetComponent<ParticleEmitter>().worldVelocity = new Vector3(0.0f, 0.3f, 5.0f);
 
-		getDistances();
+		//getDistances();
+		// DEBUG START
+		foreach (int i in dists)
+			dists[i] = 3;
+		// DEBUG END
+		
 		Debug.Log(dists[0] + "," + dists[1] + "," + dists[2] + "," + dists[3]);
 		
+		
+			
 		for (int i = 1; i <= Player.getFlamePower(); i++) {
 			if (i <= dists[0]) {
 				reach[1]++;
-				explosionChain.Add(new ExplosionField(i,Data.area.getCell((xpos-i), zpos)));
+				//explosionChain.Add(new ExplosionField(i,Data.area.getCell((xpos-i), zpos)));
+				int x = (int) transform.position.x;
+				int z = (int) transform.position.z;
+				Parcel cell = sphereHandler.getGameArea().getCurrentParcel(x-i, z);
+				explosionChain.Add(new ExplosionField(i,cell));
 			}
 
 			if (i <= dists[1]) {
 				reach[2]++;
-				explosionChain.Add(new ExplosionField(i,Data.area.getCell((xpos+i), zpos)));
+				//explosionChain.Add(new ExplosionField(i,Data.area.getCell((xpos+i), zpos)));
+				int x = (int) transform.position.x;
+				int z = (int) transform.position.z;
+				Parcel cell = sphereHandler.getGameArea().getCurrentParcel(x+i, z);
+				explosionChain.Add(new ExplosionField(i,cell));
 			}
 
 			if (i <= dists[2]) {
 				reach[3]++;
-				explosionChain.Add(new ExplosionField(i,Data.area.getCell(xpos, (zpos-i))));
+				//explosionChain.Add(new ExplosionField(i,Data.area.getCell(xpos, (zpos-i))));
+				int x = (int) transform.position.x;
+				int z = (int) transform.position.z;
+				Parcel cell = sphereHandler.getGameArea().getCurrentParcel(x, z-i);
+				explosionChain.Add(new ExplosionField(i,cell));
 			}
 
 			if (i <= dists[3]) {
 				reach[4]++;
-				explosionChain.Add(new ExplosionField(i,Data.area.getCell(xpos, (zpos+i))));
+				//explosionChain.Add(new ExplosionField(i,Data.area.getCell(xpos, (zpos+i))));
+				int x = (int) transform.position.x;
+				int z = (int) transform.position.z;
+				Parcel cell = sphereHandler.getGameArea().getCurrentParcel(x, z+i);
+				explosionChain.Add(new ExplosionField(i,cell));
 			}
 		}
 	}
 	
+	/*
 	private int[] getDistances(){
 		
 		int range = Player.getFlamePower();
@@ -210,6 +244,7 @@ public class Explosion : MonoBehaviour
 		
 		return dists;
 	}
+	*/
 }
 
 

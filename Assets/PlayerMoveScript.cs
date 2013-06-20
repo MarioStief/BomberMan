@@ -1,3 +1,4 @@
+/*
 using UnityEngine;
 using System.Collections;
 using AssemblyCSharp;
@@ -7,7 +8,7 @@ public class PlayerMoveScript : MonoBehaviour {
     public float gravity = 1.0F;
     private Vector3 moveDirection = Vector3.zero;
 	
-	private Cell currCell;
+	private Parcel currCell;
 
 	private float createTime;
 
@@ -18,13 +19,13 @@ public class PlayerMoveScript : MonoBehaviour {
 	// Update is called once per frame
 	void Update() {
 	
-		if (!Data.initialized) return;
+		//if (!Data.initialized) return;
 		
-        if (Data.controller.isGrounded && !Player.isDead()) {
+        if (!Player.isDead()) {
             moveDirection = new Vector3((-1)*Input.GetAxis("Vertical"), 0, Input.GetAxis("Horizontal"));
             moveDirection *= Player.getSpeed();     
 			
-			currCell = Data.area.getCell(Data.controller.transform.position.x, Data.controller.transform.position.z);
+			currCell = sphereHandler.getGameArea().getCurrentParcel((int) transform.position.x, (int)transform.position.y);
 			if (Player.isDead()) {
 			}
 			
@@ -37,7 +38,7 @@ public class PlayerMoveScript : MonoBehaviour {
 			}
 			*/
 			
-			if (currCell.hasPowerup()) {
+/*			if (currCell.hasPowerup()) {
 				Player.powerupCollected(currCell.destroyPowerup());
 			}
 			
@@ -69,3 +70,4 @@ public class PlayerMoveScript : MonoBehaviour {
 		}
 	}
 }
+*/
