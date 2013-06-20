@@ -33,7 +33,15 @@ public class SphereBuilder : MonoBehaviour {
 	
 	public int n_B = 8; 							// Auflösung der Breitenkreise; !! >= 4 !!
 	public int n_L = 8; 							// Auflösung der Längenkreise ; !! >= 4 !!
-		
+	
+	public static GameObject deadPlayerPrefab;
+	public static GameObject bombPrefab;
+	public static GameObject explotionPrefab;
+	//public static List<Explosion> explosions;
+	
+	public static GameObject []players = new GameObject[1];
+	public static GameObject player;
+	
 	// Use this for initialization
 	void Start () {
 				
@@ -50,6 +58,17 @@ public class SphereBuilder : MonoBehaviour {
 		
 		// Gebe den Würfeln korrekte Höhen gemäß der Werte aus gameArea
 		gameArea.updateHeight();
+
+		// Prefabs
+		deadPlayerPrefab = GameObject.Find("DeadPlayer");
+		bombPrefab = GameObject.Find("bomb");
+		explotionPrefab = GameObject.Find("Explotion");
+		//explosions = new List<Explosion>();
+		
+		// Erstelle Pool aus Powerups
+		// Mit dem Parameter lässt sich die Poolgröße variieren
+		PowerupPool.createPool(1);
+
 	}
 	
 	private void tesselateSphere(){
@@ -378,4 +397,7 @@ public class SphereBuilder : MonoBehaviour {
 		gameArea.renderAll();
 	}	//*/
 	
+		public static GameObject[] getPlayers() {
+		return players;
+	}
 }
