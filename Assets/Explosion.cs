@@ -7,10 +7,11 @@ public class Explosion : MonoBehaviour
 {
 	private const int DELAY = 100;
 	private const float EXPLOSIONTIMER = 3.0f;
+	float SCALE = 0.25f;
 	public GameObject sphere;
 	private SphereBuilder sphereHandler;
 	private Parcel cell;
-	private int xpos, ypos, zpos;
+	private float xpos, ypos, zpos;
 	
 	public static GameObject bombPrefab;
 	public static GameObject explotionPrefab;
@@ -30,12 +31,13 @@ public class Explosion : MonoBehaviour
 	void Start() {
 		bombPrefab = GameObject.Find("bomb");
 		explotionPrefab = GameObject.Find("Explotion");
-		
+		explotionPrefab.transform.localScale *= SCALE;
+		sphere = GameObject.Find("Sphere");
 		sphereHandler = sphere.GetComponent<SphereBuilder>();
 		cell = sphereHandler.getGameArea().getCurrentParcel((int) transform.position.x, (int)transform.position.y);
-		xpos = (int) transform.position.x;
-		ypos = (int) transform.position.y;
-		zpos = (int) transform.position.z;
+		xpos = GameObject.Find("Player").GetComponent<InputHandler>().getXPos();
+		ypos = GameObject.Find("Player").GetComponent<InputHandler>().getYPos();
+		zpos = GameObject.Find("Player").GetComponent<InputHandler>().getZPos();
 		
 		//bomb = GameObject.Instantiate(bombPrefab, new Vector3(xpos + 0.5f, 0.3f, zpos + 0.5f), Quaternion.identity) as GameObject; 
 		bomb = GameObject.Instantiate(bombPrefab, new Vector3(xpos, ypos, zpos), Quaternion.identity) as GameObject; 
@@ -47,6 +49,8 @@ public class Explosion : MonoBehaviour
 
 		//explosions.Add(this);
 		cell.setBomb(true);
+		
+		Debug.Log("bomb placed");
 	}
 	
 	public void startExplosion(){
@@ -83,11 +87,12 @@ public class Explosion : MonoBehaviour
 				startExplosion();
 			}
 		} else {
-			if (elapsedTime > 1.0f) // ist eine halbe Sekunde nichts passiert: GameObjekt zerstören
+			if (elapsedTime > 1.0f) { // ist eine halbe Sekunde nichts passiert: GameObjekt zerstören
 				Destroy (this);
+			}
 
 			if (elapsedTime > 0.3f) { // nach 300 ms ohne Aktualisierung: keine neuen Partikel mehr
-				dropPowerup();
+				placePowerup();
 
 				foreach (ExplosionField explosionField in explosionChain) {
 					for (int i = 1; i <= 4; i++) {
@@ -120,12 +125,12 @@ public class Explosion : MonoBehaviour
 		}
 	}
 	
-	private void dropPowerup() {
+	private void placePowerup() {
 		if (!itemDrop) {
 			if (!cell.hasPowerup()) {
-				Player.destroyBomb();
+				Player.removeBomb();
 				if (new System.Random().Next(0, 1) == 0) // DEBUG: Bombe nach Explosion erzeugen mit 25 %
-					PowerupPool.setPowerup(xpos, zpos);
+					PowerupPool.setPowerup(xpos, ypos, zpos);
 			}
 			itemDrop = true;
 		}
@@ -134,7 +139,8 @@ public class Explosion : MonoBehaviour
 	private void instantiatePSystems(){
 		
 		for (int i = 0; i < 5; i++) {
-			explosion[i] = GameObject.Instantiate(explotionPrefab, new Vector3( xpos + 0.5f, 0.5f, zpos + 0.5f), Quaternion.identity) as GameObject;
+			//explosion[i] = GameObject.Instantiate(explotionPrefab, new Vector3( xpos + 0.5f, 0.5f, zpos + 0.5f), Quaternion.identity) as GameObject;
+			explosion[i] = GameObject.Instantiate(explotionPrefab, new Vector3(xpos, ypos, zpos), Quaternion.identity) as GameObject;
 			explosion[i].GetComponent<ParticleEmitter>().maxEmission = 0;
 			explosionChain.Add(new ExplosionField(0,cell));
 		}

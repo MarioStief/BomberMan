@@ -52,7 +52,7 @@ namespace AssemblyCSharp
 			}
 		}
 		
-		public static void destroyBomb() {
+		public static void removeBomb() {
 			bombsActive--;
 		}
 

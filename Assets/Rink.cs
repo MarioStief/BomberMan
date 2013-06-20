@@ -188,9 +188,9 @@ namespace AssemblyCSharp
 		
 		}
 		
-		public Parcel getCurrentParcel(int x, int y) {
-			int xpos = ((x+gameArea.Length/2)%(gameArea.Length));
-			int ypos = ((y+gameArea[0].Length/4)%(gameArea[0].Length/2));
+		public Parcel getCurrentParcel(float x, float y) {
+			int xpos = (int) ((x+gameArea.Length/2)%(gameArea.Length));
+			int ypos = (int) ((y+gameArea[0].Length/4)%(gameArea[0].Length/2));
 			Parcel currentParcel = gameArea[xpos][ypos];
 			//Debug.Log ("Current Cell is " + xpos + "," + ypos);
 			return currentParcel;
