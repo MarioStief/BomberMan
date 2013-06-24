@@ -7,7 +7,7 @@ public class Explosion : MonoBehaviour
 {
 	private const int DELAY = 100;
 	private const float EXPLOSIONTIMER = 3.0f;
-	private const int DROPCHANCE = 25; // %
+	private const int DROPCHANCE = 25; // Drop chance in %
 	float SCALE = 0.25f;
 	public GameObject sphere;
 	private SphereBuilder sphereHandler;
@@ -16,7 +16,7 @@ public class Explosion : MonoBehaviour
 	
 	public static GameObject bombPrefab;
 	public static GameObject explotionPrefab;
-	private GameObject bomb;
+	//private GameObject bomb;
 	GameObject []explosion = new GameObject[5];
 	private int []reach = {0, 0, 0, 0, 0};
 	
@@ -27,6 +27,7 @@ public class Explosion : MonoBehaviour
 	
 	private float timer;
 	private float createTime;
+	private bool powerupsPlaced = false;
 	
 	void Start() {
 		bombPrefab = GameObject.Find("bomb");
@@ -40,7 +41,7 @@ public class Explosion : MonoBehaviour
 		zpos = GameObject.Find("Player").GetComponent<InputHandler>().getZPos();
 		
 		//bomb = GameObject.Instantiate(bombPrefab, new Vector3(xpos + 0.5f, 0.3f, zpos + 0.5f), Quaternion.identity) as GameObject; 
-		bomb = GameObject.Instantiate(bombPrefab, new Vector3(xpos, ypos, zpos), Quaternion.identity) as GameObject; 
+		//bomb = GameObject.Instantiate(bombPrefab, new Vector3(xpos, ypos, zpos), Quaternion.identity) as GameObject; 
 		timer = 0.0f;
 		createTime = Time.time;
 		
@@ -56,9 +57,11 @@ public class Explosion : MonoBehaviour
 	public void startExplosion(){
 		
 		cell.setBomb(false);
-		GameObject.Destroy(bomb);
+		//GameObject.Destroy(bomb);
+		cell.destroyGameObject();
 		Player.removeBomb();
-		bomb = null;
+		//bomb = null;
+		sphereHandler.getGameArea().clearBlue();
 		
 		Debug.Log ("Flammenstaerke: " + reach[1] + ", " + reach[2] + ", " + reach[3] + ", " + reach[4]);
 		
@@ -126,14 +129,21 @@ public class Explosion : MonoBehaviour
 	}
 	
 	private void placePowerup() {
-		foreach (ExplosionField explosionField in explosionChain) {
-			Parcel cell = explosionField.getCell();
-			if (!cell.hasPowerup()) {
-				if (new System.Random().Next(0, (int) 100/DROPCHANCE) == 0) { // Random().Next(0, 4) € {0, 1, 2, 3}
-					PowerupPool.setPowerup(cell);
+		if (!powerupsPlaced) {
+			Debug.Log ("#Still in ExplosionFields: " + explosionChain.Count);
+			foreach (ExplosionField explosionField in explosionChain) {
+				Parcel cell = explosionField.getCell();
+				Debug.Log("Cell " + sphereHandler.getGameArea().printCellCoordinates(cell) + " has GameObject: " + (cell.hasGameObject() ? "yes" : "no"));
+				if (!cell.hasGameObject()) {
+					int random = new System.Random().Next(0, (int) 100/DROPCHANCE);
+					Debug.Log("Placing Powerup for cell " + sphereHandler.getGameArea().printCellCoordinates(cell) + ": " + (random == 0 ? "yes" : "no"));
+					if (random == 0) { // Random().Next(0, 4) € {0, 1, 2, 3}
+						PowerupPool.setPowerup(cell);
+					}
 				}
 			}
 		}
+		powerupsPlaced = true;
 	}
 	
 	private void instantiatePSystems(){

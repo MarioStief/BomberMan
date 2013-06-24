@@ -29,6 +29,9 @@ namespace AssemblyCSharp
 		public GameObject []players = new GameObject[1];
 		public GameObject player;
 		
+		// Temporär, um das Überfluten der Console zu vermeiden
+		private int oldX = 99999;
+		private int oldY = 99999;
 		
 		// KONSTRUKTOREN
 		
@@ -179,15 +182,28 @@ namespace AssemblyCSharp
 			int x = (int)rinkPosition.x;
 			int y = (int)rinkPosition.y;
 			
-			if ( mark){
-				//Debug.Log("rinkPosition.x: " + rinkPosition.x);
-				//Debug.Log("rinkPosition.y: " + rinkPosition.y);
-				Debug.Log("RedCube-Position: " + ((x+gameArea.Length/2)%(gameArea.Length)) + ", " + ((y+gameArea[0].Length/4)%(gameArea[0].Length/2)));
+			if (mark){
+				if (oldX != x || oldY != y) { // Temporär, um das Überfluten der Console zu vermeiden
+					oldX = x;
+					oldY = y;
+					Debug.Log("RedCube-Position: " + ((x+gameArea.Length/2)%(gameArea.Length)) + ", " + ((y+gameArea[0].Length/4)%(gameArea[0].Length/2)));
+				}
 				drawnArea[((x+gameArea.Length/2)%(gameArea.Length))][((y+gameArea[0].Length/4)%(gameArea[0].Length/2))].renderer.material.color = Color.red;	
 			} else{
 				drawnArea[((x+gameArea.Length/2)%(gameArea.Length))][((y+gameArea[0].Length/4)%(gameArea[0].Length/2))].renderer.material.color = Color.white;	
 			}
 		
+		}
+		
+		public String printCellCoordinates(Parcel cell) {
+			for (int i = 0; i < gameArea.Length; i++) {
+				for (int j = 0; j < gameArea[i].Length; j++) {
+					if (cell == gameArea[i][j]) {
+						return "[" + i + "," + j + "]";
+					}
+				}
+			}
+			return "";
 		}
 		
 		public Parcel getCurrentParcel(int xDiff, int yDiff) {
@@ -202,6 +218,15 @@ namespace AssemblyCSharp
 			}
 			Parcel currentParcel = gameArea[xpos][ypos];
 			return currentParcel;
+		}
+		
+		// DEBUG
+		public void clearBlue() {
+			for (int i = 0; i < gameArea.Length; i++) {
+				for (int j = 0; j < gameArea[i].Length; j++) {
+					drawnArea[i][j].renderer.material.color = Color.white;
+				}
+			}
 		}
 		
 		public GameObject[] getPlayers() {

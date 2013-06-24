@@ -18,7 +18,6 @@ namespace AssemblyCSharp
 		private bool powerupOnCell;
 		
 		private PowerupType powerupType;
-		private GameObject powerup;
 		
 		public Parcel (){
 			height = 1.0f;
@@ -43,11 +42,11 @@ namespace AssemblyCSharp
 		}
 		
 		public bool hasGameObject(){
-			return obj == null;	
+			return (obj != null);	
 		}
 		
-		public void setGameObjet(GameObject obj){
-			this.obj = obj;	
+		public void setGameObject(GameObject obj){
+			this.obj = obj;
 		}
 		
 		public void initGameObject(GameObject prefab, Vector3 position, Quaternion rotation){
@@ -76,14 +75,14 @@ namespace AssemblyCSharp
 		}
 		
 		public void addPowerup(GameObject powerup, PowerupType powerupType) {
-			this.powerup = powerup;
+			this.obj = powerup;
 			this.powerupType = powerupType;
 			powerupOnCell = true;
 		}
 
 		public PowerupType destroyPowerup() {
-			GameObject.Destroy(powerup);
-			powerup = null;
+			GameObject.Destroy(obj);
+			obj = null;
 			powerupOnCell = false;
 			return powerupType;
 		}

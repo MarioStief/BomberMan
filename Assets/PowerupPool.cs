@@ -125,7 +125,6 @@ namespace AssemblyCSharp
 					powerup = GameObject.Instantiate(goldenFlamePowerupPrefab, cellCenter, Quaternion.identity) as GameObject; 
 
 			cell.addPowerup(powerup, type);
-			
 
 		}
 		

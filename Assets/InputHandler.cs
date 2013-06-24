@@ -68,13 +68,11 @@ public class InputHandler : MonoBehaviour {
 			if ( Input.GetKeyDown(KeyCode.Space)){
 				if ( !cell.hasBomb()) {
 					
-					
-					
-					cell.setGameObjet( GameObject.Instantiate(bomb, Vector3.zero, Quaternion.identity) as GameObject);
-					//if (Player.addBomb()) {
-					//	GameObject explosion = new GameObject("explosion");
-					//	explosion.AddComponent<Explosion>();
-					//}
+					cell.setGameObject( GameObject.Instantiate(bomb, Vector3.zero, Quaternion.identity) as GameObject);
+					if (Player.addBomb()) {
+						GameObject explosion = new GameObject("explosion");
+						explosion.AddComponent<Explosion>();
+					}
 				}
 			}
 			if ((Time.time - createTime) > 1.0f) {

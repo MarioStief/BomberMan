@@ -19,7 +19,6 @@ namespace AssemblyCSharp
 		
 		public static void powerupCollected(PowerupType type)
 		{
-			Debug.Log (type == PowerupType.GOLDEN_FLAME);
 			if (type == PowerupType.BOMB_UP) {
 				bombs++;
 			} else if (type == PowerupType.BOMB_DOWN) {
