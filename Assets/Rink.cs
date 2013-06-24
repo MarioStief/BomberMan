@@ -179,7 +179,8 @@ namespace AssemblyCSharp
 			int y = (int)rinkPosition.y;
 			
 			if ( mark){
-				
+				//Debug.Log("rinkPosition.x: " + rinkPosition.x);
+				//Debug.Log("rinkPosition.y: " + rinkPosition.y);
 				Debug.Log("RedCube-Position: " + ((x+gameArea.Length/2)%(gameArea.Length)) + ", " + ((y+gameArea[0].Length/4)%(gameArea[0].Length/2)));
 				drawnArea[((x+gameArea.Length/2)%(gameArea.Length))][((y+gameArea[0].Length/4)%(gameArea[0].Length/2))].renderer.material.color = Color.red;	
 			} else{
@@ -189,11 +190,15 @@ namespace AssemblyCSharp
 		}
 		
 		public Parcel getCurrentParcel(int xDiff, int yDiff) {
-			int x = (int)rinkPosition.x + xDiff;
-			int y = (int)rinkPosition.y + yDiff;
-			Debug.Log("CurrCell-Position: " + ((x+gameArea.Length/2)%(gameArea.Length)) + ", " + ((y+gameArea[0].Length/4)%(gameArea[0].Length/2)));
-			int xpos = ((x+gameArea.Length/2)%(gameArea.Length));
-			int ypos = ((y+gameArea[0].Length/4)%(gameArea[0].Length/2));
+			int x = (int)rinkPosition.x;
+			int y = (int)rinkPosition.y;
+			int xpos = ((x+gameArea.Length/2)%(gameArea.Length)) + xDiff;
+			int ypos = ((y+gameArea[0].Length/4)%(gameArea[0].Length/2)) + yDiff;
+			if (xDiff != 0 || yDiff != 0) {
+				Debug.Log("CurrCell-Position: " + ((x+gameArea.Length/2)%(gameArea.Length)) + ", " + ((y+gameArea[0].Length/4)%(gameArea[0].Length/2)));
+				Debug.Log("Active Cell: " + xpos + ", " + ypos + " (" + (xDiff < 0 ? "" : "+") + xDiff + ", " + (yDiff < 0 ? "" : "+") + yDiff + ")");
+				drawnArea[xpos][ypos].renderer.material.color = Color.blue;
+			}
 			Parcel currentParcel = gameArea[xpos][ypos];
 			return currentParcel;
 		}

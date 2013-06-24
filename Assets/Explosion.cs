@@ -7,6 +7,7 @@ public class Explosion : MonoBehaviour
 {
 	private const int DELAY = 100;
 	private const float EXPLOSIONTIMER = 3.0f;
+	private const int DROPCHANCE = 25; // %
 	float SCALE = 0.25f;
 	public GameObject sphere;
 	private SphereBuilder sphereHandler;
@@ -21,7 +22,6 @@ public class Explosion : MonoBehaviour
 	
 	private int []dists;
 	private bool waitingForBombExplosion = true;
-	private bool itemDrop = false;
 
 	private List<ExplosionField> explosionChain = new List<ExplosionField>();
 	
@@ -57,6 +57,7 @@ public class Explosion : MonoBehaviour
 		
 		cell.setBomb(false);
 		GameObject.Destroy(bomb);
+		Player.removeBomb();
 		bomb = null;
 		
 		Debug.Log ("Flammenstaerke: " + reach[1] + ", " + reach[2] + ", " + reach[3] + ", " + reach[4]);
@@ -69,9 +70,11 @@ public class Explosion : MonoBehaviour
 			explosion[i].GetComponent<ParticleEmitter>().minEmission = 2000;
 			explosion[i].GetComponent<ParticleEmitter>().maxEmission = 2000;
 		}
+		/*
 		foreach (ExplosionField explosionField in explosionChain) {
 			explosionField.decrement(); // Zähle Delay-Ticker runter
 		}
+		*/
 		
 		waitingForBombExplosion = false;
 		createTime = Time.time;
@@ -87,24 +90,21 @@ public class Explosion : MonoBehaviour
 				startExplosion();
 			}
 		} else {
-			if (elapsedTime > 1.0f) { // ist eine halbe Sekunde nichts passiert: GameObjekt zerstören
+			if (elapsedTime > 1.0f) {					// ist eine halbe Sekunde nichts passiert: GameObjekt zerstören
 				Destroy (this);
 			}
 
-			if (elapsedTime > 0.3f) { // nach 300 ms ohne Aktualisierung: keine neuen Partikel mehr
-				placePowerup();
-
-				foreach (ExplosionField explosionField in explosionChain) {
-					for (int i = 1; i <= 4; i++) {
-						if (explosion[i] != null)
-							explosion[i].GetComponent<ParticleEmitter>().maxEmission = 0;
+			if (elapsedTime > 0.3f) {					// nach 300 ms ohne Aktualisierung:
+				placePowerup();							// Lasse Powerup erscheinen
+				for (int i = 1; i <= 4; i++) {			// keine neuen Partikel mehr
+					if (explosion[i] != null) {
+						explosion[i].GetComponent<ParticleEmitter>().maxEmission = 0;
 					}
-					//explosionField.getCell().setExploding(false);
 				}
 			}
 
 			
-			if (elapsedTime > 0.1f) { // alle 100 ms
+			if (elapsedTime > 0.1f) {					// alle 100 ms
 				foreach (ExplosionField explosionField in explosionChain) {
 					bool stillRunning = false;
 					if (explosionField.getDelay() == 0) {
@@ -126,13 +126,13 @@ public class Explosion : MonoBehaviour
 	}
 	
 	private void placePowerup() {
-		if (!itemDrop) {
+		foreach (ExplosionField explosionField in explosionChain) {
+			Parcel cell = explosionField.getCell();
 			if (!cell.hasPowerup()) {
-				Player.removeBomb();
-				if (new System.Random().Next(0, 1) == 0) // DEBUG: Bombe nach Explosion erzeugen mit 25 %
-					PowerupPool.setPowerup(xpos, ypos, zpos);
+				if (new System.Random().Next(0, (int) 100/DROPCHANCE) == 0) { // Random().Next(0, 4) € {0, 1, 2, 3}
+					PowerupPool.setPowerup(cell);
+				}
 			}
-			itemDrop = true;
 		}
 	}
 	
@@ -142,7 +142,8 @@ public class Explosion : MonoBehaviour
 			//explosion[i] = GameObject.Instantiate(explotionPrefab, new Vector3( xpos + 0.5f, 0.5f, zpos + 0.5f), Quaternion.identity) as GameObject;
 			explosion[i] = GameObject.Instantiate(explotionPrefab, new Vector3(xpos, ypos, zpos), Quaternion.identity) as GameObject;
 			explosion[i].GetComponent<ParticleEmitter>().maxEmission = 0;
-			explosionChain.Add(new ExplosionField(0,cell));
+			if (i == 0)
+				explosionChain.Add(new ExplosionField(0,cell));
 		}
 		
 		explosion[1].GetComponent<ParticleEmitter>().worldVelocity = new Vector3(-5.0f, 0.3f, 0.0f);
@@ -152,11 +153,12 @@ public class Explosion : MonoBehaviour
 
 		//getDistances();
 		// DEBUG START
-		foreach (int i in dists)
-			dists[i] = 3;
+		for (int i = 0; i < dists.Length; i++) {
+			dists[i] = 10;
+		}
 		// DEBUG END
 		
-		Debug.Log(dists[0] + "," + dists[1] + "," + dists[2] + "," + dists[3]);
+		Debug.Log("Dists: [" + dists[0] + "," + dists[1] + "," + dists[2] + "," + dists[3] + "]");
 		
 		
 			
@@ -197,6 +199,7 @@ public class Explosion : MonoBehaviour
 				explosionChain.Add(new ExplosionField(i,cell));
 			}
 		}
+		Debug.Log ("#ExplosionFields: " + explosionChain.Count);
 	}
 	
 	/*

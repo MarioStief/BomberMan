@@ -92,6 +92,15 @@ namespace AssemblyCSharp
 			return powerupOnCell;
 		}
 		
+		public Vector3 getCenterPoint() {
+			return new Vector3(0, 0, 0); // Mittelpunkt der Zelle implementieren
+		}
+		
+		/*
+		public Vector3 getNormal() {
+			// Normale vom Zellenmittelpunkt fUr Objektausrichtung
+		}
+		*/
 	}
 }
 

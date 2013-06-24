@@ -44,7 +44,7 @@ public class InputHandler : MonoBehaviour {
 			zpos = transform.position.z;
 			
 			// Spieler befindet sich in Zelle:
-			cell = sphereHandler.getGameArea().getCurrentParcel((int) transform.position.x, (int)transform.position.y);
+			cell = sphereHandler.getGameArea().getCurrentParcel(0, 0);
 			
 			// Lese Bewegungsrichtung aus und lasse die Kugel entsprechend bewegen.
 			float verticalMovement = Input.GetAxis("Vertical") * Player.getSpeed();

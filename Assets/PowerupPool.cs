@@ -74,8 +74,11 @@ namespace AssemblyCSharp
 			return randomList;
 		}
 		
-		public static void setPowerup(float x, float y, float z)
+		public static void setPowerup(Parcel cell)
 		{
+			Vector3 cellCenter = cell.getCenterPoint();
+			//Vector3 cellNormal = cell.getNormal(); // wird benötigt, um das Powerup richtig zu drehen
+			
 			Powerup p = pool[0];
 			PowerupType type = p.getType();
 
@@ -107,21 +110,20 @@ namespace AssemblyCSharp
 			*/
 
 				 if	(p.getType() == PowerupType.BOMB_UP)
-					powerup = GameObject.Instantiate(bombUpPowerupPreftab, new Vector3(x, y, z), Quaternion.identity) as GameObject; 
+					powerup = GameObject.Instantiate(bombUpPowerupPreftab, cellCenter, Quaternion.identity) as GameObject; 
 			else if	(p.getType() == PowerupType.BOMB_DOWN)
-					powerup = GameObject.Instantiate(bombDownPowerupPreftab, new Vector3(x, y, z), Quaternion.identity) as GameObject; 
+					powerup = GameObject.Instantiate(bombDownPowerupPreftab, cellCenter, Quaternion.identity) as GameObject; 
 			else if (p.getType() == PowerupType.FLAME_UP)
-					powerup = GameObject.Instantiate(flameUpPowerupPrefab, new Vector3(x, y, z), Quaternion.identity) as GameObject; 
+					powerup = GameObject.Instantiate(flameUpPowerupPrefab, cellCenter, Quaternion.identity) as GameObject; 
 			else if (p.getType() == PowerupType.FLAME_DOWN)
-					powerup = GameObject.Instantiate(flameDownPowerupPrefab, new Vector3(x, y, z), Quaternion.identity) as GameObject; 
+					powerup = GameObject.Instantiate(flameDownPowerupPrefab, cellCenter, Quaternion.identity) as GameObject; 
 			else if (p.getType() == PowerupType.PLAYER_SPEED_UP)
-					powerup = GameObject.Instantiate(playerSpeedUpPowerupPrefab, new Vector3(x, y, z), Quaternion.identity) as GameObject; 
+					powerup = GameObject.Instantiate(playerSpeedUpPowerupPrefab, cellCenter, Quaternion.identity) as GameObject; 
 			else if (p.getType() == PowerupType.PLAYER_SPEED_DOWN)
-					powerup = GameObject.Instantiate(playerSpeedDownPowerupPrefab, new Vector3(x, y, z), Quaternion.identity) as GameObject; 
+					powerup = GameObject.Instantiate(playerSpeedDownPowerupPrefab, cellCenter, Quaternion.identity) as GameObject; 
 			else if (p.getType() == PowerupType.GOLDEN_FLAME)
-					powerup = GameObject.Instantiate(goldenFlamePowerupPrefab, new Vector3(x, y, z), Quaternion.identity) as GameObject; 
+					powerup = GameObject.Instantiate(goldenFlamePowerupPrefab, cellCenter, Quaternion.identity) as GameObject; 
 
-			Parcel cell = sphereHandler.getGameArea().getCurrentParcel(0, 0);
 			cell.addPowerup(powerup, type);
 			
 
