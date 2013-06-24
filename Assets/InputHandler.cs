@@ -24,14 +24,19 @@ public class InputHandler : MonoBehaviour {
 	
 	private float createTime;
 	
+	private GameObject bomb; 
+	
 	// Use this for initialization
 	void Start () {
+		
 		createTime = Time.time;
 		deadPlayerPrefab = GameObject.Find("DeadPlayer");
 		sphere = playerHandler = GameObject.Find("Sphere");
 		sphereHandler = sphere.GetComponent<SphereBuilder>();
 		playerHandler = GameObject.Find("Player");
 		cameraRotation = camera.transform.rotation;
+		
+		bomb = GameObject.Find("bomb");
 	}
 	
 	// Update is called once per frame
@@ -62,10 +67,14 @@ public class InputHandler : MonoBehaviour {
 			// Leertaste -> Bombe legen
 			if ( Input.GetKeyDown(KeyCode.Space)){
 				if ( !cell.hasBomb()) {
-					if (Player.addBomb()) {
-						GameObject explosion = new GameObject("explosion");
-						explosion.AddComponent<Explosion>();
-					}
+					
+					
+					
+					cell.setGameObjet( GameObject.Instantiate(bomb, Vector3.zero, Quaternion.identity) as GameObject);
+					//if (Player.addBomb()) {
+					//	GameObject explosion = new GameObject("explosion");
+					//	explosion.AddComponent<Explosion>();
+					//}
 				}
 			}
 			if ((Time.time - createTime) > 1.0f) {
@@ -85,7 +94,7 @@ public class InputHandler : MonoBehaviour {
 										Mathf.Sin(movement) * camera.transform.position.x + Mathf.Cos(movement) * camera.transform.position.y,
 										camera.transform.position.z);
 		
-		camera.transform.rotation.SetLookRotation(Vector3.zero);
+		camera.transform.LookAt(sphere.transform);	// TODO: Bessere Kamerabewegung!
 	}
 	
 	void OnParticleCollision(GameObject explosion) {

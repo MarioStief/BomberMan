@@ -1,8 +1,10 @@
 using UnityEngine;
 using System.Collections;
+using AssemblyCSharp;
 
 public class MeshManipulator : MonoBehaviour {
 	
+	Parcel meshParcel;
 	
 	SphereBuilder sphere;		// Der Spherebuilder, um ggf. eigene Ecken nachzufragen
 	Mesh cubeMesh;				// Der eigene Mesh
@@ -17,6 +19,10 @@ public class MeshManipulator : MonoBehaviour {
 		sphere = GameObject.Find("Sphere").GetComponent<SphereBuilder>();
 		cubeMesh = GetComponent<MeshFilter>().mesh;
 		vertexPosition = new Vector3[8];
+	}
+	
+	public void setParcel(Parcel p){
+		meshParcel = p;	
 	}
 	
 	// <summary>
@@ -56,7 +62,6 @@ public class MeshManipulator : MonoBehaviour {
 		vertexPosition[5] = FNW;
 		vertexPosition[6] = FSE;
 		vertexPosition[7] = FSW;
-		
 	}
 	
 	// <summary>
@@ -86,6 +91,8 @@ public class MeshManipulator : MonoBehaviour {
 						sphere.sphereVertices[(int)vertexPosition[6].x][(int)vertexPosition[6].y][(int)vertexPosition[6].z]*height,
 						sphere.sphereVertices[(int)vertexPosition[7].x][(int)vertexPosition[7].y][(int)vertexPosition[7].z]*height
 			);
+		
+		if ( meshParcel != null) meshParcel.setGameObjectPosition(cubeMesh.vertices[4]);
 	}
 	
 	// <summary>

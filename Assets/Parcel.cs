@@ -16,6 +16,7 @@ namespace AssemblyCSharp
 		
 		private bool bombOnCell; // Beschränkung von einer Bombe pro Feld überhaupt notwendig?
 		private bool powerupOnCell;
+		
 		private PowerupType powerupType;
 		private GameObject powerup;
 		
@@ -32,6 +33,13 @@ namespace AssemblyCSharp
 		{
 			this.height = height;
 			this.obj = obj;
+		}
+		
+		public void setGameObjectPosition(Vector3 v){
+		
+			if ( obj == null) return;
+			
+			obj.transform.position = v;
 		}
 		
 		public bool hasGameObject(){

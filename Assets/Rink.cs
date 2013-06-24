@@ -104,6 +104,7 @@ namespace AssemblyCSharp
 		public void updateHeight(){
 			for(int r = 0; r < drawnArea.Length; r++){
 				for(int s = 0; s < drawnArea[r].Length; s++){
+					drawnArea[r][s].setParcel( gameArea[r][s]);
 					drawnArea[r][s].setHeight( gameArea[r][s].getHeight() );
 				}	
 			}	
