@@ -36,6 +36,14 @@ public class NET_Input : MonoBehaviour {
         for (int i = 0; i < keys.Length; ++i)
             input |= CondFlag(i, Input.GetKey(keys[i]));
 
+        // hacked-in gamepad controls
+        float thres = 0.4f;
+        input |= CondFlag(0, -thres > Input.GetAxis("Horizontal"));
+        input |= CondFlag(1, thres < Input.GetAxis("Horizontal"));
+        input |= CondFlag(2, thres < Input.GetAxis("Vertical"));
+        input |= CondFlag(3, -thres > Input.GetAxis("Vertical"));
+        // testing for Fire1 in *_LocalActor.cs
+
         return input;
     }
 
