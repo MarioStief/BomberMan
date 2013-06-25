@@ -6,13 +6,14 @@ public class Menu : MonoBehaviour {
 
 	public Texture bgHelp; // Picture of Help-Menu
 
-	private string screen;
+	private string screen = "start";
 
 	public string serverName = "Galaxy 42";
 	private int port = 25000;
 	public int maxPlayers = 4;
 
 	private string nickname = "Player ";
+	private int playerCounter = 0;
 	private string chat = "";
 	
 	private List<string> playerList = new List<string>();
@@ -197,15 +198,11 @@ public class Menu : MonoBehaviour {
 			PlayerPrefs.SetString("Server Name", serverName);
 			PlayerPrefs.SetString("Player Name", nickname);
 			
+			showGUI = false;
+			
 			// change State
 			MenuState m = MenuState.instance;
-			m.startGame();
-			
-			// and hide myself
-			//showGUI = false;
-			
-			networkView.RPC("startGame", RPCMode.All);
-		    //Application.LoadLevel(1);
+			m.startGameServer();
 		}
 		GUI.EndGroup();
 		
@@ -300,12 +297,15 @@ public class Menu : MonoBehaviour {
 	void backButton() {
 		if (GUI.Button(new Rect(10,Screen.height-40,80,30), "Back")) {
 			if (screen == "server") { // cancel the server
+				scr_netServer.StopServer();
+				
 				Network.Disconnect();
 				MasterServer.UnregisterHost();
 				CancelInvoke("refreshServerName");
-				Debug.Log("UNREGISTER!");
 			} else if (screen == "waitingForStart") {
-				Debug.Log("waitingForStart");
+				scr_netClient.StopClient();
+				
+				networkView.RPC("removePlayerByName", RPCMode.OthersBuffered, nickname);
 				networkView.RPC("incommingChatMessage", RPCMode.Others, nickname + " leaved");
 				Network.Disconnect();
 			}
@@ -351,19 +351,18 @@ public class Menu : MonoBehaviour {
 	}
 
 	[RPC]
-	public void startGame() {
-		//Application.LoadLevel(1);
-		showGUI = false;
-	}
-
-	[RPC]
-	public void newPlayer(string nick, NetworkMessageInfo info) {
+	public int newPlayer(string nick, NetworkMessageInfo info) {
 		playerList.Add(nick);
 		Debug.Log("new player (" + nick + ") connected");
+		return playerList.Count;
 	}
 	[RPC]
 	public void removePlayer(int p) {
 		playerList.RemoveAt(p);
+	}
+	[RPC]
+	public void removePlayerByName(string nick) {
+		playerList.Remove(nick);
 	}
 
 }

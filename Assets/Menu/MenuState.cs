@@ -11,7 +11,7 @@ public class MenuState : GM_State {
 		instance = this;
 	}
 	
-	public void startGame() {
+	public void startGameServer() {
 		nextState = new GM_GS_SvGame();
         ret = UpdateRet.NEXT_STATE;
 	}
@@ -22,5 +22,23 @@ public class MenuState : GM_State {
     
 	public override GM_State NextState() {
         return nextState;
+    }
+	
+	public override void HandleMessage(NET_Message msg) 
+	{
+        if (UpdateRet.NEXT_STATE == ret)
+        {
+            // resend messages to the next state
+            msg.resend = true;
+            return;
+        }
+
+        if (NET_Message.MSG_STARTGAME == msg.GetMsgID())
+        {
+            nextState = new GM_GS_ClGame();
+            ret = UpdateRet.NEXT_STATE;
+			
+			Menu.showGUI = false;
+        }
     }
 }
