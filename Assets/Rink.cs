@@ -30,8 +30,8 @@ namespace AssemblyCSharp
 		public GameObject player;
 		
 		// Temporär, um das Überfluten der Console zu vermeiden
-		private int oldX = 99999;
-		private int oldY = 99999;
+		//private int oldX = 99999;
+		//private int oldY = 99999;
 		
 		// KONSTRUKTOREN
 		
@@ -43,7 +43,8 @@ namespace AssemblyCSharp
 			// Erstelle Pool aus Powerups
 			// Mit dem Parameter lässt sich die Poolgröße variieren
 			PowerupPool.createPool(1);
-
+			
+			Player.setCurrentParcel(gameArea[0][0]);
 		}
 		
 		// <summary>
@@ -88,7 +89,7 @@ namespace AssemblyCSharp
 					drawnArea[i][j].updateCoordinates();	
 				}
 			}
-			highLightRinkPosition(true);
+//			highLightRinkPosition(true);
 		}
 		
 		// <summary>
@@ -117,54 +118,48 @@ namespace AssemblyCSharp
 		// s.o., für einen einzelnen Würfel
 		// </summary>
 		public void updateHeight(int i, int j){
-			
-			//Debug.Log("drawnArea: " +drawnArea + "," + drawnArea[0].Length());
-			//Debug.Log("gameArea: "  +gameArea.Length + "," + gameArea[0].Length());
-			//Debug.Log("Input: "  + i + "," + j);
-
-
-			drawnArea[i][j].setHeight(gameArea[i][/*(((int)rinkPosition.y+j)%(gameArea[0].Length/2))*/j].getHeight());
+			drawnArea[i][j].setHeight(gameArea[i][j].getHeight());
 		}
 		
 		// <summary>
 		// Erhöht die vertikale Lage des Orientierungspunktes rinkPosition
 		// </summary>
-		public void incrPositionHeight(){
-			highLightRinkPosition(false);
-			if (++rinkPosition.x >= gameArea.Length){
-				rinkPosition.x = 0;	
-			}
-		}
+		//public void incrPositionHeight(){
+		//	highLightRinkPosition(false);
+		//	if (++rinkPosition.x >= gameArea.Length){
+		///		rinkPosition.x = 0;	
+		//	}
+		//}
 		
 		// <summary>
 		// Vermindert die vertikale Lage des Orientierungspunktes rinkPosition
 		// </summary>
-		public void decrPositionHeight(){
-			highLightRinkPosition(false);
-			if (--rinkPosition.x < 0){
-				rinkPosition.x = gameArea.Length-1;	
-			}
-		}
+		//public void decrPositionHeight(){
+		//	highLightRinkPosition(false);
+		//	if (--rinkPosition.x < 0){
+		//		rinkPosition.x = gameArea.Length-1;	
+		//	}
+		//}
 		
 		// <summary>
 		// Erhöht die horizontale Lage des Orientierungspunktes rinkPosition
 		// </summary>
-		public void incrPositionWidth(){
-			highLightRinkPosition(false);
-			if (++rinkPosition.y >= gameArea[0].Length){
-				rinkPosition.y = 0;	
-			}
-		}
+		//public void incrPositionWidth(){
+		//	highLightRinkPosition(false);
+		//	if (++rinkPosition.y >= gameArea[0].Length){
+		//		rinkPosition.y = 0;	
+		//	}
+		//}
 		
 		// <summary>
 		// Vermindert die vertikale Lage des Orientierungspunktes rinkPosition
 		// </summary>
-		public void decrPositionWidth(){
-			highLightRinkPosition(false);
-			if (--rinkPosition.y < 0){
-				rinkPosition.y = gameArea[0].Length-1;	
-			}
-		}
+		//public void decrPositionWidth(){
+		//	highLightRinkPosition(false);
+		//	if (--rinkPosition.y < 0){
+		//		rinkPosition.y = gameArea[0].Length-1;	
+		//	}
+		//}
 		
 		// <summary>
 		// DEBUG-Methode;
@@ -175,50 +170,50 @@ namespace AssemblyCSharp
 		// mark == true: Färbt ausgehend von RinkPosition das mittlere Kugelfeld rot und gibt dess Parzellen-Nr. aus.
 		// mark == false: Färbt momentanen Würfel weiß.
 		// </summary>
-		public void highLightRinkPosition(bool mark){
+		//public void highLightRinkPosition(bool mark){
 			
-			if (DEBUG == false) return;
+		//	if (DEBUG == false) return;
 			
-			int x = (int)rinkPosition.x;
-			int y = (int)rinkPosition.y;
+		//	int x = (int)rinkPosition.x;
+		//	int y = (int)rinkPosition.y;
 			
-			if (mark){
-				if (oldX != x || oldY != y) { // Temporär, um das Überfluten der Console zu vermeiden
-					oldX = x;
-					oldY = y;
-					Debug.Log("RedCube-Position: " + ((x+gameArea.Length/2)%(gameArea.Length)) + ", " + ((y+gameArea[0].Length/4)%(gameArea[0].Length/2)));
-				}
-				drawnArea[((x+gameArea.Length/2)%(gameArea.Length))][((y+gameArea[0].Length/4)%(gameArea[0].Length/2))].renderer.material.color = Color.red;	
-			} else{
-				drawnArea[((x+gameArea.Length/2)%(gameArea.Length))][((y+gameArea[0].Length/4)%(gameArea[0].Length/2))].renderer.material.color = Color.white;	
-			}
+		//	if (mark){
+		//		if (oldX != x || oldY != y) { // Temporär, um das Überfluten der Console zu vermeiden
+		//			oldX = x;
+		//			oldY = y;
+		//			Debug.Log("RedCube-Position: " + ((x+gameArea.Length/2)%(gameArea.Length)) + ", " + ((y+gameArea[0].Length/4)%(gameArea[0].Length/2)));
+		//		}
+		//		drawnArea[((x+gameArea.Length/2)%(gameArea.Length))][((y+gameArea[0].Length/4)%(gameArea[0].Length/2))].renderer.material.color = Color.red;	
+		//	} else{
+		//		drawnArea[((x+gameArea.Length/2)%(gameArea.Length))][((y+gameArea[0].Length/4)%(gameArea[0].Length/2))].renderer.material.color = Color.white;	
+		//	}
 		
-		}
+		//}
 		
-		public String printCellCoordinates(Parcel cell) {
-			for (int i = 0; i < gameArea.Length; i++) {
-				for (int j = 0; j < gameArea[i].Length; j++) {
-					if (cell == gameArea[i][j]) {
-						return "[" + i + "," + j + "]";
-					}
-				}
-			}
-			return "";
-		}
+		//public String printCellCoordinates(Parcel cell) {
+		//	for (int i = 0; i < gameArea.Length; i++) {
+		//		for (int j = 0; j < gameArea[i].Length; j++) {
+		//			if (cell == gameArea[i][j]) {
+		//				return "[" + i + "," + j + "]";
+		//			}
+		//		}
+		//	}
+		//	return "";
+		//}
 		
-		public Parcel getCurrentParcel(int xDiff, int yDiff) {
-			int x = (int)rinkPosition.x;
-			int y = (int)rinkPosition.y;
-			int xpos = ((x+gameArea.Length/2)%(gameArea.Length)) + xDiff;
-			int ypos = ((y+gameArea[0].Length/4)%(gameArea[0].Length/2)) + yDiff;
-			if (xDiff != 0 || yDiff != 0) {
-				Debug.Log("CurrCell-Position: " + ((x+gameArea.Length/2)%(gameArea.Length)) + ", " + ((y+gameArea[0].Length/4)%(gameArea[0].Length/2)));
-				Debug.Log("Active Cell: " + xpos + ", " + ypos + " (" + (xDiff < 0 ? "" : "+") + xDiff + ", " + (yDiff < 0 ? "" : "+") + yDiff + ")");
-				drawnArea[xpos][ypos].renderer.material.color = Color.blue;
-			}
-			Parcel currentParcel = gameArea[xpos][ypos];
-			return currentParcel;
-		}
+		//public Parcel getCurrentParcel(int xDiff, int yDiff) {
+		//	int x = (int)rinkPosition.x;
+		//	int y = (int)rinkPosition.y;
+		//	int xpos = ((x+gameArea.Length/2)%(gameArea.Length)) + xDiff;
+		//	int ypos = ((y+gameArea[0].Length/4)%(gameArea[0].Length/2)) + yDiff;
+		//	if (xDiff != 0 || yDiff != 0) {
+		//		Debug.Log("CurrCell-Position: " + ((x+gameArea.Length/2)%(gameArea.Length)) + ", " + ((y+gameArea[0].Length/4)%(gameArea[0].Length/2)));
+		//		Debug.Log("Active Cell: " + xpos + ", " + ypos + " (" + (xDiff < 0 ? "" : "+") + xDiff + ", " + (yDiff < 0 ? "" : "+") + yDiff + ")");
+		//		drawnArea[xpos][ypos].renderer.material.color = Color.blue;
+		//	}
+		//	Parcel currentParcel = gameArea[xpos][ypos];
+		//	return currentParcel;
+		//}
 		
 		// DEBUG
 		public void clearBlue() {

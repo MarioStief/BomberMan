@@ -35,10 +35,11 @@ public class Explosion : MonoBehaviour
 		explotionPrefab.transform.localScale *= SCALE;
 		sphere = GameObject.Find("Sphere");
 		sphereHandler = sphere.GetComponent<SphereBuilder>();
-		cell = sphereHandler.getGameArea().getCurrentParcel(0, 0);
-		xpos = GameObject.Find("Player").GetComponent<InputHandler>().getXPos();
-		ypos = GameObject.Find("Player").GetComponent<InputHandler>().getYPos();
-		zpos = GameObject.Find("Player").GetComponent<InputHandler>().getZPos();
+		// NEWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
+		//cell = sphereHandler.getGameArea().getCurrentParcel(0, 0);
+		//xpos = GameObject.Find("Player").GetComponent<InputHandler>().getXPos();
+		//ypos = GameObject.Find("Player").GetComponent<InputHandler>().getYPos();
+		//zpos = GameObject.Find("Player").GetComponent<InputHandler>().getZPos();
 		
 		//bomb = GameObject.Instantiate(bombPrefab, new Vector3(xpos + 0.5f, 0.3f, zpos + 0.5f), Quaternion.identity) as GameObject; 
 		//bomb = GameObject.Instantiate(bombPrefab, new Vector3(xpos, ypos, zpos), Quaternion.identity) as GameObject; 
@@ -133,10 +134,12 @@ public class Explosion : MonoBehaviour
 			Debug.Log ("#Still in ExplosionFields: " + explosionChain.Count);
 			foreach (ExplosionField explosionField in explosionChain) {
 				Parcel cell = explosionField.getCell();
-				Debug.Log("Cell " + sphereHandler.getGameArea().printCellCoordinates(cell) + " has GameObject: " + (cell.hasGameObject() ? "yes" : "no"));
+				// NEEEEEEEEEEEEEEEEEEEEEEEEEEEWWWWWWWWWW
+				//				Debug.Log("Cell " + sphereHandler.getGameArea().printCellCoordinates(cell) + " has GameObject: " + (cell.hasGameObject() ? "yes" : "no"));
 				if (!cell.hasGameObject()) {
 					int random = new System.Random().Next(0, (int) 100/DROPCHANCE);
-					Debug.Log("Placing Powerup for cell " + sphereHandler.getGameArea().printCellCoordinates(cell) + ": " + (random == 0 ? "yes" : "no"));
+					//	NNNNNNNNNNNNNN EEEEEEEEEEEEEEEEEEEEEEEWWWWWWWWWW
+					//Debug.Log("Placing Powerup for cell " + sphereHandler.getGameArea().printCellCoordinates(cell) + ": " + (random == 0 ? "yes" : "no"));
 					if (random == 0) { // Random().Next(0, 4) € {0, 1, 2, 3}
 						PowerupPool.setPowerup(cell);
 					}
@@ -178,7 +181,8 @@ public class Explosion : MonoBehaviour
 				//explosionChain.Add(new ExplosionField(i,Data.area.getCell((xpos-i), zpos)));
 				int x = (int) transform.position.x;
 				int z = (int) transform.position.z;
-				Parcel cell = sphereHandler.getGameArea().getCurrentParcel(-i, 0);
+				// NEWWWWWWWWWWWWWWWWWWWWWW
+				//Parcel cell = sphereHandler.getGameArea().getCurrentParcel(-i, 0);
 				explosionChain.Add(new ExplosionField(i,cell));
 			}
 
@@ -187,7 +191,7 @@ public class Explosion : MonoBehaviour
 				//explosionChain.Add(new ExplosionField(i,Data.area.getCell((xpos+i), zpos)));
 				int x = (int) transform.position.x;
 				int z = (int) transform.position.z;
-				Parcel cell = sphereHandler.getGameArea().getCurrentParcel(i, 0);
+				//Parcel cell = sphereHandler.getGameArea().getCurrentParcel(i, 0);
 				explosionChain.Add(new ExplosionField(i,cell));
 			}
 
@@ -196,7 +200,7 @@ public class Explosion : MonoBehaviour
 				//explosionChain.Add(new ExplosionField(i,Data.area.getCell(xpos, (zpos-i))));
 				int x = (int) transform.position.x;
 				int z = (int) transform.position.z;
-				Parcel cell = sphereHandler.getGameArea().getCurrentParcel(0, -i);
+				//Parcel cell = sphereHandler.getGameArea().getCurrentParcel(0, -i);
 				explosionChain.Add(new ExplosionField(i,cell));
 			}
 
@@ -205,7 +209,7 @@ public class Explosion : MonoBehaviour
 				//explosionChain.Add(new ExplosionField(i,Data.area.getCell(xpos, (zpos+i))));
 				int x = (int) transform.position.x;
 				int z = (int) transform.position.z;
-				Parcel cell = sphereHandler.getGameArea().getCurrentParcel(0, i);
+				//Parcel cell = sphereHandler.getGameArea().getCurrentParcel(0, i);
 				explosionChain.Add(new ExplosionField(i,cell));
 			}
 		}

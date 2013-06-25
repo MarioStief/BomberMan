@@ -5,6 +5,11 @@ namespace AssemblyCSharp
 {
 	public static class Player
 	{
+		private static Parcel currentCell;
+		
+		private static float verticalHelper		= 0.0f;
+		private static float horizontalHelper 	= 0.0f;
+		
 		private const float MAXSPEED = 4.0f;
 		private const int MAXFLAMEPOWER = 10;
 		private const int MAXHP = 100;
@@ -12,7 +17,7 @@ namespace AssemblyCSharp
 		private static int bombs = 1;
 		private static int bombsActive = 0;
 		private static int flamePower = 1;
-		private static float speed = 3;
+		private static float speed = 0.25f;
 		private static int hp = MAXHP;
 		
 		private static bool dead = false;
@@ -91,6 +96,21 @@ namespace AssemblyCSharp
 
 		public static int getMaxHP() {
 			return MAXHP;
+		}
+		
+		public static void setCurrentParcel(Parcel parcel){
+			
+			if ( currentCell != null){
+				currentCell.setColor(Color.white);	
+			}
+			
+			currentCell = parcel;	
+			
+			currentCell.setColor(Color.red);
+		}
+		
+		public static Parcel getCurrentParcel(){
+			return currentCell;	
 		}
 	}
 }

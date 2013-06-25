@@ -76,7 +76,8 @@ namespace AssemblyCSharp
 		
 		public static void setPowerup(Parcel cell)
 		{
-			Vector3 cellCenter = cell.getCenterPoint();
+			// NNNNNNNNNNNNNNNEEEEEEEEEEEEEEEEEWWWWWWWWWWWWWWWW
+			Vector3 cellCenter = Vector3.zero; //cell.getCenterPoint();
 			//Vector3 cellNormal = cell.getNormal(); // wird benötigt, um das Powerup richtig zu drehen
 			
 			Powerup p = pool[0];
@@ -137,7 +138,7 @@ namespace AssemblyCSharp
 			    builder.Append(newString).Append(" | ");
 			}
 			string result = "New Pool: " + builder.ToString();
-			Debug.Log(result);
+			//Debug.Log(result);
 		}
 		
 		public static void setDestroyable(bool d) {

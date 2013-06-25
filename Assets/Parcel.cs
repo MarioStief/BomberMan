@@ -9,8 +9,11 @@ namespace AssemblyCSharp
 	// </summary>
 	public class Parcel
 	{
+		Vector3 center;
 		
 		float height;		// value in percent, meaning: 1.1f = 110% of 
+		
+		Color color = Color.white;		// Parcel-Farbe
 		
 		GameObject obj;		// Object auf der Parzelle, das gezeichnet werden soll.
 		
@@ -74,6 +77,15 @@ namespace AssemblyCSharp
 			return height;	
 		}
 		
+		public Vector3 getCenter(){
+			
+			return center;
+		}
+		
+		public void setCenter(Vector3 v){
+			center = v;	
+		}
+		
 		public void addPowerup(GameObject powerup, PowerupType powerupType) {
 			this.obj = powerup;
 			this.powerupType = powerupType;
@@ -99,9 +111,15 @@ namespace AssemblyCSharp
 			return powerupOnCell;
 		}
 		
-		public Vector3 getCenterPoint() {
-			return new Vector3(0, 0, 0); // Mittelpunkt der Zelle implementieren
+		public void setColor(Color col){
+		
+			color = col;
 		}
+		
+		public Color getColor(){
+			return color;	
+		}
+		
 		
 		/*
 		public Vector3 getNormal() {

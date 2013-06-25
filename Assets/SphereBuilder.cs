@@ -32,6 +32,7 @@ public class SphereBuilder : MonoBehaviour {
 		adjEast = 0;
 		
 		gameArea = new Rink(n_B, n_L, new Vector2(0,0));
+		GameObject.Find("Player").GetComponent<InputHandler>().rink = gameArea;
 		
 		// Berechne Punkte und erzeuge Kugel 
 		tesselateSphere();	
@@ -78,6 +79,9 @@ public class SphereBuilder : MonoBehaviour {
 		for( int j = 0; j < n_L; j++){		// Schleife über alle  Längengeraden
 			
 			v = (j*Mathf.PI/(n_L-1)) - Mathf.PI/2;
+			
+			if ( v == -Mathf.PI/2) v += 0.001f;
+			if ( v == Mathf.PI/2) v -= 0.001f;
 			
 			for( int i = 0; i < n_B; i++){	// Schleife über alle Breitengeraden
 			
@@ -211,35 +215,15 @@ public class SphereBuilder : MonoBehaviour {
 	//
 	// Bestimme Bewegungsweite und lasse die Kugelpunkte entsprechend "rotieren" ( ist eher ne Verschiebung...)
 	// Wenn ein Breiten-, oder Längengerad überschritten wird: 
-	// - Schneide Würfel an einer Seite ab und hänge sie vorn wieder an.
 	// - Schlage in Rink.cs nach, welche Höhe die Würfel haben müssen ( da sie ne neue Parzelle darstellen könnten)
 	// </summary>
 	public void move(float moveDirection){
 		
-		// Bestimme Bewegungsrichtungen und setze ggf. Startwerte für Winkelverschiebung
-		
-		//if ( vDirection != (int) Mathf.Sign(moveDirection.x) && (int) Mathf.Sign(moveDirection.x) != 0){
-		//	vChange = true;	
-		//}
-		
+		// Bestimme Bewegungsrichtungen und
 		vDirection = (int) Mathf.Sign(moveDirection);
-		if ( vDirection == 1 && offset == 0.0f){
-			offset = -Mathf.PI/(2*(n_L-1));
-		} else if ( vDirection == -1 && offset == 0.0f){
-			offset = Mathf.PI/(2*(n_L-1));	
-		}
-		
-		//if ( hDirection != (int) Mathf.Sign(moveDirection.y)) hOffset = 0;
-		/*hDirection = (int) Mathf.Sign(moveDirection.y);
-		if ( hDirection == 1 && hOffset == 0.0f){
-			hOffset = -(1.0f/n_B) * Mathf.PI;
-		} else if ( hDirection == -1 && hOffset == 0.0f){
-			hOffset = (1.0f/n_B) * Mathf.PI;	
-		}//*/
-		
 		
 		// Rotiere den Würfel 	
-		deltaOffset = speed * moveDirection * Time.deltaTime;
+		deltaOffset = moveDirection;
 		offset = offset + deltaOffset;
 		
 		//hDeltaOffset = speed * (-1)*moveDirection.y * Time.deltaTime;
@@ -261,19 +245,6 @@ public class SphereBuilder : MonoBehaviour {
 				churnOutCubesVertical();
 			}
 		}
-		
-		/*if ( hDirection == 0) return;
-		if ( hDirection == 1){
-			if (	Mathf.Abs(hOffset) >= (2.0f/n_B) * Mathf.PI ){
-				hOffset += (2.0f/n_B) * Mathf.PI ;		
-				churnOutCubesHorizontal();
-			}
-		} else{
-			if (	Mathf.Abs(hOffset) >= (2.0f/n_B) * Mathf.PI ){
-				hOffset -= (2.0f/n_B) * Mathf.PI ;		
-				churnOutCubesHorizontal();
-			}
-		}//*/
 	}
 	
 	// <summary>
@@ -284,13 +255,13 @@ public class SphereBuilder : MonoBehaviour {
 				
 		
 		if ( vDirection == -1){
-			gameArea.decrPositionHeight();
+			//gameArea.decrPositionHeight();
 		
 			if (vChange){
 				//adjSouthPole = (adjSouthPole + n_L-2);
 				vChange = false;
 			}
-			Debug.Log("harra");
+			//Debug.Log("harra");
 			// Verschiebe Würfel, die am Nordpol anliegen zum Südpol!
 			for( int i = 0; i <  n_B; i++){
 
@@ -307,7 +278,7 @@ public class SphereBuilder : MonoBehaviour {
 			
 			//Debug.Log("lololol");
 			
-			gameArea.incrPositionHeight();
+			//gameArea.incrPositionHeight();
 			// Verschiebe Würfel, die am Nordpol anliegen zum Südpol!
 			for( int i = 0; i <  n_B; i++){
 				

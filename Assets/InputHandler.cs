@@ -9,18 +9,33 @@ using AssemblyCSharp;
 
 public class InputHandler : MonoBehaviour {
 	
+
 	public GameObject sphere;
 	private GameObject playerHandler;
 	private SphereBuilder sphereHandler;
 	
+	public Rink rink;
+	
+	private int n_L;				// Anzahl Längen und Breitengeraden
+	private int n_B;
+	
+	private int lpos;				// Position der aktuellen Parzelle rink.gameArea ist [lpos][bpos]
+	private int bpos;
+	
+	private float verticalAngle;	
+	private float horizontalAngle;
+	
+	private float verticalHelper;
+	private float horizontalHelper;
+	
+	private int vDirection;			// Bewegungsrichtung
+	private int hDirection;
+	
 	public GameObject camera;
 	private Quaternion cameraRotation;
 	
-	private Parcel cell;
+	private Parcel currCell;
 	private static GameObject deadPlayerPrefab;
-	private float xpos;
-	private float ypos;
-	private float zpos;
 	
 	private float createTime;
 	
@@ -30,10 +45,31 @@ public class InputHandler : MonoBehaviour {
 	void Start () {
 		
 		createTime = Time.time;
+		
 		deadPlayerPrefab = GameObject.Find("DeadPlayer");
+		
 		sphere = playerHandler = GameObject.Find("Sphere");
 		sphereHandler = sphere.GetComponent<SphereBuilder>();
+		
 		playerHandler = GameObject.Find("Player");
+		
+		n_L = sphereHandler.n_L;
+		n_B = sphereHandler.n_B;
+		
+		lpos = n_L/2-1;
+		bpos = n_B/4;
+		
+		Player.setCurrentParcel( rink.gameArea[lpos][bpos]);
+		
+		vDirection = 0;
+		hDirection = 0;
+		
+		verticalAngle = 0.0f;
+		horizontalAngle = 0.0f;
+		
+		verticalHelper = 0.0f;
+		horizontalHelper = 0.0f;
+		
 		cameraRotation = camera.transform.rotation;
 		
 		bomb = GameObject.Find("bomb");
@@ -44,42 +80,252 @@ public class InputHandler : MonoBehaviour {
 	
 		if (!Player.isDead()) {
 			
-			xpos = transform.position.x;
-			ypos = transform.position.y;
-			zpos = transform.position.z;
+			// -----------------------------------------------------------
+			// Bewegung und Bestimmung einer möglichen neuen currentParcel
+			// -----------------------------------------------------------
+			moveCharacter();
+			currCell = rink.gameArea[lpos][bpos];
 			
-			// Spieler befindet sich in Zelle:
-			cell = sphereHandler.getGameArea().getCurrentParcel(0, 0);
-			
-			// Lese Bewegungsrichtung aus und lasse die Kugel entsprechend bewegen.
-			float verticalMovement = Input.GetAxis("Vertical") * Player.getSpeed();
-			sphereHandler.move(verticalMovement);
-			
-			float horizontalMovement = Input.GetAxis("Horizontal") * Player.getSpeed();
-			if ( horizontalMovement != 0)
-				moveAlongEquator( horizontalMovement/(-2)*Time.deltaTime);
 			
 			// Falls die Zelle ein Powerup enthält -> aufsammeln
-			if (cell.hasPowerup()) {
-				Player.powerupCollected(cell.destroyPowerup());
-			}
+			//if (cell.hasPowerup()) {
+			//	Player.powerupCollected(cell.destroyPowerup());
+			//}
+			//>>>>>>>>>>>>>>>>>>>>>>>>>> Collision-Trigger zum Aufnehmen => Code wandert in Upgrade-Type
 			
 			// Leertaste -> Bombe legen
 			if ( Input.GetKeyDown(KeyCode.Space)){
-				if ( !cell.hasBomb()) {
+				if ( !currCell.hasBomb()) {
 					
-					cell.setGameObject( GameObject.Instantiate(bomb, Vector3.zero, Quaternion.identity) as GameObject);
-					if (Player.addBomb()) {
-						GameObject explosion = new GameObject("explosion");
-						explosion.AddComponent<Explosion>();
-					}
+					currCell.setGameObject( GameObject.Instantiate(bomb, rink.drawnArea[lpos][bpos].cubeMesh.vertices[4], rink.drawnArea[lpos][bpos].transform.rotation) as GameObject);
+					currCell.setBomb(true);
+					//if (Player.addBomb()) {
+					//	GameObject explosion = new GameObject("explosion");
+					//	explosion.AddComponent<Explosion>();
+					//}
 				}
 			}
+			
 			if ((Time.time - createTime) > 1.0f) {
 				createTime = Time.time;
 				Player.increaseHP();
 			}
 		}
+	}
+	
+	private void moveCharacter(){
+		
+		float verticalMovement = Input.GetAxis("Vertical");
+		float m = Player.getSpeed() * verticalMovement * Time.deltaTime;
+		
+		if ( verticalMovement != 0){
+			sphereHandler.move(m);
+			verticalAngle += m;
+		}
+		
+		if ( vDirection == 0) {
+			
+			vDirection = (int)Mathf.Sign(m);
+			
+			if ( vDirection == 1){
+				verticalHelper -= 	Mathf.PI/(2*(n_L-1));
+			} else{
+				verticalHelper += 	Mathf.PI/(2*(n_L-1));
+			}
+		}
+		
+		if ( verticalMovement != 0){
+			determineVerticalParcelPosition( verticalMovement, m);
+		}
+		
+		float horizontalMovement = Input.GetAxis("Horizontal") * Player.getSpeed();
+		if ( horizontalMovement != 0){
+			m = horizontalMovement/((-2)*Time.deltaTime)*Player.getSpeed()/20;
+			moveAlongEquator( m);
+			horizontalAngle += m;
+		}
+		
+		if ( hDirection == 0) {
+			
+			hDirection = (int)Mathf.Sign(m);
+			
+			if ( hDirection == 1){
+				horizontalHelper += 	Mathf.PI/n_B;
+			} else{
+				horizontalHelper -= 	Mathf.PI/n_B;
+			}
+		}
+		
+		if ( horizontalMovement != 0){
+			determineHorizontalParcelPosition( horizontalMovement, m);
+			rink.renderAll();	// 4Debug
+		}	
+	}
+	
+	// <summary>
+	// Bestimme, ob die Spielfigur einen neuen Würfel berührt. Wenn dem so ist, ändere currParcel auf
+	// die Position des neuen Würfels.
+	// </summary>
+	private void determineVerticalParcelPosition(float verticalMovement, float m){
+		if ( vDirection == 1 && Mathf.Sign(verticalMovement) == 1){	// Bewegungsrichtung blieb gleich				
+				//Debug.Log("#1");
+
+				if (Mathf.Abs( verticalAngle - verticalHelper) > Mathf.PI/(n_L-1)){
+					
+					Parcel newCell;
+					
+						
+					if ( lpos < n_L-2){
+						newCell = rink.gameArea[++lpos][bpos];
+					} else{
+						lpos = 0;
+						newCell = rink.gameArea[lpos][bpos];
+					}
+					verticalHelper += Mathf.PI/(n_L-1);
+					Player.setCurrentParcel(newCell);	
+				}
+			} else if (vDirection == 1 && Mathf.Sign(verticalMovement) == -1){	// Bewegungsrichtung ändert sich
+				
+				//Debug.Log("#2");
+
+				vDirection = -1;
+				verticalHelper +=	Mathf.PI/((n_L-1));
+					
+				if (Mathf.Abs( verticalAngle - verticalHelper) > Mathf.PI/(n_L-1)){
+					
+					Parcel newCell;
+					
+						
+					if ( lpos > 0){
+						newCell = rink.gameArea[--lpos][bpos];
+					} else{
+						lpos = n_L-2;
+						newCell = rink.gameArea[lpos][bpos];
+					}
+					verticalHelper -= Mathf.PI/(n_L-1);
+					Player.setCurrentParcel(newCell);	
+				}
+			} else if ( vDirection == -1 && Mathf.Sign(verticalMovement) == -1){	// Bewegungsrichtung blieb gleich
+				
+				//Debug.Log("#3");
+
+				if (Mathf.Abs( verticalAngle - verticalHelper) > Mathf.PI/(n_L-1)){
+					
+					Parcel newCell;
+					
+						
+					if ( lpos > 0){
+						newCell = rink.gameArea[--lpos][bpos];
+					} else{
+						lpos = n_L -2;
+						newCell = rink.gameArea[lpos][bpos];
+					}
+					verticalHelper -= Mathf.PI/(n_L-1);
+					Player.setCurrentParcel(newCell);	
+				}
+			} else if (vDirection == -1 && Mathf.Sign(verticalMovement) == 1){	// Bewegungsrichtung ändert sich
+				
+				//Debug.Log("#4");
+
+				vDirection = 1;
+				verticalHelper -=	Mathf.PI/((n_L-1));
+				
+				if (Mathf.Abs( verticalAngle - verticalHelper) > Mathf.PI/(n_L-1)){
+					
+					Parcel newCell;
+					
+						
+					if ( lpos < n_L-2){
+						newCell = rink.gameArea[++lpos][bpos];
+					} else{
+						lpos = 0;
+						newCell = rink.gameArea[lpos][bpos];
+					}
+					verticalHelper += Mathf.PI/(n_L-1);
+					Player.setCurrentParcel(newCell);	
+				}
+			} 
+	}
+	
+	private void determineHorizontalParcelPosition(float horizontalMovement, float m){
+		if ( hDirection == -1 && Mathf.Sign(horizontalMovement) == -1){	// Bewegungsrichtung blieb gleich				
+				//Debug.Log("#H1");
+
+				if (Mathf.Abs( horizontalAngle - horizontalHelper) > 2*Mathf.PI/n_B){
+					
+					Parcel newCell;
+					
+						
+					if ( bpos < n_B-1){
+						newCell = rink.gameArea[lpos][++bpos];
+					} else{
+						bpos = 0;
+						newCell = rink.gameArea[lpos][bpos];
+					}
+					horizontalHelper += 2*Mathf.PI/n_B;
+					Player.setCurrentParcel(newCell);	
+				}
+			} else if (hDirection == -1 && Mathf.Sign(horizontalMovement) == 1){	// Bewegungsrichtung ändert sich
+				
+				//Debug.Log("#H2");
+
+				hDirection = 1;
+				horizontalHelper +=	Mathf.PI/((n_L-1));
+					
+				if (Mathf.Abs( horizontalAngle - horizontalHelper) > 2*Mathf.PI/n_B){
+				
+					Parcel newCell;
+					
+						
+					if ( bpos > 0){
+						newCell = rink.gameArea[lpos][--bpos];
+					} else{
+						bpos = n_B;
+						newCell = rink.gameArea[lpos][--bpos];
+					}
+					horizontalHelper -= 2*Mathf.PI/n_B;
+					Player.setCurrentParcel(newCell);	
+				}
+			} else if ( hDirection == 1 && Mathf.Sign(horizontalMovement) == 1){	// Bewegungsrichtung blieb gleich
+				
+				//Debug.Log("#H3");
+
+				if (Mathf.Abs( horizontalAngle - horizontalHelper) > 2*Mathf.PI/n_B){
+					Debug.Log("Treffer");
+					Parcel newCell;
+					
+						
+					if ( bpos > 0){
+						newCell = rink.gameArea[lpos][--bpos];
+					} else{
+						bpos = n_B;
+						newCell = rink.gameArea[lpos][--bpos];
+					}
+					horizontalHelper -= 2*Mathf.PI/n_B;
+					Player.setCurrentParcel(newCell);	
+				}
+			} else if (hDirection == 1 && Mathf.Sign(horizontalMovement) == -1){	// Bewegungsrichtung ändert sich
+				
+				//Debug.Log("#H4");
+
+				hDirection = -1;
+				horizontalHelper -=	Mathf.PI/((n_L-1));
+				
+				if (Mathf.Abs( horizontalAngle - horizontalHelper) > 2*Mathf.PI/n_B){
+					
+					Parcel newCell;
+					
+						
+					if ( bpos < n_B-1){
+						newCell = rink.gameArea[lpos][++bpos];
+					} else{
+						bpos = 0;
+						newCell = rink.gameArea[lpos][bpos];
+					}
+					horizontalHelper += 2*Mathf.PI/n_B;
+					Player.setCurrentParcel(newCell);	
+				}
+			} 
 	}
 	
 	private void moveAlongEquator(float movement){
@@ -92,7 +338,7 @@ public class InputHandler : MonoBehaviour {
 										Mathf.Sin(movement) * camera.transform.position.x + Mathf.Cos(movement) * camera.transform.position.y,
 										camera.transform.position.z);
 		
-		camera.transform.LookAt(sphere.transform);	// TODO: Bessere Kamerabewegung!
+		camera.transform.LookAt(sphere.transform);
 	}
 	
 	void OnParticleCollision(GameObject explosion) {
@@ -104,15 +350,15 @@ public class InputHandler : MonoBehaviour {
 		}
 	}
 	
-	public float getXPos() {
-		return xpos;
-	}
+	//public float getXPos() {
+//		return xpos;
+	//}
 
-	public float getYPos() {
-		return ypos;
-	}
+	//public float getYPos() {
+	//	return ypos;
+	//}
 
-	public float getZPos() {
-		return zpos;
-	}
+	//public float getZPos() {
+	//	return zpos;
+	//}
 }
