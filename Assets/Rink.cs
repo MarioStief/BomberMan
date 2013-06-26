@@ -67,6 +67,7 @@ namespace AssemblyCSharp
 					} else{
 						gameArea[i][j] = new Parcel(1.0f);	// Bodenfläche
 					}
+					gameArea[i][j].setIdentity(i, j);
 				}
 			}
 			
@@ -227,6 +228,10 @@ namespace AssemblyCSharp
 		
 		public GameObject[] getPlayers() {
 			return players;
+		}
+		
+		public Parcel[][] getGameArea() {
+			return gameArea;
 		}
 	}
 }

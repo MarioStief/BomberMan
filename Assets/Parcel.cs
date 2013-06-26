@@ -11,7 +11,9 @@ namespace AssemblyCSharp
 	{
 		Vector3 center;
 		
-		float height;		// value in percent, meaning: 1.1f = 110% of 
+		float height;		// value in percent, meaning: 1.1f = 110% of
+		private int lpos;				// Position der aktuellen Parzelle rink.gameArea ist [lpos][bpos]
+		private int bpos;
 		
 		Color color = Color.white;		// Parcel-Farbe
 		
@@ -35,6 +37,11 @@ namespace AssemblyCSharp
 		{
 			this.height = height;
 			this.obj = obj;
+		}
+		
+		public void setIdentity(int lpos, int bpos) {
+			this.lpos = lpos;
+			this.bpos = bpos;
 		}
 		
 		public void setGameObjectPosition(Vector3 v){
@@ -120,6 +127,45 @@ namespace AssemblyCSharp
 			return color;	
 		}
 		
+		public String getCoordinates() {
+			return "[" + lpos + "," + bpos + "]";
+		}
+		
+		public int getLpos() {
+			return lpos;
+		}
+
+		public int getBpos() {
+			return bpos;
+		}
+
+		public Parcel getSurroundingCell(int lpos, int bpos) {
+			GameObject sphere = sphere = GameObject.Find("Sphere");
+			SphereBuilder sphereHandler = sphere.GetComponent<SphereBuilder>();
+			Rink rink = sphereHandler.getGameArea();
+			Parcel[][] cell = rink.getGameArea();
+			
+			lpos += this.lpos;
+			bpos += this.bpos;
+			
+			if (lpos >= cell.Length)
+				lpos %= cell.Length;
+			if (lpos < 0)
+				lpos += cell.Length;
+			if (bpos >= cell[lpos].Length)
+				bpos %= cell[lpos].Length;
+			if (bpos < 0)
+				bpos += cell[lpos].Length;
+			
+			return cell[lpos][bpos];
+		}
+
+		public void blueColor() {
+			GameObject sphere = GameObject.Find("Sphere");
+			SphereBuilder sphereHandler = sphere.GetComponent<SphereBuilder>();
+			Rink rink = sphereHandler.getGameArea();
+			rink.drawnArea[lpos][bpos].renderer.material.color = Color.blue;
+		}
 		
 		/*
 		public Vector3 getNormal() {

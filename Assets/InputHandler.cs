@@ -39,19 +39,18 @@ public class InputHandler : MonoBehaviour {
 	
 	private float createTime;
 	
-	private GameObject bomb; 
+	void Awake() {
+		deadPlayerPrefab = GameObject.Find("DeadPlayer");
+		sphere = playerHandler = GameObject.Find("Sphere");
+		sphereHandler = sphere.GetComponent<SphereBuilder>();
+		playerHandler = GameObject.Find("Player");
+	}
 	
 	// Use this for initialization
 	void Start () {
 		
 		createTime = Time.time;
 		
-		deadPlayerPrefab = GameObject.Find("DeadPlayer");
-		
-		sphere = playerHandler = GameObject.Find("Sphere");
-		sphereHandler = sphere.GetComponent<SphereBuilder>();
-		
-		playerHandler = GameObject.Find("Player");
 		
 		n_L = sphereHandler.n_L;
 		n_B = sphereHandler.n_B;
@@ -71,8 +70,6 @@ public class InputHandler : MonoBehaviour {
 		horizontalHelper = 0.0f;
 		
 		cameraRotation = camera.transform.rotation;
-		
-		bomb = GameObject.Find("bomb");
 	}
 	
 	// Update is called once per frame
@@ -88,23 +85,18 @@ public class InputHandler : MonoBehaviour {
 			
 			
 			// Falls die Zelle ein Powerup enthält -> aufsammeln
-			//if (cell.hasPowerup()) {
-			//	Player.powerupCollected(cell.destroyPowerup());
-			//}
+			if (currCell.hasPowerup()) {
+				Player.powerupCollected(currCell.destroyPowerup());
+			}
 			//>>>>>>>>>>>>>>>>>>>>>>>>>> Collision-Trigger zum Aufnehmen => Code wandert in Upgrade-Type
 			
 			// Leertaste -> Bombe legen
 			if ( Input.GetKeyDown(KeyCode.Space)){
 				if ( !currCell.hasBomb()) {
 					
-					Vector3 position = rink.drawnArea[lpos][bpos].getCenter();
-					currCell.setGameObject( GameObject.Instantiate(bomb, position, Quaternion.identity) as GameObject);
-					currCell.setBomb(true);
-							
-					//if (Player.addBomb()) {
-					//	GameObject explosion = new GameObject("explosion");
-					//	explosion.AddComponent<Explosion>();
-					//}
+					if (Player.addBomb()) {
+						Explosion explosion = Explosion.createExplosionOnCell(currCell);
+					}
 				}
 			}
 			

@@ -6,6 +6,8 @@ namespace AssemblyCSharp
 	public static class Player
 	{
 		private static Parcel currentCell;
+		private static GameObject sphere; // TEMP
+		public static SphereBuilder sphereHandler;
 		
 		private static float verticalHelper		= 0.0f;
 		private static float horizontalHelper 	= 0.0f;
@@ -21,6 +23,10 @@ namespace AssemblyCSharp
 		private static int hp = MAXHP;
 		
 		private static bool dead = false;
+		
+		static void Awake() {
+			sphereHandler = sphere.GetComponent<SphereBuilder>();
+		}
 		
 		public static void powerupCollected(PowerupType type)
 		{
