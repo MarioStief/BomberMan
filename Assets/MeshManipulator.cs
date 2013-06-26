@@ -9,8 +9,8 @@ public class MeshManipulator : MonoBehaviour {
 	SphereBuilder sphere;		// Der Spherebuilder, um ggf. eigene Ecken nachzufragen
 	public Mesh cubeMesh;				// Der eigene Mesh
 	
-	Vector3 []vertexPosition;	// Position der eigenen Punkte in 3-dimensionalem Array im Spherebuilder.
-		
+	public Vector3 []vertexPosition;	// Position der eigenen Punkte in 3-dimensionalem Array im Spherebuilder.
+	
 	float height;
 	
 	// Use this for initialization
@@ -23,7 +23,11 @@ public class MeshManipulator : MonoBehaviour {
 	
 	public void setParcel(Parcel p){
 		meshParcel = p;	
-		meshParcel.setCenter((height*cubeMesh.vertices[4] + 0.5f*height*(cubeMesh.vertices[9]-cubeMesh.vertices[4]))*(1.01f));
+		//meshParcel.setCenter((height*cubeMesh.vertices[4] + 0.5f*height*(cubeMesh.vertices[9]-cubeMesh.vertices[4]))*(1.01f));
+	}
+	
+	public Vector3 getCenter(){
+		return (height*cubeMesh.vertices[4] + 0.5f*height*(cubeMesh.vertices[9]-cubeMesh.vertices[4]))*(1.01f);
 	}
 	
 	// <summary>
@@ -93,9 +97,9 @@ public class MeshManipulator : MonoBehaviour {
 						sphere.sphereVertices[(int)vertexPosition[7].x][(int)vertexPosition[7].y][(int)vertexPosition[7].z]*height
 			);
 		
-		if ( meshParcel != null) meshParcel.setCenter((height*cubeMesh.vertices[4] + 0.5f*height*(cubeMesh.vertices[9]-cubeMesh.vertices[4]))*(1.01f));
+		//if ( meshParcel != null) meshParcel.setCenter((height*cubeMesh.vertices[4] + 0.5f*height*(cubeMesh.vertices[9]-cubeMesh.vertices[4]))*(1.01f));
 
-		if ( meshParcel != null) meshParcel.setGameObjectPosition((height*cubeMesh.vertices[4] + 0.5f*height*(cubeMesh.vertices[9]-cubeMesh.vertices[4]))*(1.01f));
+		if ( meshParcel != null) meshParcel.setGameObjectPosition(getCenter());
 		if ( meshParcel != null) renderer.material.color = meshParcel.getColor();
 	}
 	

@@ -80,9 +80,6 @@ public class SphereBuilder : MonoBehaviour {
 			
 			v = (j*Mathf.PI/(n_L-1)) - Mathf.PI/2;
 			
-			if ( v == -Mathf.PI/2) v += 0.001f;
-			if ( v == Mathf.PI/2) v -= 0.001f;
-			
 			for( int i = 0; i < n_B; i++){	// Schleife über alle Breitengeraden
 			
 				if ( n_B != 0){				// durch Null teilen ist böse...
@@ -133,29 +130,37 @@ public class SphereBuilder : MonoBehaviour {
 		// All Cubes in between
 		for( int l = 0; l < n_L-1; l++){
 
-			spCubes[l*n_B] = createSphereCube( Vector3.zero);
+			spCubes[l*n_B] = createSphereCube();
 			spCubes[l*n_B].name = "cube " + l + "," +0;
 			gameArea.drawnArea[l][0] = addMeshManipulator(spCubes[l*n_B],
 															new Vector3(1,l,1), new Vector3(1,l,0), new Vector3(0,l,1), new Vector3(0,l,0),
-															new Vector3(1,l+1,1), new Vector3(1,l+1,0), new Vector3(0,l+1,1), new Vector3(0,l+1,0));
-			
+															new Vector3(1,(l+1)%(n_L-1),1), new Vector3(1,(l+1)%(n_L-1),0), new Vector3(0,(l+1)%(n_L-1),1), new Vector3(0,(l+1)%(n_L-1),0));
 			for( int i = 1; i < n_B; i++){
 	
-				spCubes[l*n_B+i] = createSphereCube( new Vector3(0.0f,0.0f,360.0f/n_B*i));
-				spCubes[l*n_B+i].name = "cube " + l + "," +i;
-				gameArea.drawnArea[l][i] = addMeshManipulator(spCubes[l*n_B+i],
-																	new Vector3(1,l,1), new Vector3(1,l,0), new Vector3(0,l,1), new Vector3(0,l,0),
-																	new Vector3(1,l+1,1), new Vector3(1,l+1,0), new Vector3(0,l+1,1), new Vector3(0,l+1,0));
+				if ( i == n_B-1){
+					spCubes[l*n_B+i] = createSphereCube();
+					spCubes[l*n_B+i].name = "cube " + l + "," +i;
+					gameArea.drawnArea[l][i] = addMeshManipulator(spCubes[l*n_B+i],
+																		new Vector3(1,l,0), new Vector3(1,l,i), new Vector3(0,l,0), new Vector3(0,l,i),
+																		new Vector3(1,(l+1)%(n_L-1),0), new Vector3(1,(l+1)%(n_L-1),i), new Vector3(0,(l+1)%(n_L-1),0), new Vector3(0,(l+1)%(n_L-1),i));
+				}else{
+					spCubes[l*n_B+i] = createSphereCube();
+					spCubes[l*n_B+i].name = "cube " + l + "," +i;
+					gameArea.drawnArea[l][i] = addMeshManipulator(spCubes[l*n_B+i],
+																		new Vector3(1,l,i+1), new Vector3(1,l,i), new Vector3(0,l,i+1), new Vector3(0,l,i),
+																		new Vector3(1,(l+1)%(n_L-1),i+1), new Vector3(1,(l+1)%(n_L-1),i), new Vector3(0,(l+1)%(n_L-1),i+1), new Vector3(0,(l+1)%(n_L-1),i));
+				}
 			}
 		}	
+		////
 	}
 	
 	// <summary>
 	// Methode zum erzeugen eines Würfels mit Rotation quaternionEuler
 	// </summary>
-	public GameObject createSphereCube(Vector3 quaternionEuler){
+	public GameObject createSphereCube(){
 		
-		GameObject c = GameObject.Instantiate(sphereCube, new Vector3(0,0,0), Quaternion.Euler(quaternionEuler)) as GameObject;
+		GameObject c = GameObject.Instantiate(sphereCube, new Vector3(0,0,0), Quaternion.identity) as GameObject;
 		c.renderer.receiveShadows = false;
 		c.renderer.castShadows = false;
 		
@@ -266,7 +271,7 @@ public class SphereBuilder : MonoBehaviour {
 			for( int i = 0; i <  n_B; i++){
 
 				verticalOffset[adjSouthPole] [ i] =  vertexAngles[0][adjSouthPole] [ i]  + Mathf.PI/2;//vertexAngles[0][adjSouthPole][ i] - Mathf.PI/2;	
-				
+		
 				gameArea.updateHeight(adjSouthPole , i);
 			}
 			
@@ -285,6 +290,7 @@ public class SphereBuilder : MonoBehaviour {
 				//Debug.Log((n_L-1 + adjSouthPole+1)%(n_L-1));
 				
 				verticalOffset[(n_L-1 + adjSouthPole+1)%(n_L-1)] [ i] =  verticalOffset[(n_L-1 + adjSouthPole+1)%(n_L-1)] [ i]  - Mathf.PI;// + Mathf.PI/2;
+			
 				gameArea.updateHeight((n_L-1 + adjSouthPole+1)%(n_L-1), i);
 			}
 			
@@ -321,9 +327,6 @@ public class SphereBuilder : MonoBehaviour {
 				
 				verticalOffset[j][i] = ((verticalOffset[j][i]  + deltaOffset) );
 				vr = v - verticalOffset[j][i];
-				
-				//horizontalOffset[j][i] = ((horizontalOffset[j][i]  + hDeltaOffset) );
-				//ur = u - horizontalOffset[j][i];
 				
 				val = F(u,vr);					// berechne Punkt für Winkel u und v
 

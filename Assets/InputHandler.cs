@@ -97,8 +97,10 @@ public class InputHandler : MonoBehaviour {
 			if ( Input.GetKeyDown(KeyCode.Space)){
 				if ( !currCell.hasBomb()) {
 					
-					currCell.setGameObject( GameObject.Instantiate(bomb, rink.drawnArea[lpos][bpos].cubeMesh.vertices[4], rink.drawnArea[lpos][bpos].transform.rotation) as GameObject);
+					Vector3 position = rink.drawnArea[lpos][bpos].getCenter();
+					currCell.setGameObject( GameObject.Instantiate(bomb, position, Quaternion.identity) as GameObject);
 					currCell.setBomb(true);
+							
 					//if (Player.addBomb()) {
 					//	GameObject explosion = new GameObject("explosion");
 					//	explosion.AddComponent<Explosion>();
@@ -291,7 +293,7 @@ public class InputHandler : MonoBehaviour {
 				//Debug.Log("#H3");
 
 				if (Mathf.Abs( horizontalAngle - horizontalHelper) > 2*Mathf.PI/n_B){
-					Debug.Log("Treffer");
+					//Debug.Log("Treffer");
 					Parcel newCell;
 					
 						

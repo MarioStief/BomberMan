@@ -53,13 +53,14 @@ namespace AssemblyCSharp
 		// </summary>
 		private void initializeRink(int width, int height){
 			
+			height = height-1;
 			// Init und Füllen von gameArea, so dass es einem BomberManspiel gleicht
-			gameArea = new Parcel[height-1][];
-			for(int i = 0; i < height-1; i++){
+			gameArea = new Parcel[height][];
+			for(int i = 0; i < height; i++){
 				gameArea[i] = new Parcel[width];
 			}
 			
-			for(int i = 0; i < height-1; i++){
+			for(int i = 0; i < height; i++){
 				for(int j = 0; j <width; j++){
 					if ( i % 2 == 0 & j % 2 == 0){
 						gameArea[i][j] = new Parcel(1.1f);	// Hoher Steinquader
@@ -70,8 +71,8 @@ namespace AssemblyCSharp
 			}
 			
 			// Init der gezeichneten Fläche
-			drawnArea = new MeshManipulator[height-1][];
-			for(int j = 0; j < height-1; j++){
+			drawnArea = new MeshManipulator[height][];
+			for(int j = 0; j < height; j++){
 				drawnArea[j] = new MeshManipulator[width];
 			}
 		}
