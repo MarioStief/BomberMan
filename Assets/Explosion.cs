@@ -85,7 +85,7 @@ public class Explosion : MonoBehaviour
 		instantiatePSystems();
 
 		//explosions.Add(this);
-		Vector3 position = GameObject.Find("Sphere").GetComponent<SphereBuilder>().getGameArea().drawnArea[cell.getLpos()][cell.getBpos()].getCenter();
+		Vector3 position = GameObject.Find("Sphere").GetComponent<SphereBuilder>().getRink().drawnArea[cell.getLpos()][cell.getBpos()].getCenter();
 		cell.setGameObject(GameObject.Instantiate(bombPrefab, position, Quaternion.identity) as GameObject);
 		cell.setBomb(true);
 
@@ -99,7 +99,7 @@ public class Explosion : MonoBehaviour
 		if (self)
 			Player.removeBomb();
 		//bomb = null;
-		sphereHandler.getGameArea().clearBlue();
+		sphereHandler.getRink().clearBlue();
 		
 		Debug.Log ("Flammenstaerke: " + reach[1] + ", " + reach[2] + ", " + reach[3] + ", " + reach[4]);
 		

@@ -142,7 +142,7 @@ namespace AssemblyCSharp
 		public Parcel getSurroundingCell(int lpos, int bpos) {
 			GameObject sphere = sphere = GameObject.Find("Sphere");
 			SphereBuilder sphereHandler = sphere.GetComponent<SphereBuilder>();
-			Rink rink = sphereHandler.getGameArea();
+			Rink rink = sphereHandler.getRink();
 			Parcel[][] cell = rink.getGameArea();
 			
 			lpos += this.lpos;
@@ -163,7 +163,7 @@ namespace AssemblyCSharp
 		public void blueColor() {
 			GameObject sphere = GameObject.Find("Sphere");
 			SphereBuilder sphereHandler = sphere.GetComponent<SphereBuilder>();
-			Rink rink = sphereHandler.getGameArea();
+			Rink rink = sphereHandler.getRink();
 			rink.drawnArea[lpos][bpos].renderer.material.color = Color.blue;
 		}
 		
