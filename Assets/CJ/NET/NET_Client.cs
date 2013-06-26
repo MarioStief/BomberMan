@@ -82,12 +82,8 @@ public class NET_Client : MonoBehaviour {
         //Network.Connect(ipAddress, port);
     }
 
-    public void StopClient()
-    {
-        Network.Disconnect();
-    }
 
-    [RPC]
+	[RPC]
     public void NET_Ack0(NetworkPlayer serverPlayer, int pid, NetworkViewID broadcastViewID)
     {
         this.pid = pid;

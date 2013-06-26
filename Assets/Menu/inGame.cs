@@ -28,14 +28,6 @@ public class inGame : MonoBehaviour {
 			}
 			if (GUI.Button(new Rect(10,55,50,20),"YES")) {
 				//Application.LoadLevel(0);
-				GameObject obj_gameController = GameObject.FindGameObjectWithTag("GameController");
-				if (Network.isServer) {
-			        NET_Server scr_netServer = obj_gameController.GetComponent<NET_Server>();
-					scr_netServer.StopServer();
-				} else {
-					NET_Client scr_netClient = obj_gameController.GetComponent<NET_Client>();
-					scr_netClient.StopClient();
-				}
 				Menu.showGUI = true;
 				showSure = false;
 			}

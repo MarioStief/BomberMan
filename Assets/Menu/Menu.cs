@@ -13,7 +13,6 @@ public class Menu : MonoBehaviour {
 	public int maxPlayers = 4;
 
 	private string nickname = "Player ";
-	private int playerCounter = 0;
 	private string chat = "";
 	
 	private List<string> playerList = new List<string>();
@@ -297,14 +296,10 @@ public class Menu : MonoBehaviour {
 	void backButton() {
 		if (GUI.Button(new Rect(10,Screen.height-40,80,30), "Back")) {
 			if (screen == "server") { // cancel the server
-				scr_netServer.StopServer();
-				
 				Network.Disconnect();
 				MasterServer.UnregisterHost();
 				CancelInvoke("refreshServerName");
 			} else if (screen == "waitingForStart") {
-				scr_netClient.StopClient();
-				
 				networkView.RPC("removePlayerByName", RPCMode.OthersBuffered, nickname);
 				networkView.RPC("incommingChatMessage", RPCMode.Others, nickname + " leaved");
 				Network.Disconnect();

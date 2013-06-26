@@ -79,11 +79,6 @@ public class NET_Server : MonoBehaviour {
         scr_theGame = obj_gameController.GetComponent<TheGame>();
     }
 
-    public void StopServer()
-    {
-        Network.Disconnect();
-    }
-
     public void OnPlayerConnected(NetworkPlayer clientPlayer)
     {
         Client client = new Client();
