@@ -7,8 +7,8 @@ namespace AssemblyCSharp
 {
 	public static class PowerupPool
 	{
-		private static bool destroyable = true;
-		private static bool negative = true;
+		private static bool destroyable = Preferences.getDestroyablePowerups();
+		private static bool negative = Preferences.getNegativePowerups();
 		private static GameObject sphere = GameObject.Find("Sphere");
 		private static SphereBuilder sphereHandler = sphere.GetComponent<SphereBuilder>();
 		private static List<Powerup> pool = new List<Powerup>();
