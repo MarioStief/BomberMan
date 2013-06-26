@@ -95,7 +95,10 @@ public class InputHandler : MonoBehaviour {
 				if ( !currCell.hasBomb()) {
 					
 					if (Player.addBomb()) {
-						Explosion explosion = Explosion.createExplosionOnCell(currCell);
+						Explosion.createExplosionOnCell(currCell, Player.getFlamePower(), true);
+						// Um eine Bombe eines anderen Spielers auf einer Zelle zu spawnen:
+						// Explosion.createExplosionOnCell(currCell, flamePower);
+						// Powerup-ToDos: flameMight, flameSpeed
 					}
 				}
 			}

@@ -19,6 +19,8 @@ public class Explosion : MonoBehaviour
 	//private GameObject bomb;
 	GameObject []explosion = new GameObject[5];
 	private int []reach = {0, 0, 0, 0, 0};
+	private int flamePower;
+	private bool self = false;
 	
 	private int []dists;
 	private bool waitingForBombExplosion = true;
@@ -41,13 +43,24 @@ public class Explosion : MonoBehaviour
 	}
 	
 	// Factory-Klasse, um einen Konstruktor auf einem Monobehaviour-Objekt zu emulieren, der die Explosion auf einer Zelle startet
-	public static Explosion createExplosionOnCell(Parcel cell) {
+	public static Explosion createExplosionOnCell(Parcel cell, int flamePower, bool self) {
 		Explosion thisObj = GUIObject.AddComponent<Explosion>();
 		//calls Start() on the object and initializes it.
 		thisObj.cell = cell;
+		thisObj.flamePower = flamePower;
+		thisObj.self = self;
 		return thisObj;
 	}
-	
+
+	// Factory-Klasse, um einen Konstruktor auf einem Monobehaviour-Objekt zu emulieren, der die Explosion auf einer Zelle startet
+	public static Explosion createExplosionOnCell(Parcel cell, int flamePower) {
+		Explosion thisObj = GUIObject.AddComponent<Explosion>();
+		//calls Start() on the object and initializes it.
+		thisObj.cell = cell;
+		thisObj.flamePower = flamePower;
+		return thisObj;
+	}
+
 	void Awake() {
 		bombPrefab = GameObject.Find("bomb");
 		explotionPrefab = GameObject.Find("Explotion");
@@ -83,7 +96,8 @@ public class Explosion : MonoBehaviour
 		cell.setBomb(false);
 		//GameObject.Destroy(bomb);
 		cell.destroyGameObject();
-		Player.removeBomb();
+		if (self)
+			Player.removeBomb();
 		//bomb = null;
 		sphereHandler.getGameArea().clearBlue();
 		
@@ -196,7 +210,7 @@ public class Explosion : MonoBehaviour
 		
 		
 			
-		for (int i = 1; i <= Player.getFlamePower(); i++) {
+		for (int i = 1; i <= flamePower; i++) {
 			if (i <= dists[0]) {
 				int x = (int) transform.position.x;
 				int z = (int) transform.position.z;
