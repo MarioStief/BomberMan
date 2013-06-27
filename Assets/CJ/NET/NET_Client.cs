@@ -48,6 +48,18 @@ public class NET_Client : MonoBehaviour {
         }
         return names;
     }
+	
+	public void removeClient(int pid) {
+		foreach (Client client in clients) {
+			if (client.pid == pid) {
+				clients.Remove(client);
+				break;
+			}
+		}
+	}
+	public void clearClients() {
+		clients.Clear();
+	}
 
     public int GetLocalPID()
     {

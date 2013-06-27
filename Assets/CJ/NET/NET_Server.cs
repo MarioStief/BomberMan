@@ -68,7 +68,17 @@ public class NET_Server : MonoBehaviour {
     {
         return clients;
     }
-
+	
+	public int removeClient(NetworkPlayer p) {
+		foreach (Client client in clients) {
+			if (p == client.netPlayer) {
+				clients.Remove(client);
+				return client.pid;
+			}
+		}
+		return -1;
+	}
+	
     public void StartServer() 
     {
         //Network.InitializeServer(MAX_CONNECTIONS, PORT, USE_NAT_PUNCHTHROUGH);
