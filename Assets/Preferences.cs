@@ -5,14 +5,12 @@ namespace AssemblyCSharp
 {
 	public static class Preferences
 	{
-		private static bool destroyablePowerups = true;
-		private static bool negativePowerups = true;
+		private static bool destroyablePowerups;
+		private static bool negativePowerups;
 		
 		static Preferences() {
-			if (PlayerPrefs.GetString("Destroyable Powerups") != "")
-				destroyablePowerups = (PlayerPrefs.GetInt("Destroyable Powerups") == 1 ? true : false);
-			if (PlayerPrefs.GetString("Destroyable Powerups") != "")
-				negativePowerups = (PlayerPrefs.GetInt("Negative Powerups") == 1 ? true : false);
+			destroyablePowerups = (PlayerPrefs.GetInt("Destroyable Powerups",1) == 1 ? true : false);
+			negativePowerups = (PlayerPrefs.GetInt("Negative Powerups",1) == 1 ? true : false);
 		}
 		
 		public static bool getDestroyablePowerups() {

@@ -15,8 +15,7 @@ public class Explosion : MonoBehaviour
 	private float xpos, ypos, zpos;
 	
 	public static GameObject bombPrefab;
-	public static GameObject explotionPrefab;
-	//private GameObject bomb;
+	public static GameObject explosionPrefab;
 	GameObject []explosion = new GameObject[5];
 	private int []reach = {0, 0, 0, 0, 0};
 	private int flamePower;
@@ -30,6 +29,8 @@ public class Explosion : MonoBehaviour
 	private float timer;
 	private float createTime;
 	private bool powerupsPlaced = false;
+	
+	private Vector3 position;
 	
 	private static GameObject guiObject;
 	
@@ -63,9 +64,9 @@ public class Explosion : MonoBehaviour
 
 	void Awake() {
 		bombPrefab = GameObject.Find("bomb");
-		explotionPrefab = GameObject.Find("Explotion");
+		explosionPrefab = GameObject.Find("Explosion");
 		sphere = GameObject.Find("Sphere");
-		explotionPrefab.transform.localScale *= SCALE;
+		//explosionPrefab.transform.localScale *= SCALE;
 		sphereHandler = sphere.GetComponent<SphereBuilder>();
 	}
 	
@@ -85,7 +86,7 @@ public class Explosion : MonoBehaviour
 		instantiatePSystems();
 
 		//explosions.Add(this);
-		Vector3 position = GameObject.Find("Sphere").GetComponent<SphereBuilder>().getRink().drawnArea[cell.getLpos()][cell.getBpos()].getCenter();
+		position = cell.getCenterPos();
 		cell.setGameObject(GameObject.Instantiate(bombPrefab, position, Quaternion.identity) as GameObject);
 		cell.setBomb(true);
 
@@ -187,8 +188,8 @@ public class Explosion : MonoBehaviour
 	private void instantiatePSystems(){
 		
 		for (int i = 0; i < 5; i++) {
-			//explosion[i] = GameObject.Instantiate(explotionPrefab, new Vector3( xpos + 0.5f, 0.5f, zpos + 0.5f), Quaternion.identity) as GameObject;
-			explosion[i] = GameObject.Instantiate(explotionPrefab, new Vector3(xpos, ypos, zpos), Quaternion.identity) as GameObject;
+			//explosion[i] = GameObject.Instantiate(explosionPrefab, new Vector3( xpos + 0.5f, 0.5f, zpos + 0.5f), Quaternion.identity) as GameObject;
+			explosion[i] = GameObject.Instantiate(explosionPrefab, position, Quaternion.identity) as GameObject;
 			explosion[i].GetComponent<ParticleEmitter>().maxEmission = 0;
 			if (i == 0)
 				explosionChain.Add(new ExplosionField(0,cell));

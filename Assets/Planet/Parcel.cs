@@ -167,6 +167,10 @@ namespace AssemblyCSharp
 			rink.drawnArea[lpos][bpos].renderer.material.color = Color.blue;
 		}
 		
+		public Vector3 getCenterPos() {
+			return GameObject.Find("Sphere").GetComponent<SphereBuilder>().getRink().drawnArea[lpos][bpos].getCenter();
+		}
+		
 		/*
 		public Vector3 getNormal() {
 			// Normale vom Zellenmittelpunkt fUr Objektausrichtung
