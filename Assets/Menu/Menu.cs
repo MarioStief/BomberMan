@@ -188,22 +188,32 @@ public class Menu : MonoBehaviour {
 		serverName = GUI.TextField(new Rect(25,130,150,20), serverName, 30);
 		
 		// MAX PLAYERS
-		//GUI.Label(new Rect(10,100,150,20), "Max. Players:");
-		if (GUI.Button(new Rect(25, 170, 150, 20), "Max. Players: "+maxPlayers)) {
+		if (GUI.Button(new Rect(25, 150, 150, 20), "Max. Players: "+maxPlayers)) {
 			showMaxPlayers = !showMaxPlayers;
 	    }
 	    if (showMaxPlayers) {
+			
 			for (int i=1; i<5; i++) {
 				int p = (int)Mathf.Pow(2,i);
 				if (Network.connections.Length+1 > p)
 					continue;
-				if (GUI.Button(new Rect(25, 170+(20*i), 150, 20), p.ToString())) {
+				if (GUI.Button(new Rect(25, 150+(20*i), 150, 20), p.ToString())) {
 					showMaxPlayers = false;
 					maxPlayers = p;
 					Network.maxConnections = maxPlayers-1;
 				}
 			}
-	    }
+	    } else {
+			// SOME SETTINGS
+			bool pe = Preferences.getNegativePowerups();
+			if (pe != GUI.Toggle(new Rect(25,180,150,20), pe, "negative Powerups?")) {
+				Preferences.setNegative(!pe);
+			}
+			pe = Preferences.getDestroyablePowerups();
+			if (pe != GUI.Toggle(new Rect(25,200,150,20), pe, "destroyable Powerups?")) {
+				Preferences.setDestroyablePowerups(!pe);
+			}
+		}
 	    
 	    // START GAME
 		if (GUI.Button(new Rect(50,300,100,30),"Start Game")) {
