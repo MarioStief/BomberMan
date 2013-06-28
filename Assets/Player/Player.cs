@@ -19,7 +19,7 @@ namespace AssemblyCSharp
 		private static int bombs = 1;
 		private static int bombsActive = 0;
 		private static int flamePower = 1;
-		private static float speed = 0.25f;
+		private static float speed = 0.2f;
 		private static int hp = MAXHP;
 		
 		private static bool dead = false;
@@ -107,12 +107,12 @@ namespace AssemblyCSharp
 		public static void setCurrentParcel(Parcel parcel){
 			
 			if ( currentCell != null){
-				currentCell.setColor(Color.white);	
+				currentCell.hightlightColor(false);	
 			}
 			
 			currentCell = parcel;	
 			
-			currentCell.setColor(Color.red);
+			currentCell.hightlightColor(true);
 		}
 		
 		public static Parcel getCurrentParcel(){

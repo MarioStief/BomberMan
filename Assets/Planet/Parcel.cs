@@ -8,18 +8,30 @@ namespace AssemblyCSharp
 	// und etwaiger GameObjects, die starr auf dieser Parzelle liegen ( etwa Upgrades)
 	// </summary>
 	public class Parcel
-	{
-		Vector3 center;
+	{	
 		
-		float height;		// value in percent, meaning: 1.1f = 110% of
+		const float normalLevel = 1.0f;
+		const float upperLevel = 1.1f;	
+		
+		Parcel right, left, up, down;	// Nachbar-Parzellen
+		
+		int parcelType;					// Typ der Parzelle: 0 == leer, 1 == Holzkiste, 2 == Steinblock
+		
+		Vector3 center;					// Center of Parcel
+
 		private int lpos;				// Position der aktuellen Parzelle rink.gameArea ist [lpos][bpos]
 		private int bpos;
 		
-		Color color = Color.white;		// Parcel-Farbe
+		Color color;					// Parcel-Farbe
 		
-		GameObject obj;		// Object auf der Parzelle, das gezeichnet werden soll.
+		bool highlight = false;
+		Color highlightColor = Color.red;
 		
-		private bool bombOnCell; // Beschränkung von einer Bombe pro Feld überhaupt notwendig?
+		float height = 1.0f;
+		
+		GameObject obj;					// Object auf der Parzelle, das gezeichnet werden soll.
+		
+		private bool bombOnCell; 		// Beschränkung von einer Bombe pro Feld überhaupt notwendig?
 		private bool powerupOnCell;
 		
 		private PowerupType powerupType;
@@ -28,9 +40,9 @@ namespace AssemblyCSharp
 			height = 1.0f;
 		}
 		
-		public Parcel (float height)
+		public Parcel (int type)
 		{
-			this.height = height;
+			setType(type);
 		}
 		
 		public Parcel (float height, GameObject obj)
@@ -42,6 +54,34 @@ namespace AssemblyCSharp
 		public void setIdentity(int lpos, int bpos) {
 			this.lpos = lpos;
 			this.bpos = bpos;
+		}
+		
+		public void setType(int type){
+		
+			//if ( type == parcelType) return;
+			
+			parcelType = type;
+			if ( parcelType == 0){
+				height = 1.0f;	
+				color = Color.green;
+			} else if ( parcelType == 1){
+				height = 1.1f;	
+				color = new Color(0.5f,0.5f,0.0f,1.0f);
+			} else {
+				height = 1.1f;	
+				color = Color.gray;
+			}
+		}
+		
+		public int getType(){
+			return parcelType;	
+		}
+		
+		public void setNeightbours(Parcel right, Parcel left, Parcel up, Parcel down){
+			this.right = right;
+			this.left = left;
+			this.up = up;
+			this.down = down;
 		}
 		
 		public void setGameObjectPosition(Vector3 v){
@@ -123,8 +163,15 @@ namespace AssemblyCSharp
 			color = col;
 		}
 		
+		public void hightlightColor(bool b){
+		
+			highlight = b;
+		}
+		
 		public Color getColor(){
-			return color;	
+			
+			
+			return highlight? highlightColor : color;	
 		}
 		
 		public String getCoordinates() {
@@ -159,7 +206,8 @@ namespace AssemblyCSharp
 			
 			return cell[lpos][bpos];
 		}
-
+		
+		// DEBUG
 		public void blueColor() {
 			GameObject sphere = GameObject.Find("Sphere");
 			SphereBuilder sphereHandler = sphere.GetComponent<SphereBuilder>();
