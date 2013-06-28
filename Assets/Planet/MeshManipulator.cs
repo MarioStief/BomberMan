@@ -27,7 +27,7 @@ public class MeshManipulator : MonoBehaviour {
 	}
 	
 	public Vector3 getCenter(){
-		return (height*cubeMesh.vertices[4] + 0.5f*height*(cubeMesh.vertices[9]-cubeMesh.vertices[4]))*(1.01f);
+		return (cubeMesh.vertices[4] + 0.5f*height*(cubeMesh.vertices[9]-cubeMesh.vertices[4]))*(1.01f);
 	}
 	
 	// <summary>
