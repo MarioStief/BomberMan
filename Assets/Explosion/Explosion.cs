@@ -7,7 +7,7 @@ public class Explosion : MonoBehaviour
 {
 	private const int DELAY = 100;
 	// private const float EXPLOSIONTIMER = 0.1f; // Debugwert
-	private const float EXPLOSIONTIMER = 1.0f;
+	private const float EXPLOSIONTIMER = 3.0f;
 	private const int DROPCHANCE = 25; // Drop chance in %
 	float SCALE = 0.01f;
 	public GameObject sphere; // DELETE?
