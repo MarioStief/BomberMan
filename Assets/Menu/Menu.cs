@@ -15,7 +15,7 @@ public class Menu : MonoBehaviour {
 	private string nickname = "Player ";
 	private string chat = "";
 	
-	private List<string> playerList = new List<string>();
+	private Dictionary<NetworkPlayer,string> playerList = new Dictionary<NetworkPlayer, string>();
 	public static bool showGUI = true;
 	
 	// CJs stuff
@@ -31,12 +31,9 @@ public class Menu : MonoBehaviour {
         scr_netServer = obj_gameController.GetComponent<NET_Server>();
 		
 		// load settings
-		if (PlayerPrefs.GetString("Player Name") != "")
-			nickname = PlayerPrefs.GetString("Player Name");
-		if (PlayerPrefs.GetString("Server Name") != "")
-			serverName = PlayerPrefs.GetString("Server Name");
-		if (PlayerPrefs.GetInt("Server MaxPlayers") != 0)
-			maxPlayers = PlayerPrefs.GetInt("Server MaxPlayers");
+		nickname = PlayerPrefs.GetString("Player Name", nickname);
+		serverName = PlayerPrefs.GetString("Server Name", serverName);
+		maxPlayers = PlayerPrefs.GetInt("Server MaxPlayers", maxPlayers);
 	}
 
 	public void Update () {
@@ -44,8 +41,10 @@ public class Menu : MonoBehaviour {
 
 	public void OnGUI () {
 		
-		if (!showGUI)
+		if (!showGUI) {
+			screen = "start";
 			return;
+		}
 		
 		switch (screen) {
 			case "join":
@@ -73,18 +72,18 @@ public class Menu : MonoBehaviour {
 		}
 		backButton();
 	}
-
+	
+	
+	// CLIENT SIDE ONLY
 	void OnConnectedToServer() {
 		
 		chat = "Welcome to Bomberman Galaxy.";
 		// tell the others my nick
-		networkView.RPC("newPlayer", RPCMode.OthersBuffered, nickname);
-		// and add myself to my list
-		playerList.Add(nickname + " (me)");
+		networkView.RPC("newPlayer", RPCMode.OthersBuffered, nickname, Network.player);
+		playerList.Add(Network.player, nickname+" (me)");
 		networkView.RPC("incommingChatMessage", RPCMode.All, nickname + " joined");
 		screen = "waitingForStart";
 	}
-	
 	void OnDisconnectedFromServer(NetworkDisconnection info) {
         if (Network.isServer) {
             Debug.Log("Local server connection disconnected");
@@ -93,12 +92,28 @@ public class Menu : MonoBehaviour {
                 Debug.Log("Lost connection to the server");
 			} else {
                 Debug.Log("Successfully diconnected from the server");
-				screen = "kicked";
 			}
+			scr_netClient.clearClients();
+			Application.LoadLevel(0);
+			screen = "kicked";
 		}
-		playerList = new List<string>();
+		playerList = new Dictionary<NetworkPlayer,string>();
     }
-
+	
+	
+	// SERVER SIDE ONLY
+	void OnPlayerDisconnected(NetworkPlayer p) {
+		Network.RemoveRPCs(p);
+		//Network.DestroyPlayerObjects(p);
+		int pid = scr_netServer.removeClient(p);
+		if (pid != -1) {
+			networkView.RPC("removePlayer", RPCMode.OthersBuffered, p, pid);
+			networkView.RPC("incommingChatMessage", RPCMode.All, playerList[p] + " leaved");
+			playerList.Remove(p);
+		}
+	}
+	
+	
 	void joinScreen() {
 		var width = 150;
 		GUI.BeginGroup(new Rect(Screen.width/2-width/2,10,width+75,500));
@@ -151,8 +166,8 @@ public class Menu : MonoBehaviour {
 		// display a chat and the list of currently conntected players
 		GUI.BeginGroup(new Rect(10, 100, 200, 400));
 		GUILayout.Label("Connected Players:");
-		foreach (string name in playerList) //scr_netClient.AnnotatedClientNames()
-            GUILayout.Label(name);
+		foreach (var p in playerList) //scr_netClient.AnnotatedClientNames()
+            GUILayout.Label(p.Value);
 		GUI.EndGroup();
 		
 		GUI.Box(new Rect(Screen.width/2-100, 50, 200, 24), "Waiting for server to start game");
@@ -173,22 +188,32 @@ public class Menu : MonoBehaviour {
 		serverName = GUI.TextField(new Rect(25,130,150,20), serverName, 30);
 		
 		// MAX PLAYERS
-		//GUI.Label(new Rect(10,100,150,20), "Max. Players:");
-		if (GUI.Button(new Rect(25, 170, 150, 20), "Max. Players: "+maxPlayers)) {
+		if (GUI.Button(new Rect(25, 150, 150, 20), "Max. Players: "+maxPlayers)) {
 			showMaxPlayers = !showMaxPlayers;
 	    }
 	    if (showMaxPlayers) {
+			
 			for (int i=1; i<5; i++) {
 				int p = (int)Mathf.Pow(2,i);
 				if (Network.connections.Length+1 > p)
 					continue;
-				if (GUI.Button(new Rect(25, 170+(20*i), 150, 20), p.ToString())) {
+				if (GUI.Button(new Rect(25, 150+(20*i), 150, 20), p.ToString())) {
 					showMaxPlayers = false;
 					maxPlayers = p;
 					Network.maxConnections = maxPlayers-1;
 				}
 			}
-	    }
+	    } else {
+			// SOME SETTINGS
+			bool pe = Preferences.getNegativePowerups();
+			if (pe != GUI.Toggle(new Rect(25,180,150,20), pe, "negative Powerups?")) {
+				Preferences.setNegative(!pe);
+			}
+			pe = Preferences.getDestroyablePowerups();
+			if (pe != GUI.Toggle(new Rect(25,200,150,20), pe, "destroyable Powerups?")) {
+				Preferences.setDestroyablePowerups(!pe);
+			}
+		}
 	    
 	    // START GAME
 		if (GUI.Button(new Rect(50,300,100,30),"Start Game")) {
@@ -211,20 +236,20 @@ public class Menu : MonoBehaviour {
 		if (playerList.Count == 0)
 			GUI.Label(new Rect(10,20,190,20), "no player connected");
 			
-		int kick = -1;
-		for (int j=0; j < playerList.Count; j++) {
-			GUI.Label(new Rect(20,j*24+20,200,24), playerList[j]);
+		int j = 0;
+		Dictionary<NetworkPlayer,string> tpl = playerList;
+		foreach (var p in tpl) {
+			GUI.Label(new Rect(20,j*24+20,200,24), p.Value);
 			GUI.color = new Color(255,0,0);
 			if (GUI.Button(new Rect(0,j*24+21,18,15), "x")) {
-				kick = j;
+				Network.CloseConnection(p.Key, true);
+				int pid = scr_netServer.removeClient(p.Key);
+				networkView.RPC("removePlayer", RPCMode.OthersBuffered, p.Key, pid);
+				networkView.RPC("incommingChatMessage", RPCMode.All, p.Value + " was kicked");
+				playerList.Remove(p.Key);
 			}
 			GUI.color = Color.white;
-		}
-		if (kick != -1) {
-			Network.CloseConnection(Network.connections[kick], true);
-			networkView.RPC("removePlayer", RPCMode.OthersBuffered, kick);
-			networkView.RPC("incommingChatMessage", RPCMode.All, playerList[kick] + " was kicked");
-			playerList.RemoveAt(kick);
+			j++;
 		}
 		GUI.EndGroup();
 		
@@ -238,7 +263,7 @@ public class Menu : MonoBehaviour {
 	    s.fontSize = 50;
 		s.alignment = TextAnchor.MiddleCenter;
 		GUI.Label(new Rect(Screen.width/2-150, 100, 300, 100), "Server disconnected!", s);
-		playerList = new List<string>();
+		playerList = new Dictionary<NetworkPlayer,string>();
 		
 		if (GUI.Button(new Rect(Screen.width/2-50,270,100,30), "continue")) {
 			screen = "start";
@@ -251,33 +276,45 @@ public class Menu : MonoBehaviour {
 		var x = Screen.width/2 - width/2;
 		var y = Screen.height/2 - 2*height;
 		
-		if (GUI.Button(new Rect(x,y,width,height), "Join Server")) {
-			// show join menu
-			screen = "join";
-			// refresh server-list
-	    	MasterServer.ClearHostList();
-	        MasterServer.RequestHostList("BomberManUniTrier");
-		}
-		if (GUI.Button(new Rect(x,y+height,width,height), "Start new Server")) {
-			// show new-server menu
-			screen = "server";
-			// and start up the server
-		    var useNat = !Network.HavePublicAddress();
-		    var err = Network.InitializeServer(maxPlayers-1, port, useNat);
-		    while (err == NetworkConnectionError.CreateSocketOrThreadFailure) {
-		    	port++;
-			    err = Network.InitializeServer(maxPlayers-1, port, useNat);
-		    }
-		    regServerName = serverName;
-		    MasterServer.RegisterHost("BomberManUniTrier", serverName, "a comment!");
-			InvokeRepeating("refreshServerName", 5f, 3f);
-			
-			chat = "Welcome to Bomberman Galaxy.";
-			// and add myself to the list of players
-			//playerList.Add(nickname);
-			
-			// CJ
-			scr_netServer.StartServer();
+		if (Network.peerType != NetworkPeerType.Disconnected) {
+			// we are ingame!
+			if (GUI.Button(new Rect(x,y,width,height), "Disconnect")) {
+				Network.Disconnect();
+				if (Network.isServer) {
+					MasterServer.UnregisterHost();
+					CancelInvoke("refreshServerName");
+				}
+				Application.LoadLevel(0);
+			}
+		} else {
+			if (GUI.Button(new Rect(x,y,width,height), "Join Server")) {
+				// show join menu
+				screen = "join";
+				// refresh server-list
+		    	MasterServer.ClearHostList();
+		        MasterServer.RequestHostList("BomberManUniTrier");
+			}
+			if (GUI.Button(new Rect(x,y+height,width,height), "Start new Server")) {
+				// show new-server menu
+				screen = "server";
+				// and start up the server
+			    var useNat = !Network.HavePublicAddress();
+			    var err = Network.InitializeServer(maxPlayers-1, port, useNat);
+			    while (err == NetworkConnectionError.CreateSocketOrThreadFailure) {
+			    	port++;
+				    err = Network.InitializeServer(maxPlayers-1, port, useNat);
+			    }
+			    regServerName = serverName;
+			    MasterServer.RegisterHost("BomberManUniTrier", serverName, "a comment!");
+				InvokeRepeating("refreshServerName", 5f, 3f);
+				
+				chat = "Welcome to Bomberman Galaxy.";
+				// and add myself to the list of players
+				//playerList.Add(nickname);
+				
+				// CJ
+				scr_netServer.StartServer();
+			}
 		}
 		if (GUI.Button(new Rect(x,y+2*height,width,height), "How to Play")) {
 			// show help menu
@@ -300,11 +337,9 @@ public class Menu : MonoBehaviour {
 				MasterServer.UnregisterHost();
 				CancelInvoke("refreshServerName");
 			} else if (screen == "waitingForStart") {
-				networkView.RPC("removePlayerByName", RPCMode.OthersBuffered, nickname);
-				networkView.RPC("incommingChatMessage", RPCMode.Others, nickname + " leaved");
 				Network.Disconnect();
 			}
-			screen = "";
+			screen = "start";
 		}
 	}
 
@@ -346,18 +381,13 @@ public class Menu : MonoBehaviour {
 	}
 
 	[RPC]
-	public int newPlayer(string nick, NetworkMessageInfo info) {
-		playerList.Add(nick);
-		Debug.Log("new player (" + nick + ") connected");
-		return playerList.Count;
+	public void newPlayer(string nick, NetworkPlayer p) {
+		playerList.Add(p, nick);
 	}
 	[RPC]
-	public void removePlayer(int p) {
-		playerList.RemoveAt(p);
-	}
-	[RPC]
-	public void removePlayerByName(string nick) {
-		playerList.Remove(nick);
-	}
+	public void removePlayer(NetworkPlayer p, int pid) {
+		playerList.Remove(p);
+		scr_netClient.removeClient(pid);
+	}	
 
 }

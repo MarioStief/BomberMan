@@ -43,6 +43,13 @@ public class NET_Input : MonoBehaviour {
         input |= CondFlag(2, thres < Input.GetAxis("Vertical"));
         input |= CondFlag(3, -thres > Input.GetAxis("Vertical"));
         // testing for Fire1 in *_LocalActor.cs
+		
+		// hacked-in iOS controls
+		thres = 0.1f;
+        input |= CondFlag(0, -thres > Input.acceleration.x);
+        input |= CondFlag(1, thres < Input.acceleration.x);
+        input |= CondFlag(2, thres < Input.acceleration.y);
+        input |= CondFlag(3, -thres > Input.acceleration.y);
 
         return input;
     }

@@ -63,11 +63,25 @@ namespace AssemblyCSharp
 			for(int i = 0; i < height; i++){
 				for(int j = 0; j <width; j++){
 					if ( i % 2 == 0 & j % 2 == 0){
-						gameArea[i][j] = new Parcel(1.1f);	// Hoher Steinquader
+						gameArea[i][j] = new Parcel(2);	// Hoher Steinquader
 					} else{
-						gameArea[i][j] = new Parcel(1.0f);	// Bodenfläche
+						gameArea[i][j] = new Parcel(0);	// Bodenfläche
 					}
-					gameArea[i][j].setIdentity(i, j);
+					gameArea[i][j].setIdentity(i,j);	// DEBUG
+				}
+			}
+			
+			for(int i = 0; i < 3*width; i++){
+				gameArea[(int)(UnityEngine.Random.value*height)][(int)(UnityEngine.Random.value*width)].setType(1);	
+			}
+			
+			for(int i = 0; i < height; i++){
+				for(int j = 0; j < width; j++){
+					Parcel right = gameArea[i][(j-1) < 0? width-1 : j-1];
+					Parcel left = gameArea[i][(j+1)%(width)];
+					Parcel up = gameArea[(i+1)%(height)][j];
+					Parcel down = gameArea[(i-1) < 0? height-1 : i-1][j];
+					gameArea[i][j].setNeightbours(right,left,up,down);		// Hoher Steinquader
 				}
 			}
 			

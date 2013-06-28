@@ -5,7 +5,9 @@ namespace AssemblyCSharp
 {
 	public static class Player
 	{
-		private static Parcel currentCell;
+		private static Parcel currentCell;	// current Parcel
+		private static float xpos, zpos;	// Player's position in the current Parcel
+		
 		private static GameObject sphere; // TEMP
 		public static SphereBuilder sphereHandler;
 		
@@ -19,7 +21,7 @@ namespace AssemblyCSharp
 		private static int bombs = 1;
 		private static int bombsActive = 0;
 		private static int flamePower = 1;
-		private static float speed = 0.25f;
+		private static float speed = 0.4f;
 		private static int hp = MAXHP;
 		
 		private static bool dead = false;
@@ -60,6 +62,24 @@ namespace AssemblyCSharp
 			} else {
 				return false;
 			}
+		}
+		
+		public static void setXPos(float x){
+			if ( x > 1) xpos = 1;
+			xpos = x;	
+		}
+		
+		public static float getXPos(){
+			return xpos;	
+		}
+		
+		public static void setZPos(float z){
+			if ( zpos > 1) zpos = 1;
+			zpos = z;	
+		}
+		
+		public static float getZPos(){
+			return zpos;	
 		}
 		
 		public static void removeBomb() {
@@ -107,12 +127,13 @@ namespace AssemblyCSharp
 		public static void setCurrentParcel(Parcel parcel){
 			
 			if ( currentCell != null){
-				currentCell.setColor(Color.white);	
+				currentCell.hightlightColor(false);	
 			}
 			
 			currentCell = parcel;	
 			
 			currentCell.setColor(Color.cyan);
+			currentCell.hightlightColor(true);
 		}
 		
 		public static Parcel getCurrentParcel(){

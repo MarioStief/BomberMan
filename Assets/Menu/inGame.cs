@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections;
 
 public class inGame : MonoBehaviour {
-
+	
 	// Use this for initialization
 	void Start () {
 	
@@ -10,16 +10,18 @@ public class inGame : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-	
+		if (Input.GetKeyDown(KeyCode.Escape) && MenuState.instance.Update() == GM_State.UpdateRet.NEXT_STATE)
+			Menu.showGUI = !Menu.showGUI;
 	}
 	
 	bool showSure = false;
 	void OnGUI () {
-		if (Menu.showGUI) // we are not ingame!
+		if (MenuState.instance.Update() == GM_State.UpdateRet.CONTINUE) // we are not ingame!
 			return;
 		
 		if (GUI.Button(new Rect(10,10,80,20), "MENU")) {
-			showSure = !showSure;
+			//showSure = !showSure;
+			Menu.showGUI = !Menu.showGUI;
 		}
 		if (showSure) {
 			GUI.Box(new Rect(10,32,100,20), "Disconnect?");
