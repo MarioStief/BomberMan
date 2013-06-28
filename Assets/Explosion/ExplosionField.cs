@@ -8,11 +8,11 @@ namespace AssemblyCSharp
 //		private GameObject explosion;
 		private int delay;
 		private Parcel cell;
-		bool barrier;
+		int barrier; // 0 = no barrier, 1 = destroyable block, 2 = barrier
 		private int lpos;
 		private int bpos;
 		
-		public ExplosionField(int delay, Parcel cell, bool barrier, int lpos, int bpos) {
+		public ExplosionField(int delay, Parcel cell, int barrier, int lpos, int bpos) {
 			//this.explosion = explosion;
 			//this.direction = direction;
 			this.delay = delay;
@@ -34,7 +34,7 @@ namespace AssemblyCSharp
 			return cell;
 		}
 		
-		public bool getBarrier() {
+		public int getBarrier() {
 			return barrier;
 		}
 		

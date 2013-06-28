@@ -182,6 +182,9 @@ public class Explosion : MonoBehaviour
 						
 						detonator.Explode();
 						explosionField.getCell().setExploding(true);
+						if (cell.getType() == 1) {
+							cell.setType(0);
+						}
 
 						// Bomben jagen sich gegenseitig hoch:
 						if (explosionField.getCell().hasBomb()) {
@@ -230,7 +233,7 @@ public class Explosion : MonoBehaviour
 			//if (i == 0)
 		if (true) {
 			cell.colorCell(Color.red);
-			explosionChain.Add(new ExplosionField(0, cell, false, 0, 0));
+			explosionChain.Add(new ExplosionField(0, cell, 0, 0, 0));
 		}
 		//}
 		
@@ -239,7 +242,7 @@ public class Explosion : MonoBehaviour
 		//explosion[3].GetComponent<ParticleEmitter>().worldVelocity = new Vector3(0.0f, 0.3f, -5.0f);
 		//explosion[4].GetComponent<ParticleEmitter>().worldVelocity = new Vector3(0.0f, 0.3f, 5.0f);
 
-		bool[] stop = {false, false, false, false};
+		int[] stop = {0, 0, 0, 0};
 		
 		bool SURROUNDING_DEBUG = false;
 
@@ -248,7 +251,7 @@ public class Explosion : MonoBehaviour
 			
 		for (int i = 1; i <= flamePower; i++) {
 			for (int j = 0; j < 4; j++) {
-				if (!stop[j]) {
+				if (stop[j] == 0) {
 					int lpos = 0;
 					int bpos = 0;
 					switch (j) {
@@ -268,14 +271,21 @@ public class Explosion : MonoBehaviour
 					Parcel cell = this.cell.getSurroundingCell(lpos, bpos);
 					if (SURROUNDING_DEBUG)
 						Debug.Log("Surrounding Cell: " + cell.getCoordinates() + ", Height: " + cell.getHeight());
-					if (cell.getHeight() == 1f) {
+					switch (cell.getType()) {
+					case 0:
 						cell.colorCell(Color.red);
-						reach[j+1]++;
-					} else {
-						stop[j] = true;
+						//reach[j+1]++;
+						break;
+					case 1:
+						stop[j] = 1;
+						cell.colorCell(Color.red);
+						break;
+					case 2:
+						stop[j] = 2;
 						cell.colorCell(Color.gray);
+						break;
 					}
-					explosionChain.Add(new ExplosionField(i,cell, stop[0], lpos, bpos));
+					explosionChain.Add(new ExplosionField(i,cell, stop[j], lpos, bpos));
 				}
 				
 			}
