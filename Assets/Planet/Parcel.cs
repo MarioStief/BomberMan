@@ -13,7 +13,7 @@ namespace AssemblyCSharp
 		const float normalLevel = 1.0f;
 		const float upperLevel = 1.1f;	
 		
-		Parcel right, left, up, down;	// Nachbar-Parzellen
+		public Parcel right, left, up, down;	// Nachbar-Parzellen
 		
 		int parcelType;					// Typ der Parzelle: 0 == leer, 1 == Holzkiste, 2 == Steinblock
 		

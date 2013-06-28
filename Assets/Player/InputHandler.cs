@@ -23,6 +23,7 @@ public class InputHandler : MonoBehaviour {
 	private int bpos;
 	
 	private float verticalAngle;	
+	private float oldVerticalAngle;
 	private float horizontalAngle;
 	
 	private float verticalHelper;
@@ -115,6 +116,7 @@ public class InputHandler : MonoBehaviour {
 		float m = Player.getSpeed() * verticalMovement * Time.deltaTime;
 		
 		if ( verticalMovement != 0){
+			
 			if ( vDirection == 0) {
 				
 				vDirection = (int)Mathf.Sign(m);
@@ -139,27 +141,29 @@ public class InputHandler : MonoBehaviour {
 		
 		float horizontalMovement = Input.GetAxis("Horizontal") * Player.getSpeed();
 		if ( horizontalMovement != 0){
-			m = horizontalMovement/((-2)*Time.deltaTime)*Player.getSpeed()/20;
+			m = horizontalMovement*Time.deltaTime*Player.getSpeed()*(-2);
 			
 			if ( hDirection == 0) {
 				
 				hDirection = (int)Mathf.Sign(m);
 				
 				if ( hDirection == 1){
-					horizontalHelper += 	Mathf.PI/n_B;
+					horizontalHelper += 	0;//Mathf.PI/(n_B);
 				} else{
-					horizontalHelper -= 	Mathf.PI/n_B;
+					horizontalHelper -= 	0;//Mathf.PI/(n_B);
 				}
+				horizontalHelper +=m;
 			}
 		 
 			float hAngle = horizontalAngle;
 			horizontalAngle += m;
+			
 
 			m = determineHorizontalParcelPosition( horizontalMovement, m);
 			
 			moveAlongEquator( m);
 			if ( m == 0) horizontalAngle = hAngle;
-			rink.renderAll();	// 4Debug
+			rink.renderAll();	// 4Debug !!! Achtung: Muss im fertigen Spiel raus. Zieht locker 20 FPS!
 
 		}
 		
@@ -172,11 +176,18 @@ public class InputHandler : MonoBehaviour {
 	// </summary>
 	private float determineVerticalParcelPosition(float verticalMovement, float m){
 		
+
+		
 		if ( vDirection == 1 && Mathf.Sign(verticalMovement) == 1){	// Bewegungsrichtung blieb gleich				
 				//Debug.Log("#1");
-
-				if (Mathf.Abs( verticalAngle - verticalHelper) > Mathf.PI/(n_L-1)){
-					
+			
+				// Setting position of player in current cell
+				float newPlayerPosition =  1-Mathf.Abs(verticalAngle-verticalHelper)/(Mathf.PI/(n_L-1)); //bs( verticalAngle - verticalHelper) / (Mathf.PI/(n_L-1));
+				Player.setXPos( newPlayerPosition);
+				Debug.Log(newPlayerPosition);
+			
+				if (Mathf.Abs( verticalAngle - verticalHelper) > Mathf.PI/(n_L-1)){				
+				
 					Parcel newCell;
 
 					if ( lpos < n_L-2){
@@ -184,12 +195,15 @@ public class InputHandler : MonoBehaviour {
 							return 0.0f;
 						}
 						newCell = rink.gameArea[++lpos][bpos];
+						Player.setXPos( 0);
+
 					} else{
 						if ( rink.gameArea[0][bpos].getType() != 0){
 							return 0.0f;
 						}
 						lpos = 0;
 						newCell = rink.gameArea[lpos][bpos];
+						Player.setXPos( 0);
 					}
 					verticalHelper += Mathf.PI/(n_L-1);
 					Player.setCurrentParcel(newCell);	
@@ -197,7 +211,10 @@ public class InputHandler : MonoBehaviour {
 			} else if (vDirection == 1 && Mathf.Sign(verticalMovement) == -1){	// Bewegungsrichtung ändert sich
 				
 				//Debug.Log("#2");
-
+				float newPlayerPosition =  Mathf.Abs(verticalAngle-verticalHelper)/(Mathf.PI/(n_L-1)); //bs( verticalAngle - verticalHelper) / (Mathf.PI/(n_L-1));
+				Player.setXPos( newPlayerPosition);
+				Debug.Log(newPlayerPosition);
+			
 				vDirection = -1;
 				verticalHelper +=	Mathf.PI/((n_L-1));
 					
@@ -224,6 +241,10 @@ public class InputHandler : MonoBehaviour {
 			} else if ( vDirection == -1 && Mathf.Sign(verticalMovement) == -1){	// Bewegungsrichtung blieb gleich
 				
 				//Debug.Log("#3");
+				// Setting position of player in current cell
+				float newPlayerPosition =  Mathf.Abs( verticalAngle - verticalHelper) / (Mathf.PI/(n_L-1));
+				Player.setXPos( newPlayerPosition);
+				Debug.Log(newPlayerPosition);
 
 				if (Mathf.Abs( verticalAngle - verticalHelper) > Mathf.PI/(n_L-1)){
 					
@@ -248,7 +269,10 @@ public class InputHandler : MonoBehaviour {
 			} else if (vDirection == -1 && Mathf.Sign(verticalMovement) == 1){	// Bewegungsrichtung ändert sich
 				
 				//Debug.Log("#4");
-
+				float newPlayerPosition =  1-Mathf.Abs(verticalAngle-verticalHelper)/(Mathf.PI/(n_L-1)); //bs( verticalAngle - verticalHelper) / (Mathf.PI/(n_L-1));
+				Player.setXPos( newPlayerPosition);
+				Debug.Log(newPlayerPosition);
+			
 				vDirection = 1;
 				verticalHelper -=	Mathf.PI/((n_L-1));
 				
@@ -278,9 +302,15 @@ public class InputHandler : MonoBehaviour {
 	}
 	
 	private float determineHorizontalParcelPosition(float horizontalMovement, float m){
+		
 		if ( hDirection == -1 && Mathf.Sign(horizontalMovement) == -1){	// Bewegungsrichtung blieb gleich				
-				//Debug.Log("#H1");
-
+				Debug.Log("#H1");
+			
+				float newPlayerPosition =  1-Mathf.Abs(horizontalAngle-horizontalHelper)/(2*Mathf.PI/n_B); //bs( verticalAngle - verticalHelper) / (Mathf.PI/(n_L-1));
+				Player.setZPos( newPlayerPosition);
+				Debug.Log(newPlayerPosition);
+			
+			
 				if (Mathf.Abs( horizontalAngle - horizontalHelper) > 2*Mathf.PI/n_B){
 					
 					Parcel newCell;
@@ -303,10 +333,15 @@ public class InputHandler : MonoBehaviour {
 				}
 			} else if (hDirection == -1 && Mathf.Sign(horizontalMovement) == 1){	// Bewegungsrichtung ändert sich
 				
-				//Debug.Log("#H2");
-
+				Debug.Log("#H2");
+				
+			
 				hDirection = 1;
-				horizontalHelper +=	Mathf.PI/((n_L-1));
+				horizontalHelper +=	Mathf.PI/(n_B);
+			
+				float newPlayerPosition =  Mathf.Abs(horizontalAngle-horizontalHelper)/(2*Mathf.PI/n_B); //bs( verticalAngle - verticalHelper) / (Mathf.PI/(n_L-1));
+				Player.setZPos( newPlayerPosition);
+				Debug.Log(newPlayerPosition);
 					
 				if (Mathf.Abs( horizontalAngle - horizontalHelper) > 2*Mathf.PI/n_B){
 				
@@ -330,8 +365,11 @@ public class InputHandler : MonoBehaviour {
 				}
 			} else if ( hDirection == 1 && Mathf.Sign(horizontalMovement) == 1){	// Bewegungsrichtung blieb gleich
 				
-				//Debug.Log("#H3");
-
+				Debug.Log("#H3");
+				float newPlayerPosition =  Mathf.Abs(horizontalAngle-horizontalHelper)/(2*Mathf.PI/n_B); //bs( verticalAngle - verticalHelper) / (Mathf.PI/(n_L-1));
+				Player.setZPos( newPlayerPosition);
+				Debug.Log(newPlayerPosition);
+			
 				if (Mathf.Abs( horizontalAngle - horizontalHelper) > 2*Mathf.PI/n_B){
 					//Debug.Log("Treffer");
 					Parcel newCell;
@@ -351,11 +389,16 @@ public class InputHandler : MonoBehaviour {
 				}
 			} else if (hDirection == 1 && Mathf.Sign(horizontalMovement) == -1){	// Bewegungsrichtung ändert sich
 				
-				//Debug.Log("#H4");
-
-				hDirection = -1;
-				horizontalHelper -=	Mathf.PI/((n_L-1));
+				Debug.Log("#H4");
 				
+			
+				hDirection = -1;
+				horizontalHelper -=	Mathf.PI/(n_B);
+			
+				float newPlayerPosition =  1-Mathf.Abs(horizontalAngle-horizontalHelper)/(2*Mathf.PI/n_B); //bs( verticalAngle - verticalHelper) / (Mathf.PI/(n_L-1));
+				Player.setZPos( newPlayerPosition);
+				Debug.Log(newPlayerPosition);
+			
 				if (Mathf.Abs( horizontalAngle - horizontalHelper) > 2*Mathf.PI/n_B){
 					
 					Parcel newCell;
