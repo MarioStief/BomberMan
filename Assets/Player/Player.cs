@@ -132,7 +132,7 @@ namespace AssemblyCSharp
 			
 			currentCell = parcel;	
 			
-			currentCell.setColor(Color.cyan);
+			//currentCell.setColor(Color.cyan);
 			currentCell.hightlightColor(true);
 		}
 		

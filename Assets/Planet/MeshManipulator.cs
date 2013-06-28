@@ -74,7 +74,9 @@ public class MeshManipulator : MonoBehaviour {
 	// Die Höhe des Würfels wird im Aktualisierungsschritt beachtet.
 	// </summary>
 	public void updateCoordinates(){
-		
+		if ( meshParcel != null) {
+			height = meshParcel.getHeight();
+		}
 		
 		if (height == 0)
 			setVertices(sphere.sphereVertices[(int)vertexPosition[0].x][(int)vertexPosition[0].y][(int)vertexPosition[0].z],

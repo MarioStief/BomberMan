@@ -140,7 +140,7 @@ public class Explosion : MonoBehaviour
 			}
 
 			if (elapsedTime > 0.3f) {					// nach 300 ms ohne Aktualisierung:
-				placePowerup();							// Lasse Powerup erscheinen
+				//placePowerup();							// Lasse Powerup erscheinen
 				for (int i = 1; i <= 4; i++) {			// keine neuen Partikel mehr
 					if (explosion[i] != null) {
 						//explosion[i].GetComponent<ParticleEmitter>().maxEmission = 0;
@@ -152,7 +152,7 @@ public class Explosion : MonoBehaviour
 			if (elapsedTime > 0.1f) {					// alle 100 ms
 				foreach (ExplosionField explosionField in explosionChain) {
 					bool stillRunning = false;
-					if (explosionField.getDelay() == 0 && explosionField.getCell().getType() < 2) {
+					if (explosionField.getDelay() == 0) {
 						Vector3 position = explosionField.getCell().getCenterPos();
 						GameObject explosion = GameObject.Instantiate(explosionPrefab, position, Quaternion.identity) as GameObject;
 						explosion.transform.position = new Vector3(position.x + 0.05f, position.y + 0.05f, position.z + 0.05f);
@@ -161,10 +161,10 @@ public class Explosion : MonoBehaviour
 						explosionField.getCell().decreaseHeight();
 						float explosionSize = 300f;
 						detonator.setSize(explosionSize);
-						/* derzeit redundant
+						
 						if (explosionField.getCell().getHeight() > 1f)
-							detonator.setSize(explosionSize*2); // in Wirklichkeit halbiert
-						*/
+							detonator.setSize(explosionSize*4); // in Wirklichkeit halbiert
+						
 						detonator.setDuration(15f);
 						Parcel explodingCell = explosionField.getCell();
 						/*
@@ -184,20 +184,31 @@ public class Explosion : MonoBehaviour
 						
 						detonator.Explode();
 						explosionField.getCell().setExploding(true);
+						
+						// Wand zerstören, ggfls. Powerup setzen
+						if (PowerupPool.getDestroyable())
+							if (explosionField.getCell().hasPowerup())
+								explosionField.getCell().destroyPowerup();
+
 						if (explodingCell.getType() == 1) {
 							explodingCell.setType(0);
+							int random = new System.Random().Next(0, (int) 100/DROPCHANCE);
+							Debug.Log("Placing Powerup for cell " + explodingCell.getCoordinates() + ": " + (random == 0 ? "yes" : "no"));
+							if (random == 0) { // Random().Next(0, 4) € {0, 1, 2, 3}
+								PowerupPool.setPowerup(explodingCell);
+							}
 						}
+						explodingCell.getMeshManipulator().updateCoordinates();
 
 						// Bomben jagen sich gegenseitig hoch:
 						if (explosionField.getCell().hasBomb()) {
 							explosionField.getCell().getExplosion().startExplosion();
 						}
 						
-						if (PowerupPool.getDestroyable())
-							if (explosionField.getCell().hasPowerup())
-								explosionField.getCell().destroyPowerup();
 						stillRunning = true;
-					} else if (explosionField.getDelay() == -5) {
+
+						
+					} else if (explosionField.getDelay() == -3) {
 						explosionField.getCell().setExploding(false);
 					}
 
@@ -208,13 +219,13 @@ public class Explosion : MonoBehaviour
 			}
 		}
 	}
-	
+	/*
 	private void placePowerup() {
 		if (!powerupsPlaced) {
 			foreach (ExplosionField explosionField in explosionChain) {
 				Parcel cell = explosionField.getCell();
 				Debug.Log("Cell " + cell.getCoordinates() + " has GameObject: " + (cell.hasGameObject() ? "yes" : "no"));
-				if (!cell.hasGameObject() && explosionField.getCell().getHeight() == 1.00f) {
+				if (!cell.hasGameObject()) {
 					int random = new System.Random().Next(0, (int) 100/DROPCHANCE);
 					Debug.Log("Placing Powerup for cell " + cell.getCoordinates() + ": " + (random == 0 ? "yes" : "no"));
 					if (random == 0) { // Random().Next(0, 4) € {0, 1, 2, 3}
@@ -225,6 +236,7 @@ public class Explosion : MonoBehaviour
 		}
 		powerupsPlaced = true;
 	}
+	*/
 	
 	private void instantiatePSystems(){
 		

@@ -25,7 +25,7 @@ namespace AssemblyCSharp
 		Color color;					// Parcel-Farbe
 		
 		bool highlight = false;
-		Color highlightColor = Color.red;
+		Color highlightColor = Color.cyan;
 		
 		float height = 1.0f;
 		
