@@ -7,7 +7,7 @@ public class Explosion : MonoBehaviour
 {
 	private const int DELAY = 100;
 	// private const float EXPLOSIONTIMER = 0.1f; // Debugwert
-	private const float EXPLOSIONTIMER = 3.0f;
+	private const float EXPLOSIONTIMER = 1.0f;
 	private const int DROPCHANCE = 25; // Drop chance in %
 	float SCALE = 0.01f;
 	public GameObject sphere; // DELETE?
@@ -161,7 +161,7 @@ public class Explosion : MonoBehaviour
 						float explosionSize = 300f;
 						detonator.setSize(explosionSize);
 						
-						if (explosionField.getCell().getHeight() > 1f)
+						if (explosionField.getCell().getHeight() > 1f) // kleine Explosion in den Steinblöcken
 							detonator.setSize(explosionSize*4); // in Wirklichkeit halbiert
 						
 						detonator.setDuration(15f);
@@ -197,6 +197,11 @@ public class Explosion : MonoBehaviour
 								PowerupPool.setPowerup(explodingCell);
 							}
 						}
+						if (explodingCell.getType() == 2 && explodingCell.getHeight() == 1f) {
+							explodingCell.setType(0);
+							PowerupPool.setPowerup(explodingCell);
+						}
+
 						explodingCell.getMeshManipulator().updateCoordinates();
 
 						// Bomben jagen sich gegenseitig hoch:

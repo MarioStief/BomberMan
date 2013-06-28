@@ -73,7 +73,8 @@ namespace AssemblyCSharp
 					getMeshManipulator().updateCoordinates();
 					Debug.Log("MeshManipulator says: " + getMeshManipulator().vertexPosition[i].x);
 				}
-			}
+			} else if (height > 1f)
+				height = 1f;
 		}
 		
 		public void setIdentity(int lpos, int bpos) {
