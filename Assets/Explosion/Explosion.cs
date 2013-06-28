@@ -101,7 +101,6 @@ public class Explosion : MonoBehaviour
 		if (self)
 			Player.removeBomb();
 		//bomb = null;
-		sphereHandler.getRink().clearColor();
 		
 		Debug.Log ("Flammenstaerke: " + reach[1] + ", " + reach[2] + ", " + reach[3] + ", " + reach[4]);
 		

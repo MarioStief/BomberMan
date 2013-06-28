@@ -231,15 +231,6 @@ namespace AssemblyCSharp
 		//	return currentParcel;
 		//}
 		
-		// DEBUG
-		public void clearColor() {
-			for (int i = 0; i < gameArea.Length; i++) {
-				for (int j = 0; j < gameArea[i].Length; j++) {
-					drawnArea[i][j].renderer.material.color = Color.white;
-				}
-			}
-		}
-		
 		public GameObject[] getPlayers() {
 			return players;
 		}
