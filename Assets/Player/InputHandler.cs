@@ -82,6 +82,13 @@ public class InputHandler : MonoBehaviour {
 			// -----------------------------------------------------------
 			moveCharacter();
 			currCell = rink.gameArea[lpos][bpos];
+			if (currCell.isExploding()) {
+				// don't die while debugging...
+				Player.setDead(true);
+				renderer.material.color = Color.black;
+				GameObject deadPlayer = GameObject.Instantiate(deadPlayerPrefab, new Vector3(transform.position.x, transform.position.y, transform.position.z), Quaternion.identity) as GameObject; 
+				//*/
+			}
 			
 			
 			// Falls die Zelle ein Powerup enthält -> aufsammeln
@@ -343,7 +350,7 @@ public class InputHandler : MonoBehaviour {
 		if (Player.getHP() == 0) {
 			renderer.material.color = Color.black;
 			//moveDirection = new Vector3(0, 0, 0);
-			//GameObject deadPlayer = GameObject.Instantiate(deadPlayerPrefab, new Vector3(currCell.getXPos() + 0.5f, 0.3f, currCell.getZPos() + 0.5f), Quaternion.identity) as GameObject; 
+			GameObject deadPlayer = GameObject.Instantiate(deadPlayerPrefab, new Vector3(transform.position.x, transform.position.y, transform.position.z), Quaternion.identity) as GameObject; 
 		}
 	}
 	

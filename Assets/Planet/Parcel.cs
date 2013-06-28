@@ -11,7 +11,7 @@ namespace AssemblyCSharp
 	{
 		Vector3 center;
 		
-		float height;		// value in percent, meaning: 1.1f = 110% of
+		private float height;		// value in percent, meaning: 1.1f = 110% of
 		private int lpos;				// Position der aktuellen Parzelle rink.gameArea ist [lpos][bpos]
 		private int bpos;
 		
@@ -21,11 +21,36 @@ namespace AssemblyCSharp
 		
 		private bool bombOnCell; // Beschränkung von einer Bombe pro Feld überhaupt notwendig?
 		private bool powerupOnCell;
+		private Explosion explosion;
+		private bool exploding;
 		
 		private PowerupType powerupType;
 		
 		public Parcel (){
 			height = 1.0f;
+		}
+		
+		public MeshManipulator getMeshManipulator() {
+			return GameObject.Find("Sphere").GetComponent<SphereBuilder>().getRink().drawnArea[lpos][bpos];
+		}
+		
+		public void setExploding (bool exploding) {
+			this.exploding = exploding;
+		}
+		
+		public bool isExploding () {
+			return exploding;
+		}
+
+		public void decreaseHeight() {
+			if (height > 1.009f) { // also 1.01 oder höher
+				height -= 0.01f;
+				for (int i = 0; i < 5; i++) {
+					if (i < 2 || i > 3)
+					//getMeshManipulator().vertexPosition[i].x = height;
+					Debug.Log("MeshManipulator says: " + getMeshManipulator().vertexPosition[i].x);
+				}
+			}
 		}
 		
 		public Parcel (float height)
@@ -113,7 +138,15 @@ namespace AssemblyCSharp
 		public bool hasBomb() {
 			return bombOnCell;
 		}
-
+		
+		public void setExplosion(Explosion explosion) {
+			this.explosion = explosion;
+		}
+		
+		public Explosion getExplosion() {
+			return explosion;
+		}
+		
 		public bool hasPowerup() {
 			return powerupOnCell;
 		}
@@ -140,7 +173,7 @@ namespace AssemblyCSharp
 		}
 
 		public Parcel getSurroundingCell(int lpos, int bpos) {
-			GameObject sphere = sphere = GameObject.Find("Sphere");
+			GameObject sphere = GameObject.Find("Sphere");
 			SphereBuilder sphereHandler = sphere.GetComponent<SphereBuilder>();
 			Rink rink = sphereHandler.getRink();
 			Parcel[][] cell = rink.getGameArea();
@@ -160,11 +193,11 @@ namespace AssemblyCSharp
 			return cell[lpos][bpos];
 		}
 
-		public void blueColor() {
+		public void colorCell(Color color) {
 			GameObject sphere = GameObject.Find("Sphere");
 			SphereBuilder sphereHandler = sphere.GetComponent<SphereBuilder>();
 			Rink rink = sphereHandler.getRink();
-			rink.drawnArea[lpos][bpos].renderer.material.color = Color.blue;
+			rink.drawnArea[lpos][bpos].renderer.material.color = color;
 		}
 		
 		public Vector3 getCenterPos() {

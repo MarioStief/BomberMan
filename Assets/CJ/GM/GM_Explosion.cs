@@ -14,7 +14,7 @@ public class GM_Explosion : MonoBehaviour {
 
     private int[] dists;
     private bool waitingForBombExplosion = true;
-    private bool itemDrop = false;
+//    private bool itemDrop = false;
 
     private GM_GameArea gameArea = null;
     private int flamePower = 50; // Player.getFlamerPower()

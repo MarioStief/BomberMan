@@ -6,9 +6,10 @@ using AssemblyCSharp;
 public class Explosion : MonoBehaviour
 {
 	private const int DELAY = 100;
+	// private const float EXPLOSIONTIMER = 0.1f; // Debugwert
 	private const float EXPLOSIONTIMER = 3.0f;
 	private const int DROPCHANCE = 25; // Drop chance in %
-	float SCALE = 0.25f;
+	float SCALE = 0.01f;
 	public GameObject sphere; // DELETE?
 	private SphereBuilder sphereHandler;
 	public Parcel cell;
@@ -30,8 +31,6 @@ public class Explosion : MonoBehaviour
 	private float createTime;
 	private bool powerupsPlaced = false;
 	
-	private Vector3 position;
-	
 	private static GameObject guiObject;
 	
 	public static GameObject GUIObject {
@@ -49,6 +48,7 @@ public class Explosion : MonoBehaviour
 		//calls Start() on the object and initializes it.
 		thisObj.cell = cell;
 		thisObj.flamePower = flamePower;
+		thisObj.transform.position = cell.getCenterPos();
 		thisObj.self = self;
 		return thisObj;
 	}
@@ -65,8 +65,8 @@ public class Explosion : MonoBehaviour
 	void Awake() {
 		bombPrefab = GameObject.Find("bomb");
 		explosionPrefab = GameObject.Find("Explosion");
+		explosionPrefab.transform.localScale *= SCALE;
 		sphere = GameObject.Find("Sphere");
-		//explosionPrefab.transform.localScale *= SCALE;
 		sphereHandler = sphere.GetComponent<SphereBuilder>();
 	}
 	
@@ -86,8 +86,9 @@ public class Explosion : MonoBehaviour
 		instantiatePSystems();
 
 		//explosions.Add(this);
-		position = cell.getCenterPos();
-		cell.setGameObject(GameObject.Instantiate(bombPrefab, position, Quaternion.identity) as GameObject);
+		//transform.position = cell.getCenterPos();
+		cell.setGameObject(GameObject.Instantiate(bombPrefab, transform.position, Quaternion.identity) as GameObject);
+		cell.setExplosion(this);
 		cell.setBomb(true);
 
 	}
@@ -100,11 +101,12 @@ public class Explosion : MonoBehaviour
 		if (self)
 			Player.removeBomb();
 		//bomb = null;
-		sphereHandler.getRink().clearBlue();
+		sphereHandler.getRink().clearColor();
 		
 		Debug.Log ("Flammenstaerke: " + reach[1] + ", " + reach[2] + ", " + reach[3] + ", " + reach[4]);
 		
-		for (int i = 1; i <= 4; i++) {
+		/*
+		for (int i = 1; i <= 4; i++) { //  CHANGE TO i = 1; i <= 4
 			explosion[i].GetComponent<ParticleEmitter>().minSize = 0.0f;
 			explosion[i].GetComponent<ParticleEmitter>().maxSize = 2.5f;
 			explosion[i].GetComponent<ParticleEmitter>().minEnergy = 0.2f;
@@ -112,6 +114,7 @@ public class Explosion : MonoBehaviour
 			explosion[i].GetComponent<ParticleEmitter>().minEmission = 2000;
 			explosion[i].GetComponent<ParticleEmitter>().maxEmission = 2000;
 		}
+		*/
 		/*
 		foreach (ExplosionField explosionField in explosionChain) {
 			explosionField.decrement(); // Zähle Delay-Ticker runter
@@ -140,24 +143,58 @@ public class Explosion : MonoBehaviour
 				placePowerup();							// Lasse Powerup erscheinen
 				for (int i = 1; i <= 4; i++) {			// keine neuen Partikel mehr
 					if (explosion[i] != null) {
-						explosion[i].GetComponent<ParticleEmitter>().maxEmission = 0;
+						//explosion[i].GetComponent<ParticleEmitter>().maxEmission = 0;
 					}
 				}
 			}
 
-			
+			// Explosionskette startet
 			if (elapsedTime > 0.1f) {					// alle 100 ms
 				foreach (ExplosionField explosionField in explosionChain) {
 					bool stillRunning = false;
 					if (explosionField.getDelay() == 0) {
-						//explosionField.getCell().setExploding(true);
+						Vector3 position = explosionField.getCell().getCenterPos();
+						GameObject explosion = GameObject.Instantiate(explosionPrefab, position, Quaternion.identity) as GameObject;
+						explosion.transform.position = new Vector3(position.x + 0.05f, position.y + 0.05f, position.z + 0.05f);
+						//explosion.GetComponent<Detonator>().size = 10f;
+						Detonator detonator = explosion.GetComponent<Detonator>();
+						explosionField.getCell().decreaseHeight();
+						float explosionSize = 300f;
+						detonator.setSize(explosionSize);
+						if (explosionField.getCell().getHeight() > 1f)
+							detonator.setSize(explosionSize*2); // in Wirklichkeit halbiert
+						detonator.setDuration(15f);
+						Parcel explodingCell = explosionField.getCell();
+						/*
+						DetonatorComponent detonatorComponent = explosion.GetComponent<DetonatorComponent>();
+						detonatorComponent.force = explodingCell.getSurroundingCell(explodingCell.getLpos(),explodingCell.getBpos()).getCenterPos();
+						detonatorComponent.startForce = explodingCell.getSurroundingCell(explodingCell.getLpos(),explodingCell.getBpos()).getCenterPos();
+						detonatorComponent.velocity = explodingCell.getSurroundingCell(explodingCell.getLpos(),explodingCell.getBpos()).getCenterPos();
+						detonatorComponent.startVelocity = explodingCell.getSurroundingCell(explodingCell.getLpos(),explodingCell.getBpos()).getCenterPos();
+						//detonatorComponent.startSize = 100f;
+						*/
+						
+						// Explosionslautstärke der Spielerentfernung anpassen:
+						float distance = Vector3.Distance (GameObject.Find("Player").transform.position, position);
+						detonator.GetComponent<AudioSource>().volume /= 2*distance;
+						detonator.GetComponent<AudioSource>().Play();
+						Debug.Log ("Explosion Volume: " + (100/(2*distance)) + " %");
+						
+						detonator.Explode();
+						explosionField.getCell().setExploding(true);
+
+						// Bomben jagen sich gegenseitig hoch:
+						if (explosionField.getCell().hasBomb()) {
+							explosionField.getCell().getExplosion().startExplosion();
+						}
+						
 						if (PowerupPool.getDestroyable())
 							if (explosionField.getCell().hasPowerup())
 								explosionField.getCell().destroyPowerup();
 						stillRunning = true;
-					} /*else if (explosionField.getDelay() == -5) {
-						explosionField.getExplosion().GetComponent<ParticleEmitter>().maxEmission = 0;
-					}*/
+					} else if (explosionField.getDelay() == -5) {
+						explosionField.getCell().setExploding(false);
+					}
 
 					explosionField.decrement(); // Zähle Delay-Ticker runter
 					if (stillRunning)
@@ -169,11 +206,10 @@ public class Explosion : MonoBehaviour
 	
 	private void placePowerup() {
 		if (!powerupsPlaced) {
-			Debug.Log ("#Still in ExplosionFields: " + explosionChain.Count);
 			foreach (ExplosionField explosionField in explosionChain) {
 				Parcel cell = explosionField.getCell();
 				Debug.Log("Cell " + cell.getCoordinates() + " has GameObject: " + (cell.hasGameObject() ? "yes" : "no"));
-				if (!cell.hasGameObject()) {
+				if (!cell.hasGameObject() && explosionField.getCell().getHeight() == 1.00f) {
 					int random = new System.Random().Next(0, (int) 100/DROPCHANCE);
 					Debug.Log("Placing Powerup for cell " + cell.getCoordinates() + ": " + (random == 0 ? "yes" : "no"));
 					if (random == 0) { // Random().Next(0, 4) € {0, 1, 2, 3}
@@ -187,73 +223,84 @@ public class Explosion : MonoBehaviour
 	
 	private void instantiatePSystems(){
 		
-		for (int i = 0; i < 5; i++) {
-			//explosion[i] = GameObject.Instantiate(explosionPrefab, new Vector3( xpos + 0.5f, 0.5f, zpos + 0.5f), Quaternion.identity) as GameObject;
-			explosion[i] = GameObject.Instantiate(explosionPrefab, position, Quaternion.identity) as GameObject;
-			explosion[i].GetComponent<ParticleEmitter>().maxEmission = 0;
-			if (i == 0)
-				explosionChain.Add(new ExplosionField(0,cell));
+		//for (int i = 0; i < 5; i++) { // DEBUG
+			// die Explosion etwas über die Planetenoberfläche anheben:
+			//explosion[i] = GameObject.Instantiate(explosionPrefab, transform.position, Quaternion.identity) as GameObject;
+			//explosion[i].GetComponent<ParticleEmitter>().maxEmission = 0;
+			//if (i == 0)
+		if (true) {
+			cell.colorCell(Color.red);
+			explosionChain.Add(new ExplosionField(0, cell, false, 0, 0));
 		}
+		//}
 		
-		explosion[1].GetComponent<ParticleEmitter>().worldVelocity = new Vector3(-5.0f, 0.3f, 0.0f);
-		explosion[2].GetComponent<ParticleEmitter>().worldVelocity = new Vector3(5.0f, 0.3f, 0.0f);
-		explosion[3].GetComponent<ParticleEmitter>().worldVelocity = new Vector3(0.0f, 0.3f, -5.0f);
-		explosion[4].GetComponent<ParticleEmitter>().worldVelocity = new Vector3(0.0f, 0.3f, 5.0f);
+		//explosion[1].GetComponent<ParticleEmitter>().worldVelocity = new Vector3(-5.0f, 0.3f, 0.0f);
+		//explosion[2].GetComponent<ParticleEmitter>().worldVelocity = new Vector3(5.0f, 0.3f, 0.0f);
+		//explosion[3].GetComponent<ParticleEmitter>().worldVelocity = new Vector3(0.0f, 0.3f, -5.0f);
+		//explosion[4].GetComponent<ParticleEmitter>().worldVelocity = new Vector3(0.0f, 0.3f, 5.0f);
 
-		//getDistances();
-		// DEBUG START
-		for (int i = 0; i < dists.Length; i++) {
-			dists[i] = 10;
-		}
-		// DEBUG END
+		bool[] stop = {false, false, false, false};
 		
-		Debug.Log("Dists: [" + dists[0] + "," + dists[1] + "," + dists[2] + "," + dists[3] + "]");
-		
-		
+		bool SURROUNDING_DEBUG = false;
+
+		if (SURROUNDING_DEBUG)
+			Debug.Log("I am here: " + this.cell.getCoordinates());
 			
 		for (int i = 1; i <= flamePower; i++) {
-			if (i <= dists[0]) {
-				int x = (int) transform.position.x;
-				int z = (int) transform.position.z;
+			if (!stop[0]) {
 				Parcel cell = this.cell.getSurroundingCell(-i, 0);
-				if (cell.getHeight() < 1.1f) {
-					cell.blueColor();
-					explosionChain.Add(new ExplosionField(i,cell));
+				if (SURROUNDING_DEBUG)
+					Debug.Log("Surrounding Cell: " + cell.getCoordinates() + ", Height: " + cell.getHeight());
+				if (cell.getHeight() == 1f) {
+					cell.colorCell(Color.red);
 					reach[1]++;
+				} else {
+					stop[0] = true;
+					cell.colorCell(Color.gray);
 				}
+				explosionChain.Add(new ExplosionField(i,cell, stop[0], -i, 0));
 			}
 
-			if (i <= dists[1]) {
-				int x = (int) transform.position.x;
-				int z = (int) transform.position.z;
+			if (!stop[1]) {
 				Parcel cell = this.cell.getSurroundingCell(i, 0);
-				if (cell.getHeight() < 1.1f) {
-					cell.blueColor();
-					explosionChain.Add(new ExplosionField(i,cell));
+				if (SURROUNDING_DEBUG)
+					Debug.Log("Surrounding Cell: " + cell.getCoordinates() + ", Height: " + cell.getHeight());
+				if (cell.getHeight() == 1f) {
+					cell.colorCell(Color.red);
 					reach[2]++;
+				} else {
+					stop[1] = true;
+					cell.colorCell(Color.gray);
 				}
+				explosionChain.Add(new ExplosionField(i,cell, stop[1], i, 0));
 			}
 
-			if (i <= dists[2]) {
-				int x = (int) transform.position.x;
-				int z = (int) transform.position.z;
+			if (!stop[2]) {
 				Parcel cell = this.cell.getSurroundingCell(0, -i);
-				if (cell.getHeight() < 1.1f) {
-					cell.blueColor();
-					explosionChain.Add(new ExplosionField(i,cell));
+				if (SURROUNDING_DEBUG)
+					Debug.Log("Surrounding Cell: " + cell.getCoordinates() + ", Height: " + cell.getHeight());
+				if (cell.getHeight() == 1.00f) {
+					cell.colorCell(Color.red);
 					reach[3]++;
+				} else {
+					stop[2] = true;
+					cell.colorCell(Color.gray);
 				}
+				explosionChain.Add(new ExplosionField(i,cell, stop[2], 0, -i));
 			}
 
-			if (i <= dists[3]) {
-				int x = (int) transform.position.x;
-				int z = (int) transform.position.z;
+			if (!stop[3]) {
 				Parcel cell = this.cell.getSurroundingCell(0, i);
-				if (cell.getHeight() < 1.1f) {
-					cell.blueColor();
-					explosionChain.Add(new ExplosionField(i,cell));
+				if (SURROUNDING_DEBUG)
+					Debug.Log("Surrounding Cell: " + cell.getCoordinates() + ", Height: " + cell.getHeight());
+				if (cell.getHeight() == 1f) {
+					cell.colorCell(Color.red);
 					reach[4]++;
+				} else {
+					stop[3] = true;
+					cell.colorCell(Color.gray);
 				}
+				explosionChain.Add(new ExplosionField(i,cell, stop[3], 0, i));
 			}
 		}
 		Debug.Log ("#ExplosionFields: " + explosionChain.Count);

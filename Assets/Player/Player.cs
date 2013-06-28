@@ -45,10 +45,10 @@ namespace AssemblyCSharp
 					flamePower = MAXFLAMEPOWER;
 			} else if (type == PowerupType.PLAYER_SPEED_UP) {
 				if (speed < MAXSPEED)
-					speed += 0.5f;
+					speed += 0.1f;
 			} else if (type == PowerupType.PLAYER_SPEED_DOWN) {
 				if (speed > 1.0f)
-					speed -= 0.5f;
+					speed -= 0.1f;
 			}
 			Debug.Log("bombs: " + bombs + ", flamePower: " + flamePower + ", speed: " + speed);
 		}
@@ -112,7 +112,7 @@ namespace AssemblyCSharp
 			
 			currentCell = parcel;	
 			
-			currentCell.setColor(Color.red);
+			currentCell.setColor(Color.cyan);
 		}
 		
 		public static Parcel getCurrentParcel(){

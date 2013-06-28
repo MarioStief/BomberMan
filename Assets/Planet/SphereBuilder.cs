@@ -340,6 +340,17 @@ public class SphereBuilder : MonoBehaviour {
 		gameArea.renderAll();
 	}	//*/
 	
+	void Update(){
+		/*
+		for ( int i = 0; i < gameArea.Length; i++) {
+			for ( int j = 0; j < gameArea[i].Length; j++) {
+				gameArea[i][j].updateHeight();
+			}
+		}
+		*/
+		//gameArea.updateHeight();
+	}
+	
 	public Rink getRink() {
 		return gameArea;
 	}
