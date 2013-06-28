@@ -42,7 +42,7 @@ public class InputHandler : MonoBehaviour {
 	
 	void Awake() {
 		deadPlayerPrefab = GameObject.Find("DeadPlayer");
-		sphere = playerHandler = GameObject.Find("Sphere");
+		sphere = GameObject.Find("Sphere");
 		sphereHandler = sphere.GetComponent<SphereBuilder>();
 		playerHandler = GameObject.Find("Player");
 	}

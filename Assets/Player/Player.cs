@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace AssemblyCSharp
 {
@@ -26,7 +27,8 @@ namespace AssemblyCSharp
 		
 		private static bool dead = false;
 		
-		static void Awake() {
+		static Player() {
+			sphere = GameObject.Find("Sphere");
 			sphereHandler = sphere.GetComponent<SphereBuilder>();
 		}
 		
@@ -96,6 +98,39 @@ namespace AssemblyCSharp
 		
 		public static void setDead(bool d) {
 			dead = d;
+			if (d) {
+				// Verteile Powerups über das Spielfeld
+				List<Parcel> parcelPool = new List<Parcel>();
+				Parcel[][] gameArea = sphereHandler.getRink().getGameArea();
+				for (int i = 0; i < gameArea.Length; i++) {
+					for (int j = 0; j < gameArea[i].Length; j++) {
+						if (gameArea[i][j].getType() == 0) {
+							parcelPool.Add(gameArea[i][j]);
+						}
+					}
+				}
+				parcelPool = shuffleList(parcelPool);
+				if (flamePower == MAXFLAMEPOWER && parcelPool.Count > 0) {
+					parcelPool[0].addPowerup(new Powerup(PowerupType.GOLDEN_FLAME), PowerupPool.goldenFlamePowerupPrefab);
+					parcelPool.RemoveAt(0);
+					bombs = 1;
+				}
+				while (bombs > 1 && parcelPool.Count > 0) {
+					parcelPool[0].addPowerup(new Powerup(PowerupType.BOMB_UP), PowerupPool.bombUpPowerupPreftab);
+					parcelPool.RemoveAt(0);
+					bombs--;
+				}
+				while (flamePower > 1 && parcelPool.Count > 0) {
+					parcelPool[0].addPowerup(new Powerup(PowerupType.FLAME_UP), PowerupPool.flameUpPowerupPrefab);
+					parcelPool.RemoveAt(0);
+					flamePower--;
+				}
+				while (speed > 0.4f && parcelPool.Count > 0) {
+					parcelPool[0].addPowerup(new Powerup(PowerupType.PLAYER_SPEED_UP), PowerupPool.playerSpeedUpPowerupPrefab);
+					parcelPool.RemoveAt(0);
+					speed -= 0.1f;
+				}
+			}
 		}
 		
 		public static bool isDead() {
@@ -138,6 +173,21 @@ namespace AssemblyCSharp
 		
 		public static Parcel getCurrentParcel(){
 			return currentCell;	
+		}
+		
+		private static List<Parcel> shuffleList(List<Parcel> sortedList)
+		{
+			List<Parcel> randomList = new List<Parcel>();
+			
+			System.Random r = new System.Random();
+		    int randomIndex = 0;
+		    while (sortedList.Count > 0)
+		    {
+		    	randomIndex = r.Next(0, sortedList.Count);
+		    	randomList.Add(sortedList[randomIndex]);
+				sortedList.RemoveAt(randomIndex);
+			}
+			return randomList;
 		}
 	}
 }

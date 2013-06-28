@@ -164,6 +164,12 @@ namespace AssemblyCSharp
 			powerupOnCell = true;
 		}
 
+		public void addPowerup(Powerup powerup, GameObject prefab) {
+			this.obj = GameObject.Instantiate(prefab, getCenterPos(), Quaternion.identity) as GameObject;
+			this.powerupType = powerup.getType();
+			powerupOnCell = true;
+		}
+
 		public PowerupType destroyPowerup() {
 			GameObject.Destroy(obj);
 			obj = null;
