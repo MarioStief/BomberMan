@@ -247,60 +247,37 @@ public class Explosion : MonoBehaviour
 			Debug.Log("I am here: " + this.cell.getCoordinates());
 			
 		for (int i = 1; i <= flamePower; i++) {
-			if (!stop[0]) {
-				Parcel cell = this.cell.getSurroundingCell(-i, 0);
-				if (SURROUNDING_DEBUG)
-					Debug.Log("Surrounding Cell: " + cell.getCoordinates() + ", Height: " + cell.getHeight());
-				if (cell.getHeight() == 1f) {
-					cell.colorCell(Color.red);
-					reach[1]++;
-				} else {
-					stop[0] = true;
-					cell.colorCell(Color.gray);
+			for (int j = 0; j < 4; j++) {
+				if (!stop[j]) {
+					int lpos = 0;
+					int bpos = 0;
+					switch (j) {
+					case 0:
+						lpos = -i;
+						break;
+					case 1:
+						lpos = i;
+						break;
+					case 2:
+						bpos = -i;
+						break;
+					case 3:
+						bpos = i;
+						break;
+					}
+					Parcel cell = this.cell.getSurroundingCell(lpos, bpos);
+					if (SURROUNDING_DEBUG)
+						Debug.Log("Surrounding Cell: " + cell.getCoordinates() + ", Height: " + cell.getHeight());
+					if (cell.getHeight() == 1f) {
+						cell.colorCell(Color.red);
+						reach[j+1]++;
+					} else {
+						stop[j] = true;
+						cell.colorCell(Color.gray);
+					}
+					explosionChain.Add(new ExplosionField(i,cell, stop[0], lpos, bpos));
 				}
-				explosionChain.Add(new ExplosionField(i,cell, stop[0], -i, 0));
-			}
-
-			if (!stop[1]) {
-				Parcel cell = this.cell.getSurroundingCell(i, 0);
-				if (SURROUNDING_DEBUG)
-					Debug.Log("Surrounding Cell: " + cell.getCoordinates() + ", Height: " + cell.getHeight());
-				if (cell.getHeight() == 1f) {
-					cell.colorCell(Color.red);
-					reach[2]++;
-				} else {
-					stop[1] = true;
-					cell.colorCell(Color.gray);
-				}
-				explosionChain.Add(new ExplosionField(i,cell, stop[1], i, 0));
-			}
-
-			if (!stop[2]) {
-				Parcel cell = this.cell.getSurroundingCell(0, -i);
-				if (SURROUNDING_DEBUG)
-					Debug.Log("Surrounding Cell: " + cell.getCoordinates() + ", Height: " + cell.getHeight());
-				if (cell.getHeight() == 1.00f) {
-					cell.colorCell(Color.red);
-					reach[3]++;
-				} else {
-					stop[2] = true;
-					cell.colorCell(Color.gray);
-				}
-				explosionChain.Add(new ExplosionField(i,cell, stop[2], 0, -i));
-			}
-
-			if (!stop[3]) {
-				Parcel cell = this.cell.getSurroundingCell(0, i);
-				if (SURROUNDING_DEBUG)
-					Debug.Log("Surrounding Cell: " + cell.getCoordinates() + ", Height: " + cell.getHeight());
-				if (cell.getHeight() == 1f) {
-					cell.colorCell(Color.red);
-					reach[4]++;
-				} else {
-					stop[3] = true;
-					cell.colorCell(Color.gray);
-				}
-				explosionChain.Add(new ExplosionField(i,cell, stop[3], 0, i));
+				
 			}
 		}
 		Debug.Log ("#ExplosionFields: " + explosionChain.Count);
