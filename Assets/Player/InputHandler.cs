@@ -49,6 +49,8 @@ public class InputHandler : MonoBehaviour {
 	
 	// Use this for initialization
 	void Start () {
+		sphereHandler.move(0.000001f); // CK, fixed color on startup :)
+		moveAlongEquator(0.000001f);
 		
 		createTime = Time.time;
 		
@@ -121,8 +123,7 @@ public class InputHandler : MonoBehaviour {
 		
 		float verticalMovement = Input.GetAxis("Vertical");
 		float m = Player.getSpeed() * verticalMovement * Time.deltaTime;
-		
-		if ( verticalMovement != 0){
+		if ( verticalMovement != 0) {
 			
 			if ( vDirection == 0) {
 				
@@ -170,10 +171,10 @@ public class InputHandler : MonoBehaviour {
 			
 			moveAlongEquator( m);
 			if ( m == 0) horizontalAngle = hAngle;
-			rink.renderAll();	// 4Debug !!! Achtung: Muss im fertigen Spiel raus. Zieht locker 20 FPS!
-
+			//rink.renderAll();	// 4Debug !!! Achtung: Muss im fertigen Spiel raus. Zieht locker 20 FPS!
 		}
 		
+		transform.LookAt(Vector3.zero, Vector3.forward);
 		
 	}
 	
@@ -438,11 +439,11 @@ public class InputHandler : MonoBehaviour {
 										Mathf.Sin(movement) * transform.position.x + Mathf.Cos(movement) * transform.position.y,
 										transform.position.z);
 		
+		
 		camera.transform.position = new Vector3(Mathf.Cos(movement)* camera.transform.position.x - Mathf.Sin(movement) * camera.transform.position.y,
 										Mathf.Sin(movement) * camera.transform.position.x + Mathf.Cos(movement) * camera.transform.position.y,
 										camera.transform.position.z);
-		
-		camera.transform.LookAt(sphere.transform);
+		camera.transform.LookAt(Vector3.zero, Vector3.forward);
 	}
 	
 	void OnParticleCollision(GameObject explosion) {
