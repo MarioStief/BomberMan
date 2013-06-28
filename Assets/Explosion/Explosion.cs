@@ -152,7 +152,7 @@ public class Explosion : MonoBehaviour
 			if (elapsedTime > 0.1f) {					// alle 100 ms
 				foreach (ExplosionField explosionField in explosionChain) {
 					bool stillRunning = false;
-					if (explosionField.getDelay() == 0) {
+					if (explosionField.getDelay() == 0 && explosionField.getCell().getType() < 2) {
 						Vector3 position = explosionField.getCell().getCenterPos();
 						GameObject explosion = GameObject.Instantiate(explosionPrefab, position, Quaternion.identity) as GameObject;
 						explosion.transform.position = new Vector3(position.x + 0.05f, position.y + 0.05f, position.z + 0.05f);
@@ -161,8 +161,10 @@ public class Explosion : MonoBehaviour
 						explosionField.getCell().decreaseHeight();
 						float explosionSize = 300f;
 						detonator.setSize(explosionSize);
+						/* derzeit redundant
 						if (explosionField.getCell().getHeight() > 1f)
 							detonator.setSize(explosionSize*2); // in Wirklichkeit halbiert
+						*/
 						detonator.setDuration(15f);
 						Parcel explodingCell = explosionField.getCell();
 						/*
@@ -182,8 +184,8 @@ public class Explosion : MonoBehaviour
 						
 						detonator.Explode();
 						explosionField.getCell().setExploding(true);
-						if (cell.getType() == 1) {
-							cell.setType(0);
+						if (explodingCell.getType() == 1) {
+							explodingCell.setType(0);
 						}
 
 						// Bomben jagen sich gegenseitig hoch:
