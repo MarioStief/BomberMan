@@ -10,13 +10,6 @@ namespace AssemblyCSharp
 		private static bool destroyable = Preferences.getDestroyablePowerups();
 		private static bool negative = Preferences.getNegativePowerups();
 		private static List<Powerup> pool = new List<Powerup>();
-		public static GameObject bombUpPowerupPreftab = GameObject.Find("BombUp");
-		public static GameObject bombDownPowerupPreftab = GameObject.Find("BombDown");
-		public static GameObject flameUpPowerupPrefab = GameObject.Find("FlameUp");
-		public static GameObject flameDownPowerupPrefab = GameObject.Find("FlameDown");
-		public static GameObject playerSpeedUpPowerupPrefab = GameObject.Find("PlayerSpeedUp");
-		public static GameObject playerSpeedDownPowerupPrefab = GameObject.Find("PlayerSpeedDown");
-		public static GameObject goldenFlamePowerupPrefab = GameObject.Find("GoldenFlame");
 		
 		static PowerupPool() {
 			/*
@@ -93,9 +86,9 @@ namespace AssemblyCSharp
 
 			/*
 				 if	(p.getType() == PowerupType.BOMB_UP)
-					powerup = GameObject.Instantiate(bombUpPowerupPreftab, new Vector3(x + 0.5f, 0.3f, y + 0.5f), Quaternion.identity) as GameObject; 
+					powerup = GameObject.Instantiate(bombUpPowerupPrefab, new Vector3(x + 0.5f, 0.3f, y + 0.5f), Quaternion.identity) as GameObject; 
 			else if	(p.getType() == PowerupType.BOMB_DOWN)
-					powerup = GameObject.Instantiate(bombDownPowerupPreftab, new Vector3(x + 0.5f, 0.3f, y + 0.5f), Quaternion.identity) as GameObject; 
+					powerup = GameObject.Instantiate(bombDownPowerupPrefab, new Vector3(x + 0.5f, 0.3f, y + 0.5f), Quaternion.identity) as GameObject; 
 			else if (p.getType() == PowerupType.FLAME_UP)
 					powerup = GameObject.Instantiate(flameUpPowerupPrefab, new Vector3(x + 0.5f, 0.3f, y + 0.5f), Quaternion.identity) as GameObject; 
 			else if (p.getType() == PowerupType.FLAME_DOWN)
@@ -109,19 +102,19 @@ namespace AssemblyCSharp
 			*/
 
 				 if	(p.getType() == PowerupType.BOMB_UP)
-					powerup = GameObject.Instantiate(bombUpPowerupPreftab, cellCenter, Quaternion.identity) as GameObject; 
+					powerup = GameObject.Instantiate(Static.bombUpPowerupPrefab, cellCenter, Quaternion.identity) as GameObject; 
 			else if	(p.getType() == PowerupType.BOMB_DOWN)
-					powerup = GameObject.Instantiate(bombDownPowerupPreftab, cellCenter, Quaternion.identity) as GameObject; 
+					powerup = GameObject.Instantiate(Static.bombDownPowerupPrefab, cellCenter, Quaternion.identity) as GameObject; 
 			else if (p.getType() == PowerupType.FLAME_UP)
-					powerup = GameObject.Instantiate(flameUpPowerupPrefab, cellCenter, Quaternion.identity) as GameObject; 
+					powerup = GameObject.Instantiate(Static.flameUpPowerupPrefab, cellCenter, Quaternion.identity) as GameObject; 
 			else if (p.getType() == PowerupType.FLAME_DOWN)
-					powerup = GameObject.Instantiate(flameDownPowerupPrefab, cellCenter, Quaternion.identity) as GameObject; 
+					powerup = GameObject.Instantiate(Static.flameDownPowerupPrefab, cellCenter, Quaternion.identity) as GameObject; 
 			else if (p.getType() == PowerupType.PLAYER_SPEED_UP)
-					powerup = GameObject.Instantiate(playerSpeedUpPowerupPrefab, cellCenter, Quaternion.identity) as GameObject; 
+					powerup = GameObject.Instantiate(Static.playerSpeedUpPowerupPrefab, cellCenter, Quaternion.identity) as GameObject; 
 			else if (p.getType() == PowerupType.PLAYER_SPEED_DOWN)
-					powerup = GameObject.Instantiate(playerSpeedDownPowerupPrefab, cellCenter, Quaternion.identity) as GameObject; 
+					powerup = GameObject.Instantiate(Static.playerSpeedDownPowerupPrefab, cellCenter, Quaternion.identity) as GameObject; 
 			else if (p.getType() == PowerupType.GOLDEN_FLAME)
-					powerup = GameObject.Instantiate(goldenFlamePowerupPrefab, cellCenter, Quaternion.identity) as GameObject; 
+					powerup = GameObject.Instantiate(Static.goldenFlamePowerupPrefab, cellCenter, Quaternion.identity) as GameObject; 
 
 			cell.addPowerup(powerup, type);
 

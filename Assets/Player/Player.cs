@@ -106,22 +106,22 @@ namespace AssemblyCSharp
 				}
 				parcelPool = shuffleList(parcelPool);
 				if (flamePower == MAXFLAMEPOWER && parcelPool.Count > 0) {
-					parcelPool[0].addPowerup(new Powerup(PowerupType.GOLDEN_FLAME), PowerupPool.goldenFlamePowerupPrefab);
+					parcelPool[0].addPowerup(new Powerup(PowerupType.GOLDEN_FLAME), Static.goldenFlamePowerupPrefab);
 					parcelPool.RemoveAt(0);
 					bombs = 1;
 				}
 				while (bombs > 1 && parcelPool.Count > 0) {
-					parcelPool[0].addPowerup(new Powerup(PowerupType.BOMB_UP), PowerupPool.bombUpPowerupPreftab);
+					parcelPool[0].addPowerup(new Powerup(PowerupType.BOMB_UP), Static.bombUpPowerupPrefab);
 					parcelPool.RemoveAt(0);
 					bombs--;
 				}
 				while (flamePower > 1 && parcelPool.Count > 0) {
-					parcelPool[0].addPowerup(new Powerup(PowerupType.FLAME_UP), PowerupPool.flameUpPowerupPrefab);
+					parcelPool[0].addPowerup(new Powerup(PowerupType.FLAME_UP), Static.flameUpPowerupPrefab);
 					parcelPool.RemoveAt(0);
 					flamePower--;
 				}
 				while (speed > 0.4f && parcelPool.Count > 0) {
-					parcelPool[0].addPowerup(new Powerup(PowerupType.PLAYER_SPEED_UP), PowerupPool.playerSpeedUpPowerupPrefab);
+					parcelPool[0].addPowerup(new Powerup(PowerupType.PLAYER_SPEED_UP), Static.playerSpeedUpPowerupPrefab);
 					parcelPool.RemoveAt(0);
 					speed -= 0.1f;
 				}

@@ -1,12 +1,32 @@
 using UnityEngine;
 using System.Collections;
- 
+
 public class SplitMeshIntoTriangles : MonoBehaviour
 {
+	
+	private static GameObject guiObject;
+	private GameObject gameObject;
+	
+	public static GameObject GUIObject {
+		get {
+			if (guiObject == null) {
+				guiObject = new GameObject("Explosion");
+			}
+			return guiObject;
+		}
+	}
+	
+	// Factory-Klasse, um einen Konstruktor auf einem Monobehaviour-Objekt zu emulieren, der die Explosion auf einer Zelle startet
+	public static SplitMeshIntoTriangles createMeshExplosion(GameObject obj) {
+		SplitMeshIntoTriangles thisObj = GUIObject.AddComponent<SplitMeshIntoTriangles>();
+		thisObj.gameObject = obj;
+		return thisObj;
+	}
+	
     IEnumerator SplitMesh ()
     {
-        MeshFilter MF = GetComponent<MeshFilter>();
-        MeshRenderer MR = GetComponent<MeshRenderer>();
+        MeshFilter MF = gameObject.GetComponent<MeshFilter>();
+        MeshRenderer MR = gameObject.GetComponent<MeshRenderer>();
         Mesh M = MF.mesh;
         Vector3[] verts = M.vertices;
         Vector3[] normals = M.normals;
@@ -51,8 +71,9 @@ public class SplitMeshIntoTriangles : MonoBehaviour
         Time.timeScale = 1.0f;
         Destroy(gameObject);
     }
-    void OnMouseDown()
+    void Start()
     {
+		Debug.Log (gameObject.ToString() + " has been destroyed.");
         StartCoroutine(SplitMesh());
     }
 }

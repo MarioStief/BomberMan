@@ -171,8 +171,12 @@ namespace AssemblyCSharp
 			powerupOnCell = true;
 		}
 
-		public PowerupType destroyPowerup() {
-			GameObject.Destroy(obj);
+		public PowerupType destroyPowerup(bool shatter) {
+			if (shatter) {
+				SplitMeshIntoTriangles.createMeshExplosion(obj); // Zerbersten lassen
+			} else {
+				GameObject.Destroy(obj);
+			}
 			obj = null;
 			powerupOnCell = false;
 			return powerupType;

@@ -9,12 +9,9 @@ public class Explosion : MonoBehaviour
 	// private const float EXPLOSIONTIMER = 0.1f; // Debugwert
 	private const float EXPLOSIONTIMER = 3.0f;
 	private const int DROPCHANCE = 25; // Drop chance in %
-	float SCALE = 0.01f;
 	public Parcel cell;
 	private float xpos, ypos, zpos;
 	
-	public static GameObject bombPrefab;
-	public static GameObject explosionPrefab;
 	GameObject []explosion = new GameObject[5];
 	private int []reach = {0, 0, 0, 0, 0};
 	private int flamePower;
@@ -60,12 +57,6 @@ public class Explosion : MonoBehaviour
 		return thisObj;
 	}
 
-	void Awake() {
-		bombPrefab = GameObject.Find("bomb");
-		explosionPrefab = GameObject.Find("Explosion");
-		explosionPrefab.transform.localScale *= SCALE;
-	}
-	
 	void Start() {
 		// NEWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
 		//cell = sphereHandler.getGameArea().getCurrentParcel(0, 0);
@@ -83,7 +74,7 @@ public class Explosion : MonoBehaviour
 
 		//explosions.Add(this);
 		//transform.position = cell.getCenterPos();
-		cell.setGameObject(GameObject.Instantiate(bombPrefab, transform.position, Quaternion.identity) as GameObject);
+		cell.setGameObject(GameObject.Instantiate(GameObject.Find("bomb"), transform.position, Quaternion.identity) as GameObject);
 		cell.setExplosion(this);
 		cell.setBomb(true);
 
@@ -147,7 +138,7 @@ public class Explosion : MonoBehaviour
 					bool stillRunning = false;
 					if (explosionField.getDelay() == 0) {
 						Vector3 position = explosionField.getCell().getCenterPos();
-						GameObject explosion = GameObject.Instantiate(explosionPrefab, position, Quaternion.identity) as GameObject;
+						GameObject explosion = GameObject.Instantiate(Static.explosionPrefab, position, Quaternion.identity) as GameObject;
 						explosion.transform.position = new Vector3(position.x + 0.05f, position.y + 0.05f, position.z + 0.05f);
 						//explosion.GetComponent<Detonator>().size = 10f;
 						Detonator detonator = explosion.GetComponent<Detonator>();
@@ -182,7 +173,7 @@ public class Explosion : MonoBehaviour
 						// Wand zerstören, ggfls. Powerup setzen
 						if (PowerupPool.getDestroyable())
 							if (explosionField.getCell().hasPowerup())
-								explosionField.getCell().destroyPowerup();
+								explosionField.getCell().destroyPowerup(true);
 
 						if (explodingCell.getType() == 1) {
 							explodingCell.setType(0);

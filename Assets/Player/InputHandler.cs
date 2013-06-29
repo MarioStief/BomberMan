@@ -33,12 +33,10 @@ public class InputHandler : MonoBehaviour {
 	private Quaternion cameraRotation;
 	
 	private Parcel currCell;
-	private static GameObject deadPlayerPrefab;
 	
 	private float createTime;
 	
 	void Awake() {
-		deadPlayerPrefab = GameObject.Find("DeadPlayer");
 		playerHandler = GameObject.Find("Player");
 	}
 	
@@ -87,14 +85,14 @@ public class InputHandler : MonoBehaviour {
 				// don't die while debugging...
 				Player.setDead(true);
 				renderer.material.color = Color.black;
-				GameObject deadPlayer = GameObject.Instantiate(deadPlayerPrefab, new Vector3(transform.position.x, transform.position.y, transform.position.z), Quaternion.identity) as GameObject; 
+				GameObject deadPlayer = GameObject.Instantiate(Static.deadPlayerPrefab, new Vector3(transform.position.x, transform.position.y, transform.position.z), Quaternion.identity) as GameObject; 
 				//*/
 			}
 			
 			
 			// Falls die Zelle ein Powerup enthält -> aufsammeln
 			if (currCell.hasPowerup()) {
-				Player.powerupCollected(currCell.destroyPowerup());
+				Player.powerupCollected(currCell.destroyPowerup(false));
 			}
 			
 			// Leertaste -> Bombe legen
@@ -516,7 +514,7 @@ public class InputHandler : MonoBehaviour {
 		if (Player.getHP() == 0) {
 			renderer.material.color = Color.black;
 			//moveDirection = new Vector3(0, 0, 0);
-			GameObject deadPlayer = GameObject.Instantiate(deadPlayerPrefab, new Vector3(transform.position.x, transform.position.y, transform.position.z), Quaternion.identity) as GameObject; 
+			GameObject deadPlayer = GameObject.Instantiate(Static.deadPlayerPrefab, new Vector3(transform.position.x, transform.position.y, transform.position.z), Quaternion.identity) as GameObject; 
 		}
 	}
 
