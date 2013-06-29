@@ -8,13 +8,14 @@ public class Explosion : MonoBehaviour
 	private const int DELAY = 100;
 	// private const float EXPLOSIONTIMER = 0.1f; // Debugwert
 	private const float EXPLOSIONTIMER = 3.0f;
-	private const int DROPCHANCE = 25; // Drop chance in %
+	private const int DROPCHANCE = PowerupPool.DROPCHANCE;
 	public Parcel cell;
 	private float xpos, ypos, zpos;
 	
 	GameObject []explosion = new GameObject[5];
 	private int []reach = {0, 0, 0, 0, 0};
 	private int flamePower;
+	private bool createBomb;
 	private bool self = false;
 	
 	private int []dists;
@@ -38,22 +39,24 @@ public class Explosion : MonoBehaviour
 	}
 	
 	// Factory-Klasse, um einen Konstruktor auf einem Monobehaviour-Objekt zu emulieren, der die Explosion auf einer Zelle startet
-	public static Explosion createExplosionOnCell(Parcel cell, int flamePower, bool self) {
+	public static Explosion createExplosionOnCell(Parcel cell, int flamePower, bool createBomb, bool self) {
 		Explosion thisObj = GUIObject.AddComponent<Explosion>();
 		//calls Start() on the object and initializes it.
 		thisObj.cell = cell;
 		thisObj.flamePower = flamePower;
+		thisObj.createBomb = createBomb;
 		thisObj.transform.position = cell.getCenterPos();
 		thisObj.self = self;
 		return thisObj;
 	}
 
 	// Factory-Klasse, um einen Konstruktor auf einem Monobehaviour-Objekt zu emulieren, der die Explosion auf einer Zelle startet
-	public static Explosion createExplosionOnCell(Parcel cell, int flamePower) {
+	public static Explosion createExplosionOnCell(Parcel cell, int flamePower, bool createBomb) {
 		Explosion thisObj = GUIObject.AddComponent<Explosion>();
 		//calls Start() on the object and initializes it.
 		thisObj.cell = cell;
 		thisObj.flamePower = flamePower;
+		thisObj.createBomb = createBomb;
 		return thisObj;
 	}
 
@@ -74,7 +77,8 @@ public class Explosion : MonoBehaviour
 
 		//explosions.Add(this);
 		//transform.position = cell.getCenterPos();
-		cell.setGameObject(GameObject.Instantiate(GameObject.Find("bomb"), transform.position, Quaternion.identity) as GameObject);
+		if (createBomb)
+			cell.setGameObject(GameObject.Instantiate(GameObject.Find("bomb"), transform.position, Quaternion.identity) as GameObject);
 		cell.setExplosion(this);
 		cell.setBomb(true);
 
@@ -83,8 +87,8 @@ public class Explosion : MonoBehaviour
 	public void startExplosion(){
 		
 		cell.setBomb(false);
-		//GameObject.Destroy(bomb);
-		cell.destroyGameObject();
+		if (createBomb)
+			cell.destroyGameObject();
 		if (self)
 			Player.removeBomb();
 		//bomb = null;
@@ -136,7 +140,7 @@ public class Explosion : MonoBehaviour
 			if (elapsedTime > 0.1f) {					// alle 100 ms
 				foreach (ExplosionField explosionField in explosionChain) {
 					bool stillRunning = false;
-					if (explosionField.getDelay() == 0) {
+					if (explosionField.getDelay() == 0 && !explosionField.getCell().isExploding()) {
 						Vector3 position = explosionField.getCell().getCenterPos();
 						GameObject explosion = GameObject.Instantiate(Static.explosionPrefab, position, Quaternion.identity) as GameObject;
 						explosion.transform.position = new Vector3(position.x + 0.05f, position.y + 0.05f, position.z + 0.05f);
@@ -146,8 +150,8 @@ public class Explosion : MonoBehaviour
 						float explosionSize = 300f;
 						detonator.setSize(explosionSize);
 						
-						if (explosionField.getCell().getHeight() > 1f) // kleine Explosion in den Steinblöcken
-							detonator.setSize(explosionSize*4); // in Wirklichkeit halbiert
+						if (explosionField.getCell().getType() == 2 && explosionField.getCell().getHeight() > 1.0f) // kleine Explosion in den Steinblöcken
+							detonator.setSize(explosionSize*4); // in Wirklichkeit geviertelt
 						
 						detonator.setDuration(15f);
 						Parcel explodingCell = explosionField.getCell();
@@ -171,9 +175,15 @@ public class Explosion : MonoBehaviour
 						explosionField.getCell().colorCell(Color.black);
 						
 						// Wand zerstören, ggfls. Powerup setzen
-						if (PowerupPool.getDestroyable())
-							if (explosionField.getCell().hasPowerup())
+						if (PowerupPool.getDestroyable()) {
+							if (explosionField.getCell().hasPowerup()) {
+								if (Preferences.getExplodingPowerups() == true) {
+									Explosion ex = Explosion.createExplosionOnCell(explosionField.getCell(), Player.getFlamePower(), false, false);
+									ex.startExplosion();
+								}
 								explosionField.getCell().destroyPowerup(true);
+							}
+						}
 
 						if (explodingCell.getType() == 1) {
 							explodingCell.setType(0);

@@ -16,9 +16,9 @@ namespace AssemblyCSharp
 		private const int MAXFLAMEPOWER = 10;
 		private const int MAXHP = 100;
 		
-		private static int bombs = 1;
+		private static int bombs = 10;
 		private static int bombsActive = 0;
-		private static int flamePower = 1;
+		private static int flamePower = 10;
 		private static float speed = 0.4f;
 		private static int hp = MAXHP;
 		

@@ -7,6 +7,7 @@ namespace AssemblyCSharp
 {
 	public static class PowerupPool
 	{
+		public const int DROPCHANCE = 25; // Drop chance in %
 		private static bool destroyable = Preferences.getDestroyablePowerups();
 		private static bool negative = Preferences.getNegativePowerups();
 		private static List<Powerup> pool = new List<Powerup>();

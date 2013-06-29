@@ -12,6 +12,7 @@ namespace AssemblyCSharp
 		
 		const float normalLevel = 1.0f;
 		const float upperLevel = 1.17f;	
+		public float STEP = 0.02f;
 		
 		public Parcel right, left, up, down;	// Nachbar-Parzellen
 		
@@ -66,8 +67,8 @@ namespace AssemblyCSharp
 		}
 
 		public void decreaseHeight() {
-			if (height > 1.009f) { // also 1.01 oder höher
-				height -= 0.01f;
+			if (height > (1.0f + STEP - 0.0001f)) { // also 1.01 oder höher
+				height -= STEP;
 				for (int i = 0; i < 5; i++) {
 					if (i < 2 || i > 3)
 					getMeshManipulator().updateCoordinates();
@@ -172,7 +173,7 @@ namespace AssemblyCSharp
 		}
 
 		public PowerupType destroyPowerup(bool shatter) {
-			if (shatter) {
+			if (shatter && Preferences.getExplodingPowerups() == false) { // if shatter
 				SplitMeshIntoTriangles.createMeshExplosion(obj); // Zerbersten lassen
 			} else {
 				GameObject.Destroy(obj);
