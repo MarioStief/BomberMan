@@ -152,9 +152,9 @@ public class InputHandler : MonoBehaviour {
 				hDirection = (int)Mathf.Sign(hm);
 				
 				if ( hDirection == 1){
-					horizontalHelper += 	0;//Mathf.PI/(n_B);
+					horizontalHelper += 	Mathf.PI/(n_B);
 				} else{
-					horizontalHelper -= 	0;//Mathf.PI/(n_B);
+					horizontalHelper -= 	Mathf.PI/(n_B);
 				}
 				horizontalHelper += hm;
 			}
@@ -403,7 +403,7 @@ public class InputHandler : MonoBehaviour {
 				
 			
 				hDirection = 1;
-				horizontalHelper +=	Mathf.PI/(n_B);
+				horizontalHelper +=	2*Mathf.PI/(n_B);
 			
 				float newPlayerPosition =  Mathf.Abs(horizontalAngle-horizontalHelper)/(2*Mathf.PI/n_B); //bs( verticalAngle - verticalHelper) / (Mathf.PI/(n_L-1));
 				Player.setZPos( newPlayerPosition);
@@ -463,7 +463,7 @@ public class InputHandler : MonoBehaviour {
 				
 			
 				hDirection = -1;
-				horizontalHelper -=	Mathf.PI/(n_B);
+				horizontalHelper -=	2*Mathf.PI/(n_B);
 			
 				float newPlayerPosition =  1-Mathf.Abs(horizontalAngle-horizontalHelper)/(2*Mathf.PI/n_B); //bs( verticalAngle - verticalHelper) / (Mathf.PI/(n_L-1));
 				Player.setZPos( newPlayerPosition);
