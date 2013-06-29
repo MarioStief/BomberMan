@@ -6,6 +6,7 @@ public class SplitMeshIntoTriangles : MonoBehaviour
 	
 	private static GameObject guiObject;
 	private GameObject gameObject;
+	private Vector3 scale;
 	
 	public static GameObject GUIObject {
 		get {
@@ -16,10 +17,11 @@ public class SplitMeshIntoTriangles : MonoBehaviour
 		}
 	}
 	
-	// Factory-Klasse, um einen Konstruktor auf einem Monobehaviour-Objekt zu emulieren, der die Explosion auf einer Zelle startet
+	// Factory-Klasse, um einen Konstruktor auf einem Monobehaviour-Objekt zu emulieren
 	public static SplitMeshIntoTriangles createMeshExplosion(GameObject obj) {
 		SplitMeshIntoTriangles thisObj = GUIObject.AddComponent<SplitMeshIntoTriangles>();
 		thisObj.gameObject = obj;
+		thisObj.scale = obj.transform.localScale;
 		return thisObj;
 	}
 	
@@ -54,12 +56,13 @@ public class SplitMeshIntoTriangles : MonoBehaviour
                 mesh.triangles = new int[] { 0, 1, 2, 2, 1, 0 };
  
                 GameObject GO = new GameObject("Triangle " + (i / 3));
-                GO.transform.position = transform.position;
-                GO.transform.rotation = transform.rotation;
+                GO.transform.position = gameObject.transform.position;
+                GO.transform.rotation = gameObject.transform.rotation;
                 GO.AddComponent<MeshRenderer>().material = MR.materials[submesh];
                 GO.AddComponent<MeshFilter>().mesh = mesh;
                 GO.AddComponent<BoxCollider>();
-                GO.AddComponent<Rigidbody>().AddExplosionForce(100, transform.position, 30);
+				GO.transform.localScale = scale;
+                GO.AddComponent<Rigidbody>().AddExplosionForce(10, gameObject.transform.position, 30);
  
                 Destroy(GO, 5 + Random.Range(0.0f, 5.0f));
             }
