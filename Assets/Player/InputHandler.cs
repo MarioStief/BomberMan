@@ -15,8 +15,6 @@ public class InputHandler : MonoBehaviour {
 	private GameObject playerHandler;
 	private SphereBuilder sphereHandler;
 	
-	public Rink rink;
-	
 	private int n_L;				// Anzahl Längen und Breitengeraden
 	private int n_B;
 	
@@ -41,30 +39,26 @@ public class InputHandler : MonoBehaviour {
 	
 	private float createTime;
 	
-	Vector3 lookDirection;
-	
 	void Awake() {
 		deadPlayerPrefab = GameObject.Find("DeadPlayer");
-		sphere = GameObject.Find("Sphere");
-		sphereHandler = sphere.GetComponent<SphereBuilder>();
 		playerHandler = GameObject.Find("Player");
 	}
 	
 	// Use this for initialization
 	void Start () {
-		sphereHandler.move(0.000001f); // CK, fixed color on startup :)
+		Static.sphereHandler.move(0.000001f); // CK, fixed color on startup :)
 		moveAlongEquator(0.000001f);
 		
 		createTime = Time.time;
 		
 		
-		n_L = sphereHandler.n_L;
-		n_B = sphereHandler.n_B;
+		n_L = Static.sphereHandler.n_L;
+		n_B = Static.sphereHandler.n_B;
 		
 		lpos = n_L/2-1;
 		bpos = n_B/4;
 		
-		currCell = rink.gameArea[lpos][bpos];
+		currCell = Static.rink.gameArea[lpos][bpos];
 		Player.setCurrentParcel(currCell);
 		
 		vDirection = 0;
@@ -78,7 +72,7 @@ public class InputHandler : MonoBehaviour {
 		
 		cameraRotation = camera.transform.rotation;
 		
-		lookDirection = currCell.up.getCenterPos();
+		transform.LookAt(currCell.up.getCenterPos());
 	}
 	
 	// Update is called once per frame
@@ -90,7 +84,7 @@ public class InputHandler : MonoBehaviour {
 			// Bewegung und Bestimmung einer möglichen neuen currentParcel
 			// -----------------------------------------------------------
 			moveCharacter();
-			currCell = rink.gameArea[lpos][bpos];
+			currCell = Static.rink.gameArea[lpos][bpos];
 			if (currCell.isExploding()) {
 				// don't die while debugging...
 				Player.setDead(true);
@@ -128,19 +122,12 @@ public class InputHandler : MonoBehaviour {
 	private void moveCharacter(){
 		
 		float verticalMovement = Input.GetAxis("Vertical");
-		float m = Player.getSpeed() * verticalMovement * Time.deltaTime;
-		if (m > 0) {
-			// nach oben schauen
-			lookDirection = currCell.up.getCenterPos();
-		} else if (m < 0) {
-			// nach unten schauen
-			lookDirection = currCell.down.getCenterPos();
-		}
+		float vm = Player.getSpeed() * verticalMovement * Time.deltaTime;
 		if ( verticalMovement != 0) {
 			
 			if ( vDirection == 0) {
 				
-				vDirection = (int)Mathf.Sign(m);
+				vDirection = (int)Mathf.Sign(vm);
 				
 				if ( vDirection == 1){
 					verticalHelper -= 	Mathf.PI/(2*(n_L-1));
@@ -150,52 +137,99 @@ public class InputHandler : MonoBehaviour {
 			}
 		
 			float vAngle = verticalAngle;
-			verticalAngle += m;
+			verticalAngle += vm;
 
-			m = determineVerticalParcelPosition( verticalMovement, m);
+			vm = determineVerticalParcelPosition( verticalMovement, vm);
 			
-			sphereHandler.move(m);
-			if ( m == 0) verticalAngle = vAngle;
+			Static.sphereHandler.move(vm);
+			if ( vm == 0) verticalAngle = vAngle;
 		}
 		
 		
 		
 		float horizontalMovement = Input.GetAxis("Horizontal") * Player.getSpeed();
+		float hm = 0f;
 		if ( horizontalMovement != 0){
-			m = horizontalMovement*Time.deltaTime*Player.getSpeed()*(-2);
-			if (m > 0) {
-				// nach links schauen
-				lookDirection = currCell.left.getCenterPos();
-
-			} else if (m < 0) {
-				// nach rechts schauen
-				lookDirection = currCell.right.getCenterPos();
-			}
+			hm = horizontalMovement*Time.deltaTime*Player.getSpeed()*(-2);
 			if ( hDirection == 0) {
 				
-				hDirection = (int)Mathf.Sign(m);
+				hDirection = (int)Mathf.Sign(hm);
 				
 				if ( hDirection == 1){
 					horizontalHelper += 	0;//Mathf.PI/(n_B);
 				} else{
 					horizontalHelper -= 	0;//Mathf.PI/(n_B);
 				}
-				horizontalHelper +=m;
+				horizontalHelper += hm;
 			}
 		 
 			float hAngle = horizontalAngle;
-			horizontalAngle += m;
+			horizontalAngle += hm;
 			
 
-			m = determineHorizontalParcelPosition( horizontalMovement, m);
+			hm = determineHorizontalParcelPosition( horizontalMovement, hm);
 			
-			moveAlongEquator( m);
-			if ( m == 0) horizontalAngle = hAngle;
+			moveAlongEquator( hm);
+			if ( hm == 0) horizontalAngle = hAngle;
 			//rink.renderAll();	// 4Debug !!! Achtung: Muss im fertigen Spiel raus. Zieht locker 20 FPS!
 		}
 		
-		transform.LookAt(lookDirection);
-		//transform.LookAt(Vector3.zero, Vector3.forward);
+			Vector3 lookDirection = currCell.up.getCenterPos();
+
+			// Spielerrotation
+			int GAP = 2;
+			if (vm > 0) {
+				// nach oben schauen
+				if (hm > 0) {
+					// nach links oben schauen
+					Debug.Log("links oben");
+					lookDirection = currCell.getSurroundingCell(GAP,GAP).getCenterPos();
+					currCell.getSurroundingCell(GAP,GAP).colorCell(Color.magenta);
+				} else if (hm < 0) {
+					// nach rechts oben schauen
+					Debug.Log("rechts oben");
+					lookDirection = currCell.getSurroundingCell(GAP,-GAP).getCenterPos();
+					currCell.getSurroundingCell(GAP,-GAP).colorCell(Color.magenta);
+
+				} else {
+					// nur nach oben schauen
+					Debug.Log("oben");
+					lookDirection = currCell.getSurroundingCell(GAP,0).getCenterPos();
+					currCell.getSurroundingCell(GAP,0).colorCell(Color.magenta);
+				}
+			} else if (vm < 0) {
+				// nach unten schauen
+				if (hm > 0) {
+					// nach links unten schauen
+					Debug.Log("links unten");
+					lookDirection = currCell.getSurroundingCell(-GAP,GAP).getCenterPos();
+					currCell.getSurroundingCell(-GAP,GAP).colorCell(Color.magenta);
+				} else if (hm < 0) {
+					// nach rechts unten schauen
+					Debug.Log("rechts unten");
+					lookDirection = currCell.getSurroundingCell(-GAP,-GAP).getCenterPos();
+					currCell.getSurroundingCell(-GAP,-GAP).colorCell(Color.magenta);
+				} else {
+					// nur nach unten schauen
+					Debug.Log("unten");
+					lookDirection = currCell.getSurroundingCell(-GAP,0).getCenterPos();
+					currCell.getSurroundingCell(-GAP,0).colorCell(Color.magenta);
+				}
+			} else {
+				if (hm > 0) {
+					// nur nach links schauen
+					Debug.Log("links");
+					lookDirection = currCell.getSurroundingCell(0,GAP).getCenterPos();
+					currCell.getSurroundingCell(0,GAP).colorCell(Color.magenta);
+				} else {
+					// nur nach rechts schauen
+					Debug.Log("rechts");
+					lookDirection = currCell.getSurroundingCell(0,-GAP).getCenterPos();
+					currCell.getSurroundingCell(0,-GAP).colorCell(Color.magenta);
+				}
+			}
+		
+			transform.LookAt(lookDirection);
 		
 	}
 	
@@ -219,18 +253,18 @@ public class InputHandler : MonoBehaviour {
 					Parcel newCell;
 
 					if ( lpos < n_L-2){
-						if ( rink.gameArea[lpos+1][bpos].getType() != 0){
+						if ( Static.rink.gameArea[lpos+1][bpos].getType() != 0){
 							return 0.0f;
 						}
-						newCell = rink.gameArea[++lpos][bpos];
+						newCell = Static.rink.gameArea[++lpos][bpos];
 						Player.setXPos( 0);
 
 					} else{
-						if ( rink.gameArea[0][bpos].getType() != 0){
+						if ( Static.rink.gameArea[0][bpos].getType() != 0){
 							return 0.0f;
 						}
 						lpos = 0;
-						newCell = rink.gameArea[lpos][bpos];
+						newCell = Static.rink.gameArea[lpos][bpos];
 						Player.setXPos( 0);
 					}
 					verticalHelper += Mathf.PI/(n_L-1);
@@ -253,16 +287,16 @@ public class InputHandler : MonoBehaviour {
 					
 						
 					if ( lpos > 0){
-						if ( rink.gameArea[lpos-1][bpos].getType() != 0){
+						if ( Static.rink.gameArea[lpos-1][bpos].getType() != 0){
 							return 0.0f;
 						}
-						newCell = rink.gameArea[--lpos][bpos];
+						newCell = Static.rink.gameArea[--lpos][bpos];
 					} else{
-						if ( rink.gameArea[n_L-2][bpos].getType() != 0){
+						if ( Static.rink.gameArea[n_L-2][bpos].getType() != 0){
 							return 0.0f;
 						}
 						lpos = n_L-2;
-						newCell = rink.gameArea[lpos][bpos];
+						newCell = Static.rink.gameArea[lpos][bpos];
 					}
 					verticalHelper -= Mathf.PI/(n_L-1);
 					Player.setCurrentParcel(newCell);	
@@ -283,16 +317,16 @@ public class InputHandler : MonoBehaviour {
 					
 						
 					if ( lpos > 0){
-						if ( rink.gameArea[lpos-1][bpos].getType() != 0){
+						if ( Static.rink.gameArea[lpos-1][bpos].getType() != 0){
 							return 0.0f;
 						}
-						newCell = rink.gameArea[--lpos][bpos];
+						newCell = Static.rink.gameArea[--lpos][bpos];
 					} else{
-						if ( rink.gameArea[n_L-2][bpos].getType() != 0){
+						if ( Static.rink.gameArea[n_L-2][bpos].getType() != 0){
 							return 0.0f;
 						}
 						lpos = n_L -2;
-						newCell = rink.gameArea[lpos][bpos];
+						newCell = Static.rink.gameArea[lpos][bpos];
 					}
 					verticalHelper -= Mathf.PI/(n_L-1);
 					Player.setCurrentParcel(newCell);	
@@ -315,16 +349,16 @@ public class InputHandler : MonoBehaviour {
 					
 						
 					if ( lpos < n_L-2){
-						if ( rink.gameArea[lpos+1][bpos].getType() != 0){
+						if ( Static.rink.gameArea[lpos+1][bpos].getType() != 0){
 							return 0.0f;
 						}
-						newCell = rink.gameArea[++lpos][bpos];
+						newCell = Static.rink.gameArea[++lpos][bpos];
 					} else{
-						if ( rink.gameArea[0][bpos].getType() != 0){
+						if ( Static.rink.gameArea[0][bpos].getType() != 0){
 							return 0.0f;
 						}
 						lpos = 0;
-						newCell = rink.gameArea[lpos][bpos];
+						newCell = Static.rink.gameArea[lpos][bpos];
 					}
 					verticalHelper += Mathf.PI/(n_L-1);
 					Player.setCurrentParcel(newCell);	
@@ -352,16 +386,16 @@ public class InputHandler : MonoBehaviour {
 					
 						
 					if ( bpos < n_B-1){
-						if ( rink.gameArea[lpos][bpos+1].getType() != 0){
+						if ( Static.rink.gameArea[lpos][bpos+1].getType() != 0){
 							return 0.0f;
 						}
-						newCell = rink.gameArea[lpos][++bpos];
+						newCell = Static.rink.gameArea[lpos][++bpos];
 					} else{
-						if ( rink.gameArea[lpos][0].getType() != 0){
+						if ( Static.rink.gameArea[lpos][0].getType() != 0){
 							return 0.0f;
 						}
 						bpos = 0;
-						newCell = rink.gameArea[lpos][bpos];
+						newCell = Static.rink.gameArea[lpos][bpos];
 					}
 					horizontalHelper += 2*Mathf.PI/n_B;
 					Player.setCurrentParcel(newCell);	
@@ -386,16 +420,16 @@ public class InputHandler : MonoBehaviour {
 					
 						
 					if ( bpos > 0){
-						if ( rink.gameArea[lpos][bpos-1].getType() != 0){
+						if ( Static.rink.gameArea[lpos][bpos-1].getType() != 0){
 							return 0.0f;
 						}
-						newCell = rink.gameArea[lpos][--bpos];
+						newCell = Static.rink.gameArea[lpos][--bpos];
 					} else{
-						if ( rink.gameArea[lpos][n_B-1].getType() != 0){
+						if ( Static.rink.gameArea[lpos][n_B-1].getType() != 0){
 							return 0.0f;
 						}
 						bpos = n_B;
-						newCell = rink.gameArea[lpos][--bpos];
+						newCell = Static.rink.gameArea[lpos][--bpos];
 					}
 					horizontalHelper -= 2*Mathf.PI/n_B;
 					Player.setCurrentParcel(newCell);	
@@ -415,13 +449,13 @@ public class InputHandler : MonoBehaviour {
 					
 						
 					if ( bpos > 0){
-						if ( rink.gameArea[lpos][bpos-1].getType() != 0){
+						if ( Static.rink.gameArea[lpos][bpos-1].getType() != 0){
 							return 0.0f;
 						}
-						newCell = rink.gameArea[lpos][--bpos];
+						newCell = Static.rink.gameArea[lpos][--bpos];
 					} else{
 						bpos = n_B;
-						newCell = rink.gameArea[lpos][--bpos];
+						newCell = Static.rink.gameArea[lpos][--bpos];
 					}
 					horizontalHelper -= 2*Mathf.PI/n_B;
 					Player.setCurrentParcel(newCell);	
@@ -446,16 +480,16 @@ public class InputHandler : MonoBehaviour {
 					
 						
 					if ( bpos < n_B-1){
-						if ( rink.gameArea[lpos][bpos+1].getType() != 0){
+						if ( Static.rink.gameArea[lpos][bpos+1].getType() != 0){
 							return 0.0f;
 						}
-						newCell = rink.gameArea[lpos][++bpos];
+						newCell = Static.rink.gameArea[lpos][++bpos];
 					} else{
-						if ( rink.gameArea[lpos][0].getType() != 0){
+						if ( Static.rink.gameArea[lpos][0].getType() != 0){
 							return 0.0f;
 						}
 						bpos = 0;
-						newCell = rink.gameArea[lpos][bpos];
+						newCell = Static.rink.gameArea[lpos][bpos];
 					}
 					horizontalHelper += 2*Mathf.PI/n_B;
 					Player.setCurrentParcel(newCell);	

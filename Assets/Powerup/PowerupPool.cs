@@ -9,8 +9,6 @@ namespace AssemblyCSharp
 	{
 		private static bool destroyable = Preferences.getDestroyablePowerups();
 		private static bool negative = Preferences.getNegativePowerups();
-		private static GameObject sphere = GameObject.Find("Sphere");
-		private static SphereBuilder sphereHandler = sphere.GetComponent<SphereBuilder>();
 		private static List<Powerup> pool = new List<Powerup>();
 		public static GameObject bombUpPowerupPreftab = GameObject.Find("BombUp");
 		public static GameObject bombDownPowerupPreftab = GameObject.Find("BombDown");
@@ -52,11 +50,11 @@ namespace AssemblyCSharp
 						pool.Add(new Powerup(PowerupType.PLAYER_SPEED_DOWN));
 				}
 			}
+
 			pool = shuffleList(pool);
 			
 			// DEBUG: show pool content
 			poolContent();
-			
 		}
 		
 		private static List<Powerup> shuffleList(List<Powerup> sortedList)

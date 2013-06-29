@@ -40,21 +40,29 @@ namespace AssemblyCSharp
 		
 		public Parcel (){
 			height = 1.0f;
+			constructor();
 		}
 		
 		public Parcel (int type)
 		{
 			setType(type);
+			constructor();
 		}
 		
 		public Parcel (float height, GameObject obj)
 		{
 			this.height = height;
 			this.obj = obj;
+			constructor();
+		}
+		
+		private void constructor() {
+			GameObject sphere = GameObject.Find("Sphere");
+			SphereBuilder sphereHandler = sphere.GetComponent<SphereBuilder>();
 		}
 		
 		public MeshManipulator getMeshManipulator() {
-			return GameObject.Find("Sphere").GetComponent<SphereBuilder>().getRink().drawnArea[lpos][bpos];
+			return Static.rink.drawnArea[lpos][bpos];
 		}
 		
 		public void setExploding (bool exploding) {
@@ -227,10 +235,7 @@ namespace AssemblyCSharp
 		}
 
 		public Parcel getSurroundingCell(int lpos, int bpos) {
-			GameObject sphere = GameObject.Find("Sphere");
-			SphereBuilder sphereHandler = sphere.GetComponent<SphereBuilder>();
-			Rink rink = sphereHandler.getRink();
-			Parcel[][] cell = rink.getGameArea();
+			Parcel[][] cell = Static.rink.getGameArea();
 			
 			lpos += this.lpos;
 			bpos += this.bpos;
@@ -248,14 +253,11 @@ namespace AssemblyCSharp
 		}
 		
 		public void colorCell(Color color) {
-			GameObject sphere = GameObject.Find("Sphere");
-			SphereBuilder sphereHandler = sphere.GetComponent<SphereBuilder>();
-			Rink rink = sphereHandler.getRink();
-			rink.drawnArea[lpos][bpos].renderer.material.color = color;
+			Static.rink.drawnArea[lpos][bpos].renderer.material.color = color;
 		}
 		
 		public Vector3 getCenterPos() {
-			return GameObject.Find("Sphere").GetComponent<SphereBuilder>().getRink().drawnArea[lpos][bpos].getCenter();
+			return Static.rink.drawnArea[lpos][bpos].getCenter();
 		}
 		
 		/*

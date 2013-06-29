@@ -9,9 +9,6 @@ namespace AssemblyCSharp
 		private static Parcel currentCell;	// current Parcel
 		private static float xpos, zpos;	// Player's position in the current Parcel
 		
-		private static GameObject sphere; // TEMP
-		public static SphereBuilder sphereHandler;
-		
 		private static float verticalHelper		= 0.0f;
 		private static float horizontalHelper 	= 0.0f;
 		
@@ -28,8 +25,6 @@ namespace AssemblyCSharp
 		private static bool dead = false;
 		
 		static Player() {
-			sphere = GameObject.Find("Sphere");
-			sphereHandler = sphere.GetComponent<SphereBuilder>();
 		}
 		
 		public static void powerupCollected(PowerupType type)
@@ -101,7 +96,7 @@ namespace AssemblyCSharp
 			if (d) {
 				// Verteile Powerups über das Spielfeld
 				List<Parcel> parcelPool = new List<Parcel>();
-				Parcel[][] gameArea = sphereHandler.getRink().getGameArea();
+				Parcel[][] gameArea = Static.gameArea;
 				for (int i = 0; i < gameArea.Length; i++) {
 					for (int j = 0; j < gameArea[i].Length; j++) {
 						if (gameArea[i][j].getType() == 0) {

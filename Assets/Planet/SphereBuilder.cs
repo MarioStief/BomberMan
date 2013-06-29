@@ -28,11 +28,13 @@ public class SphereBuilder : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		
+		Static.setSphereBuilder(this);
+		
 		adjSouthPole = n_L-2;
 		adjEast = 0;
 		
 		gameArea = new Rink(n_B, n_L, new Vector2(0,0));
-		GameObject.Find("Player").GetComponent<InputHandler>().rink = gameArea;
+		//GameObject.Find("Player").GetComponent<InputHandler>().rink = gameArea;
 		
 		// Berechne Punkte und erzeuge Kugel 
 		tesselateSphere();	

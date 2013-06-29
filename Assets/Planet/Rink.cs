@@ -42,6 +42,7 @@ namespace AssemblyCSharp
 			
 			// Erstelle Pool aus Powerups
 			// Mit dem Parameter lässt sich die Poolgröße variieren
+			Static.setRink(this);
 			PowerupPool.createPool(1);
 			
 			Player.setCurrentParcel(gameArea[0][0]);
