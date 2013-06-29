@@ -36,6 +36,7 @@ namespace AssemblyCSharp
 		private bool powerupOnCell;
 		private Explosion explosion;
 		private bool exploding;
+		private int powerupExplodingValue;
 		
 		private PowerupType powerupType;
 		
@@ -72,7 +73,7 @@ namespace AssemblyCSharp
 				for (int i = 0; i < 5; i++) {
 					if (i < 2 || i > 3)
 					getMeshManipulator().updateCoordinates();
-					Debug.Log("MeshManipulator says: " + getMeshManipulator().vertexPosition[i].x);
+					//Debug.Log("MeshManipulator says: " + getMeshManipulator().vertexPosition[i].x);
 				}
 			} else if (height > 1f)
 				height = 1f;
@@ -160,15 +161,10 @@ namespace AssemblyCSharp
 			center = v;	
 		}
 		
-		public void addPowerup(GameObject powerup, PowerupType powerupType) {
-			this.obj = powerup;
-			this.powerupType = powerupType;
-			powerupOnCell = true;
-		}
-
 		public void addPowerup(Powerup powerup, GameObject prefab) {
 			this.obj = GameObject.Instantiate(prefab, getCenterPos(), Quaternion.identity) as GameObject;
 			this.powerupType = powerup.getType();
+			powerupExplodingValue = powerup.getValue();
 			powerupOnCell = true;
 		}
 
@@ -180,6 +176,7 @@ namespace AssemblyCSharp
 			}
 			obj = null;
 			powerupOnCell = false;
+			powerupExplodingValue = 0;
 			return powerupType;
 		}
 		
@@ -201,6 +198,10 @@ namespace AssemblyCSharp
 		
 		public bool hasPowerup() {
 			return powerupOnCell;
+		}
+		
+		public int getPowerupValue() {
+			return powerupExplodingValue;
 		}
 		
 		public void setColor(Color col){

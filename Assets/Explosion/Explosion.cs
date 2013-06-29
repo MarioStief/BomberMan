@@ -178,7 +178,7 @@ public class Explosion : MonoBehaviour
 						if (PowerupPool.getDestroyable()) {
 							if (explosionField.getCell().hasPowerup()) {
 								if (Preferences.getExplodingPowerups() == true) {
-									Explosion ex = Explosion.createExplosionOnCell(explosionField.getCell(), Player.getFlamePower(), false, false);
+									Explosion ex = Explosion.createExplosionOnCell(explosionField.getCell(), explosionField.getCell().getPowerupValue(), false, false);
 									ex.startExplosion();
 								}
 								explosionField.getCell().destroyPowerup(true);

@@ -103,21 +103,21 @@ namespace AssemblyCSharp
 			*/
 
 				 if	(p.getType() == PowerupType.BOMB_UP)
-					powerup = GameObject.Instantiate(Static.bombUpPowerupPrefab, cellCenter, Quaternion.identity) as GameObject; 
+					powerup = Static.bombUpPowerupPrefab; 
 			else if	(p.getType() == PowerupType.BOMB_DOWN)
-					powerup = GameObject.Instantiate(Static.bombDownPowerupPrefab, cellCenter, Quaternion.identity) as GameObject; 
+					powerup = Static.bombDownPowerupPrefab; 
 			else if (p.getType() == PowerupType.FLAME_UP)
-					powerup = GameObject.Instantiate(Static.flameUpPowerupPrefab, cellCenter, Quaternion.identity) as GameObject; 
+					powerup = Static.flameUpPowerupPrefab; 
 			else if (p.getType() == PowerupType.FLAME_DOWN)
-					powerup = GameObject.Instantiate(Static.flameDownPowerupPrefab, cellCenter, Quaternion.identity) as GameObject; 
+					powerup = Static.flameDownPowerupPrefab; 
 			else if (p.getType() == PowerupType.PLAYER_SPEED_UP)
-					powerup = GameObject.Instantiate(Static.playerSpeedUpPowerupPrefab, cellCenter, Quaternion.identity) as GameObject; 
+					powerup = Static.playerSpeedUpPowerupPrefab; 
 			else if (p.getType() == PowerupType.PLAYER_SPEED_DOWN)
-					powerup = GameObject.Instantiate(Static.playerSpeedDownPowerupPrefab, cellCenter, Quaternion.identity) as GameObject; 
+					powerup = Static.playerSpeedDownPowerupPrefab; 
 			else if (p.getType() == PowerupType.GOLDEN_FLAME)
-					powerup = GameObject.Instantiate(Static.goldenFlamePowerupPrefab, cellCenter, Quaternion.identity) as GameObject; 
+					powerup = Static.goldenFlamePowerupPrefab; 
 
-			cell.addPowerup(powerup, type);
+			cell.addPowerup(new Powerup(type), powerup);
 
 		}
 		
