@@ -13,17 +13,41 @@ public class MeshManipulator : MonoBehaviour {
 	
 	float height;
 	
+	public Texture grassTex;
+	public Texture rockTex;
+	public Texture boxTex;
+	public Texture rockBump;
+	
 	// Use this for initialization
 	void Awake () {
 				
 		sphere = Static.sphereHandler;
 		cubeMesh = GetComponent<MeshFilter>().mesh;
 		vertexPosition = new Vector3[8];
+		
+		//grassTex = Resources.Load("Textures\\grassPlane2.jpg") as Texture;
 	}
 	
 	public void setParcel(Parcel p){
 		meshParcel = p;	
-		//meshParcel.setCenter((height*cubeMesh.vertices[4] + 0.5f*height*(cubeMesh.vertices[9]-cubeMesh.vertices[4]))*(1.01f));
+
+	}
+	
+	public void updateTexture(){
+		int type = meshParcel.getType();
+		if ( type == 0) {
+			//Debug.Log(grassTex);
+			renderer.material.mainTexture = grassTex;
+			renderer.material.mainTextureScale = new Vector2(0.3f,0.3f);
+		}
+		else if ( type == 2){
+			renderer.material.mainTexture = rockTex;
+			renderer.material.SetTexture("_BumpMap", rockBump); 
+		}
+		else {
+			renderer.material.mainTexture = boxTex;
+
+		}
 	}
 	
 	public Vector3 getCenter(){
@@ -76,6 +100,7 @@ public class MeshManipulator : MonoBehaviour {
 	public void updateCoordinates(){
 		if ( meshParcel != null) {
 			height = meshParcel.getHeight();
+			updateTexture();
 		}
 		
 		if (height == 0)

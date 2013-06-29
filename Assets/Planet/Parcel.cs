@@ -11,7 +11,7 @@ namespace AssemblyCSharp
 	{
 		
 		const float normalLevel = 1.0f;
-		const float upperLevel = 1.1f;	
+		const float upperLevel = 1.17f;	
 		
 		public Parcel right, left, up, down;	// Nachbar-Parzellen
 		
@@ -22,7 +22,7 @@ namespace AssemblyCSharp
 		private int lpos;				// Position der aktuellen Parzelle rink.gameArea ist [lpos][bpos]
 		private int bpos;
 		
-		Color color;					// Parcel-Farbe
+		Color color = Color.white;					// Parcel-Farbe
 		
 		bool highlight = false;
 		Color highlightColor = Color.cyan;
@@ -89,13 +89,13 @@ namespace AssemblyCSharp
 			parcelType = type;
 			if ( parcelType == 0){
 				height = 1.0f;	
-				color = Color.green;
+				//color = Color.green;
 			} else if ( parcelType == 1){
-				height = 1.1f;	
-				color = new Color(0.5f,0.5f,0.0f,1.0f);
+				height = upperLevel;	
+				//color = new Color(0.5f,0.5f,0.0f,1.0f);
 			} else {
-				height = 1.1f;	
-				color = Color.gray;
+				height = upperLevel;	
+				//color = Color.gray;
 			}
 		}
 		

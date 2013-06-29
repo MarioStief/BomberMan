@@ -2,7 +2,12 @@ fileFormatVersion: 2
 guid: 363e043996f7d1543ae78b1e0ab2de16
 MonoImporter:
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - cubeMesh: {instanceID: 0}
+  - grassTex: {fileID: 2800000, guid: 4890804b757da2642a5889dea230b2ec, type: 3}
+  - rockTex: {fileID: 2800000, guid: d21c505b5e9d66b47af97f71688297b1, type: 3}
+  - boxTex: {fileID: 2800000, guid: 7012598236c375948b61f55c94ed2cb2, type: 3}
+  - rockBump: {fileID: 2800000, guid: 739bc64d995ae0c44969f49f4a59222d, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

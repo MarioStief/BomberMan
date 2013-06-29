@@ -93,8 +93,8 @@ public class SphereBuilder : MonoBehaviour {
 				val = F(u,v);				// berechne Punkt für Winkel u und v
 
 				if ( val != Vector3.zero){
-					sphereVertices[0][j][i] = val * 1;	
-					sphereVertices[1][j][i] = val * 2;
+					sphereVertices[0][j][i] = val * 1.7f;	
+					sphereVertices[1][j][i] = val * 2.0f;
 					
 					vertexAngles[0][j][i] = v;
 					vertexAngles[1][j][i] = v;
@@ -175,7 +175,7 @@ public class SphereBuilder : MonoBehaviour {
 	public MeshManipulator addMeshManipulator(GameObject c,
 												Vector3 BNE, Vector3 BNW, Vector3 BSE, Vector3 BSW,
 												Vector3 FNE, Vector3 FNW, Vector3 FSE, Vector3 FSW){
-		MeshManipulator m = c.AddComponent<MeshManipulator>();
+		MeshManipulator m = c.GetComponent<MeshManipulator>();
 		m.setVertexPosition( BNE, BNW, BSE, BSW, FNE,  FNW,  FSE,  FSW);	// Eckpunkte	
 		m.updateCoordinates();
 		
@@ -333,8 +333,8 @@ public class SphereBuilder : MonoBehaviour {
 				val = F(u,vr);					// berechne Punkt für Winkel u und v
 
 				if ( val != Vector3.zero){
-					sphereVertices[0][j][i] = val * 1;	
-					sphereVertices[1][j][i] = val * 2;
+					sphereVertices[0][j][i] = val * 1.7f;	
+					sphereVertices[1][j][i] = val * 2.0f;
 				}
 			}
 		}	
