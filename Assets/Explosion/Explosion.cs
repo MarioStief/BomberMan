@@ -10,8 +10,6 @@ public class Explosion : MonoBehaviour
 	private const float EXPLOSIONTIMER = 3.0f;
 	private const int DROPCHANCE = 25; // Drop chance in %
 	float SCALE = 0.01f;
-	public GameObject sphere; // DELETE?
-	private SphereBuilder sphereHandler;
 	public Parcel cell;
 	private float xpos, ypos, zpos;
 	
@@ -66,8 +64,6 @@ public class Explosion : MonoBehaviour
 		bombPrefab = GameObject.Find("bomb");
 		explosionPrefab = GameObject.Find("Explosion");
 		explosionPrefab.transform.localScale *= SCALE;
-		sphere = GameObject.Find("Sphere");
-		sphereHandler = sphere.GetComponent<SphereBuilder>();
 	}
 	
 	void Start() {
@@ -139,11 +135,9 @@ public class Explosion : MonoBehaviour
 			}
 
 			if (elapsedTime > 0.3f) {					// nach 300 ms ohne Aktualisierung:
-				//placePowerup();							// Lasse Powerup erscheinen
-				for (int i = 1; i <= 4; i++) {			// keine neuen Partikel mehr
-					if (explosion[i] != null) {
-						//explosion[i].GetComponent<ParticleEmitter>().maxEmission = 0;
-					}
+				foreach (ExplosionField explosionField in explosionChain) {
+					explosionField.getCell().setExploding(false);
+					explosionField.getCell().colorCell(Color.green);
 				}
 			}
 
@@ -183,6 +177,7 @@ public class Explosion : MonoBehaviour
 						
 						detonator.Explode();
 						explosionField.getCell().setExploding(true);
+						explosionField.getCell().colorCell(Color.black);
 						
 						// Wand zerstören, ggfls. Powerup setzen
 						if (PowerupPool.getDestroyable())
@@ -214,6 +209,7 @@ public class Explosion : MonoBehaviour
 						
 					} else if (explosionField.getDelay() == -3) {
 						explosionField.getCell().setExploding(false);
+						explosionField.getCell().colorCell(Color.green);
 					}
 
 					explosionField.decrement(); // Zähle Delay-Ticker runter

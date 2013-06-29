@@ -16,7 +16,7 @@ public class MeshManipulator : MonoBehaviour {
 	// Use this for initialization
 	void Awake () {
 				
-		sphere = GameObject.Find("Sphere").GetComponent<SphereBuilder>();
+		sphere = Static.sphereHandler;
 		cubeMesh = GetComponent<MeshFilter>().mesh;
 		vertexPosition = new Vector3[8];
 	}

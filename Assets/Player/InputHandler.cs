@@ -11,9 +11,7 @@ public class InputHandler : MonoBehaviour {
 	
 	bool DEBUGPLAYERPOSITION = false;
 	
-	public GameObject sphere;
 	private GameObject playerHandler;
-	private SphereBuilder sphereHandler;
 	
 	private int n_L;				// Anzahl Längen und Breitengeraden
 	private int n_B;
@@ -182,18 +180,18 @@ public class InputHandler : MonoBehaviour {
 				// nach oben schauen
 				if (hm > 0) {
 					// nach links oben schauen
-					Debug.Log("links oben");
+					//Debug.Log("links oben");
 					lookDirection = currCell.getSurroundingCell(GAP,GAP).getCenterPos();
 					currCell.getSurroundingCell(GAP,GAP).colorCell(Color.magenta);
 				} else if (hm < 0) {
 					// nach rechts oben schauen
-					Debug.Log("rechts oben");
+					//Debug.Log("rechts oben");
 					lookDirection = currCell.getSurroundingCell(GAP,-GAP).getCenterPos();
 					currCell.getSurroundingCell(GAP,-GAP).colorCell(Color.magenta);
 
 				} else {
 					// nur nach oben schauen
-					Debug.Log("oben");
+					//Debug.Log("oben");
 					lookDirection = currCell.getSurroundingCell(GAP,0).getCenterPos();
 					currCell.getSurroundingCell(GAP,0).colorCell(Color.magenta);
 				}
@@ -201,29 +199,29 @@ public class InputHandler : MonoBehaviour {
 				// nach unten schauen
 				if (hm > 0) {
 					// nach links unten schauen
-					Debug.Log("links unten");
+					//Debug.Log("links unten");
 					lookDirection = currCell.getSurroundingCell(-GAP,GAP).getCenterPos();
 					currCell.getSurroundingCell(-GAP,GAP).colorCell(Color.magenta);
 				} else if (hm < 0) {
 					// nach rechts unten schauen
-					Debug.Log("rechts unten");
+					//Debug.Log("rechts unten");
 					lookDirection = currCell.getSurroundingCell(-GAP,-GAP).getCenterPos();
 					currCell.getSurroundingCell(-GAP,-GAP).colorCell(Color.magenta);
 				} else {
 					// nur nach unten schauen
-					Debug.Log("unten");
+					//Debug.Log("unten");
 					lookDirection = currCell.getSurroundingCell(-GAP,0).getCenterPos();
 					currCell.getSurroundingCell(-GAP,0).colorCell(Color.magenta);
 				}
 			} else {
 				if (hm > 0) {
 					// nur nach links schauen
-					Debug.Log("links");
+					//Debug.Log("links");
 					lookDirection = currCell.getSurroundingCell(0,GAP).getCenterPos();
 					currCell.getSurroundingCell(0,GAP).colorCell(Color.magenta);
 				} else {
 					// nur nach rechts schauen
-					Debug.Log("rechts");
+					//Debug.Log("rechts");
 					lookDirection = currCell.getSurroundingCell(0,-GAP).getCenterPos();
 					currCell.getSurroundingCell(0,-GAP).colorCell(Color.magenta);
 				}

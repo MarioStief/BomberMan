@@ -40,27 +40,19 @@ namespace AssemblyCSharp
 		
 		public Parcel (){
 			height = 1.0f;
-			constructor();
-		}
+			}
 		
 		public Parcel (int type)
 		{
 			setType(type);
-			constructor();
 		}
 		
 		public Parcel (float height, GameObject obj)
 		{
 			this.height = height;
 			this.obj = obj;
-			constructor();
 		}
-		
-		private void constructor() {
-			GameObject sphere = GameObject.Find("Sphere");
-			SphereBuilder sphereHandler = sphere.GetComponent<SphereBuilder>();
-		}
-		
+				
 		public MeshManipulator getMeshManipulator() {
 			return Static.rink.drawnArea[lpos][bpos];
 		}
