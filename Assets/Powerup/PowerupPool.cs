@@ -33,7 +33,7 @@ namespace AssemblyCSharp
 					pool.Add(new Powerup(PowerupType.FLAME_UP));
 				for (int j = 0; j < 10; j++)
 					pool.Add(new Powerup(PowerupType.PLAYER_SPEED_UP));
-				for (int j = 0; j < 1000; j++)
+				for (int j = 0; j < 10; j++)
 					pool.Add(new Powerup(PowerupType.DELAY_SPEED_UP));
 				for (int j = 0; j < 1; j++)
 					pool.Add(new Powerup(PowerupType.GOLDEN_FLAME));
