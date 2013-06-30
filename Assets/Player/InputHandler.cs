@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
 using AssemblyCSharp;
 
@@ -71,6 +72,24 @@ public class InputHandler : MonoBehaviour {
 		transform.LookAt(currCell.up.getCenterPos());
 	}
 	
+	IEnumerator deadPlayer() {
+		while (true) {
+			float x = transform.position.x;
+			float y = transform.position.y;
+			float z = transform.position.z;
+			yield return new WaitForSeconds(Random.value);
+			Vector3 position = new Vector3(Random.Range(x-0.1f, x+0.1f), Random.Range(y-0.1f, y+0.1f), Random.Range(z-0.1f, z+0.1f));
+			GameObject explosion = GameObject.Instantiate(Static.explosionPrefab, position, Quaternion.identity) as GameObject;
+			Detonator detonator = explosion.GetComponent<Detonator>();
+			detonator.setSize(Random.Range(500f, 1000f));
+			detonator.setDuration(5f);
+			float distance = Vector3.Distance (GameObject.Find("Player").transform.position, position);
+			detonator.GetComponent<AudioSource>().volume /= 20*distance;
+			detonator.GetComponent<AudioSource>().Play();
+			detonator.Explode();
+		}
+	}
+	
 	// Update is called once per frame
 	void Update () {
 		
@@ -82,11 +101,9 @@ public class InputHandler : MonoBehaviour {
 			moveCharacter();
 			currCell = Static.rink.gameArea[lpos][bpos];
 			if (currCell.isExploding()) {
-				// don't die while debugging...
 				Player.setDead(true);
 				renderer.material.color = Color.black;
-				GameObject deadPlayer = GameObject.Instantiate(Static.deadPlayerPrefab, new Vector3(transform.position.x, transform.position.y, transform.position.z), Quaternion.identity) as GameObject; 
-				//*/
+				StartCoroutine(deadPlayer());
 			}
 			
 			
@@ -100,7 +117,7 @@ public class InputHandler : MonoBehaviour {
 				if ( !currCell.hasBomb()) {
 					
 					if (Player.addBomb()) {
-						Explosion.createExplosionOnCell(currCell, Player.getFlamePower(), true, true);
+						Explosion.createExplosionOnCell(currCell, Player.getFlamePower(), Player.getDelay(), true, true);
 						// Um eine Bombe eines anderen Spielers auf einer Zelle zu spawnen:
 						// Explosion.createExplosionOnCell(Parcel, flamePower, true);
 						// Powerup-ToDos: flameMight, flameSpeed
@@ -514,7 +531,7 @@ public class InputHandler : MonoBehaviour {
 		if (Player.getHP() == 0) {
 			renderer.material.color = Color.black;
 			//moveDirection = new Vector3(0, 0, 0);
-			GameObject deadPlayer = GameObject.Instantiate(Static.deadPlayerPrefab, new Vector3(transform.position.x, transform.position.y, transform.position.z), Quaternion.identity) as GameObject; 
+			GameObject deadPlayer = GameObject.Instantiate(Static.explosionPrefab, new Vector3(transform.position.x, transform.position.y, transform.position.z), Quaternion.identity) as GameObject; 
 		}
 	}
 

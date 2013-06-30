@@ -14,9 +14,12 @@ namespace AssemblyCSharp
 		public static GameObject bombDownPowerupPrefab;
 		public static GameObject flameUpPowerupPrefab;
 		public static GameObject flameDownPowerupPrefab;
-		public static GameObject goldenFlamePowerupPrefab;
 		public static GameObject playerSpeedUpPowerupPrefab;
 		public static GameObject playerSpeedDownPowerupPrefab;
+		public static GameObject delaySpeedUpPowerupPrefab;
+		public static GameObject delaySpeedDownPowerupPrefab;
+		public static GameObject goldenFlamePowerupPrefab;
+		public static GameObject superbombPowerupPrefab;
 		public static GameObject explosionPrefab;
 		public static GameObject deadPlayerPrefab;
 		
@@ -26,9 +29,12 @@ namespace AssemblyCSharp
 			bombDownPowerupPrefab = (GameObject) UnityEngine.Object.Instantiate(Resources.Load("Prefabs/bombDownPrefab"));
 			flameUpPowerupPrefab = (GameObject) UnityEngine.Object.Instantiate(Resources.Load("Prefabs/flameUpPrefab"));
 			flameDownPowerupPrefab = (GameObject) UnityEngine.Object.Instantiate(Resources.Load("Prefabs/flameDownPrefab"));
-			goldenFlamePowerupPrefab = (GameObject) UnityEngine.Object.Instantiate(Resources.Load("Prefabs/goldenFlamePrefab"));
 			playerSpeedUpPowerupPrefab = (GameObject) UnityEngine.Object.Instantiate(Resources.Load("Prefabs/playerSpeedUpPrefab"));
 			playerSpeedDownPowerupPrefab = (GameObject) UnityEngine.Object.Instantiate(Resources.Load("Prefabs/playerSpeedDownPrefab"));
+			delaySpeedUpPowerupPrefab = (GameObject) UnityEngine.Object.Instantiate(Resources.Load("Prefabs/delaySpeedUpPrefab"));
+			delaySpeedDownPowerupPrefab = (GameObject) UnityEngine.Object.Instantiate(Resources.Load("Prefabs/delaySpeedDownPrefab"));
+			goldenFlamePowerupPrefab = (GameObject) UnityEngine.Object.Instantiate(Resources.Load("Prefabs/goldenFlamePrefab"));
+			superbombPowerupPrefab = (GameObject) UnityEngine.Object.Instantiate(Resources.Load("Prefabs/superbombPrefab"));
 			explosionPrefab = (GameObject) UnityEngine.Object.Instantiate(Resources.Load("Prefabs/explosionPrefab"));
 			deadPlayerPrefab = (GameObject) UnityEngine.Object.Instantiate(Resources.Load("Prefabs/deadPlayerPrefab"));
 		}

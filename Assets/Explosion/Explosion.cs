@@ -5,7 +5,6 @@ using AssemblyCSharp;
 
 public class Explosion : MonoBehaviour
 {
-	private const int DELAY = 100;
 	// private const float EXPLOSIONTIMER = 0.1f; // Debugwert
 	private const float EXPLOSIONTIMER = 3.0f;
 	private const int DROPCHANCE = PowerupPool.DROPCHANCE;
@@ -15,6 +14,7 @@ public class Explosion : MonoBehaviour
 	GameObject []explosion = new GameObject[5];
 	private int []reach = {0, 0, 0, 0, 0};
 	private int flamePower;
+	private float delay;
 	private bool createBomb;
 	private bool self = false;
 	
@@ -39,11 +39,12 @@ public class Explosion : MonoBehaviour
 	}
 	
 	// Factory-Klasse, um einen Konstruktor auf einem Monobehaviour-Objekt zu emulieren, der die Explosion auf einer Zelle startet
-	public static Explosion createExplosionOnCell(Parcel cell, int flamePower, bool createBomb, bool self) {
+	public static Explosion createExplosionOnCell(Parcel cell, int flamePower, float delay, bool createBomb, bool self) {
 		Explosion thisObj = GUIObject.AddComponent<Explosion>();
 		//calls Start() on the object and initializes it.
 		thisObj.cell = cell;
 		thisObj.flamePower = flamePower;
+		thisObj.delay = delay;
 		thisObj.createBomb = createBomb;
 		thisObj.transform.position = cell.getCenterPos();
 		thisObj.self = self;
@@ -51,7 +52,7 @@ public class Explosion : MonoBehaviour
 	}
 
 	// Factory-Klasse, um einen Konstruktor auf einem Monobehaviour-Objekt zu emulieren, der die Explosion auf einer Zelle startet
-	public static Explosion createExplosionOnCell(Parcel cell, int flamePower, bool createBomb) {
+	public static Explosion createExplosionOnCell(Parcel cell, int flamePower, float delay, bool createBomb) {
 		Explosion thisObj = GUIObject.AddComponent<Explosion>();
 		//calls Start() on the object and initializes it.
 		thisObj.cell = cell;
@@ -137,7 +138,7 @@ public class Explosion : MonoBehaviour
 			}
 
 			// Explosionskette startet
-			if (elapsedTime > 0.1f) {					// alle 100 ms
+			if (elapsedTime > delay) {					// alle 100 ms
 				foreach (ExplosionField explosionField in explosionChain) {
 					bool stillRunning = false;
 					if (explosionField.getDelay() == 0 && !explosionField.getCell().isExploding()) {
@@ -147,6 +148,10 @@ public class Explosion : MonoBehaviour
 						//explosion.GetComponent<Detonator>().size = 10f;
 						Detonator detonator = explosion.GetComponent<Detonator>();
 						explosionField.getCell().decreaseHeight();
+						if (Player.getSuperbomb()) {
+							explosionField.getCell().decreaseHeight();
+							explosionField.getCell().decreaseHeight();
+						}
 						float explosionSize = 300f;
 						detonator.setSize(explosionSize);
 						
@@ -168,7 +173,7 @@ public class Explosion : MonoBehaviour
 						float distance = Vector3.Distance (GameObject.Find("Player").transform.position, position);
 						detonator.GetComponent<AudioSource>().volume /= 2*distance;
 						detonator.GetComponent<AudioSource>().Play();
-						Debug.Log ("Explosion Volume: " + (100/(2*distance)) + " %");
+						//Debug.Log ("Explosion Volume: " + (100/(2*distance)) + " %");
 						
 						detonator.Explode();
 						explosionField.getCell().setExploding(true);
@@ -178,7 +183,7 @@ public class Explosion : MonoBehaviour
 						if (PowerupPool.getDestroyable()) {
 							if (explosionField.getCell().hasPowerup()) {
 								if (Preferences.getExplodingPowerups() == true) {
-									Explosion ex = Explosion.createExplosionOnCell(explosionField.getCell(), explosionField.getCell().getPowerupValue(), false, false);
+									Explosion ex = Explosion.createExplosionOnCell(explosionField.getCell(), explosionField.getCell().getPowerupValue(), Player.getDelay(), false, false);
 									ex.startExplosion();
 								}
 								explosionField.getCell().destroyPowerup(true);
@@ -208,7 +213,7 @@ public class Explosion : MonoBehaviour
 						stillRunning = true;
 
 						
-					} else if (explosionField.getDelay() == -3) {
+					} else if ((explosionField.getDelay() * delay) < -0.3f) { // Zellen sind wieder betretbar nach 300 ms
 						explosionField.getCell().setExploding(false);
 						explosionField.getCell().colorCell(Color.green);
 					}
@@ -241,21 +246,10 @@ public class Explosion : MonoBehaviour
 	
 	private void instantiatePSystems(){
 		
-		//for (int i = 0; i < 5; i++) { // DEBUG
-			// die Explosion etwas über die Planetenoberfläche anheben:
-			//explosion[i] = GameObject.Instantiate(explosionPrefab, transform.position, Quaternion.identity) as GameObject;
-			//explosion[i].GetComponent<ParticleEmitter>().maxEmission = 0;
-			//if (i == 0)
 		if (true) {
 			cell.colorCell(Color.red);
 			explosionChain.Add(new ExplosionField(0, cell, 0, 0, 0));
 		}
-		//}
-		
-		//explosion[1].GetComponent<ParticleEmitter>().worldVelocity = new Vector3(-5.0f, 0.3f, 0.0f);
-		//explosion[2].GetComponent<ParticleEmitter>().worldVelocity = new Vector3(5.0f, 0.3f, 0.0f);
-		//explosion[3].GetComponent<ParticleEmitter>().worldVelocity = new Vector3(0.0f, 0.3f, -5.0f);
-		//explosion[4].GetComponent<ParticleEmitter>().worldVelocity = new Vector3(0.0f, 0.3f, 5.0f);
 
 		int[] stop = {0, 0, 0, 0};
 		
@@ -289,10 +283,10 @@ public class Explosion : MonoBehaviour
 					switch (cell.getType()) {
 					case 0:
 						cell.colorCell(Color.red);
-						//reach[j+1]++;
 						break;
 					case 1:
-						stop[j] = 1;
+						if (!Player.getSuperbomb())
+							stop[j] = 1;
 						cell.colorCell(Color.red);
 						break;
 					case 2:

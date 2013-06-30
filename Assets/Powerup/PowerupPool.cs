@@ -33,8 +33,12 @@ namespace AssemblyCSharp
 					pool.Add(new Powerup(PowerupType.FLAME_UP));
 				for (int j = 0; j < 10; j++)
 					pool.Add(new Powerup(PowerupType.PLAYER_SPEED_UP));
+				for (int j = 0; j < 1000; j++)
+					pool.Add(new Powerup(PowerupType.DELAY_SPEED_UP));
 				for (int j = 0; j < 1; j++)
 					pool.Add(new Powerup(PowerupType.GOLDEN_FLAME));
+				for (int j = 0; j < 1; j++)
+					pool.Add(new Powerup(PowerupType.SUPERBOMB));
 				if (negative) {
 					for (int j = 0; j < 2; j++)
 						pool.Add(new Powerup(PowerupType.BOMB_DOWN));
@@ -42,6 +46,8 @@ namespace AssemblyCSharp
 						pool.Add(new Powerup(PowerupType.FLAME_DOWN));
 					for (int j = 0; j < 2; j++)
 						pool.Add(new Powerup(PowerupType.PLAYER_SPEED_DOWN));
+					for (int j = 0; j < 2; j++)
+						pool.Add(new Powerup(PowerupType.DELAY_SPEED_DOWN));
 				}
 			}
 
@@ -85,23 +91,6 @@ namespace AssemblyCSharp
 			
 			GameObject powerup = null;
 
-			/*
-				 if	(p.getType() == PowerupType.BOMB_UP)
-					powerup = GameObject.Instantiate(bombUpPowerupPrefab, new Vector3(x + 0.5f, 0.3f, y + 0.5f), Quaternion.identity) as GameObject; 
-			else if	(p.getType() == PowerupType.BOMB_DOWN)
-					powerup = GameObject.Instantiate(bombDownPowerupPrefab, new Vector3(x + 0.5f, 0.3f, y + 0.5f), Quaternion.identity) as GameObject; 
-			else if (p.getType() == PowerupType.FLAME_UP)
-					powerup = GameObject.Instantiate(flameUpPowerupPrefab, new Vector3(x + 0.5f, 0.3f, y + 0.5f), Quaternion.identity) as GameObject; 
-			else if (p.getType() == PowerupType.FLAME_DOWN)
-					powerup = GameObject.Instantiate(flameDownPowerupPrefab, new Vector3(x + 0.5f, 0.3f, y + 0.5f), Quaternion.identity) as GameObject; 
-			else if (p.getType() == PowerupType.PLAYER_SPEED_UP)
-					powerup = GameObject.Instantiate(playerSpeedUpPowerupPrefab, new Vector3(x + 0.5f, 0.3f, y + 0.5f), Quaternion.identity) as GameObject; 
-			else if (p.getType() == PowerupType.PLAYER_SPEED_DOWN)
-					powerup = GameObject.Instantiate(playerSpeedDownPowerupPrefab, new Vector3(x + 0.5f, 0.3f, y + 0.5f), Quaternion.identity) as GameObject; 
-			else if (p.getType() == PowerupType.GOLDEN_FLAME)
-					powerup = GameObject.Instantiate(goldenFlamePowerupPrefab, new Vector3(x + 0.5f, 0.3f, y + 0.5f), Quaternion.identity) as GameObject; 
-			*/
-
 				 if	(p.getType() == PowerupType.BOMB_UP)
 					powerup = Static.bombUpPowerupPrefab; 
 			else if	(p.getType() == PowerupType.BOMB_DOWN)
@@ -114,8 +103,14 @@ namespace AssemblyCSharp
 					powerup = Static.playerSpeedUpPowerupPrefab; 
 			else if (p.getType() == PowerupType.PLAYER_SPEED_DOWN)
 					powerup = Static.playerSpeedDownPowerupPrefab; 
+			else if (p.getType() == PowerupType.DELAY_SPEED_UP)
+					powerup = Static.playerSpeedUpPowerupPrefab; 
+			else if (p.getType() == PowerupType.DELAY_SPEED_DOWN)
+					powerup = Static.playerSpeedDownPowerupPrefab; 
 			else if (p.getType() == PowerupType.GOLDEN_FLAME)
 					powerup = Static.goldenFlamePowerupPrefab; 
+			else if (p.getType() == PowerupType.SUPERBOMB)
+					powerup = Static.superbombPowerupPrefab; 
 
 			cell.addPowerup(new Powerup(type), powerup);
 

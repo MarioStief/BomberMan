@@ -35,7 +35,8 @@ namespace AssemblyCSharp
 					value = 3; 
 			else if (type == PowerupType.GOLDEN_FLAME)
 					value = 10;
-			Debug.Log("***************************" + type.ToString() + " returned value " + value);
+			else if (type == PowerupType.SUPERBOMB)
+					value = 10;
 			return value;
 		}
 	}

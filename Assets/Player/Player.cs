@@ -12,14 +12,18 @@ namespace AssemblyCSharp
 		private static float verticalHelper		= 0.0f;
 		private static float horizontalHelper 	= 0.0f;
 		
-		private const float MAXSPEED = 4.0f;
+		private const float MAXSPEED = 0.8f;
+		private const float MINDELAY = 0.04f;
+		private const float MAXDELAY = 0.28f;
 		private const int MAXFLAMEPOWER = 10;
 		private const int MAXHP = 100;
+		private static bool SUPERBOMB = false;
 		
 		private static int bombs = 10;
 		private static int bombsActive = 0;
 		private static int flamePower = 10;
 		private static float speed = 0.4f;
+		private static float delay = 0.2f;
 		private static int hp = MAXHP;
 		
 		private static bool dead = false;
@@ -40,16 +44,24 @@ namespace AssemblyCSharp
 			} else if (type == PowerupType.FLAME_DOWN) {
 				if (flamePower > 1)
 					flamePower--;
-			} else if (type == PowerupType.GOLDEN_FLAME) {
-					flamePower = MAXFLAMEPOWER;
 			} else if (type == PowerupType.PLAYER_SPEED_UP) {
 				if (speed < MAXSPEED)
-					speed += 0.1f;
+					speed += 0.05f;
 			} else if (type == PowerupType.PLAYER_SPEED_DOWN) {
 				if (speed > 1.0f)
-					speed -= 0.1f;
+					speed -= 0.05f;
+			} else if (type == PowerupType.DELAY_SPEED_UP) {
+				if (delay > MINDELAY)
+					delay -= 0.02f;
+			} else if (type == PowerupType.DELAY_SPEED_DOWN) {
+				if (delay < MAXDELAY)
+					speed += 0.02f;
+			} else if (type == PowerupType.GOLDEN_FLAME) {
+					flamePower = MAXFLAMEPOWER;
+			} else if (type == PowerupType.SUPERBOMB) {
+					SUPERBOMB = true;
 			}
-			Debug.Log("bombs: " + bombs + ", flamePower: " + flamePower + ", speed: " + speed);
+			Debug.Log("bombs: " + bombs + ", flamePower: " + flamePower + ", speed: " + speed*1000 + " ms, delay: " + delay*1000 + " ms");
 		}
 		
 		public static bool addBomb() {
@@ -105,6 +117,11 @@ namespace AssemblyCSharp
 					}
 				}
 				parcelPool = shuffleList(parcelPool);
+				if (SUPERBOMB) {
+					parcelPool[0].addPowerup(new Powerup(PowerupType.SUPERBOMB), Static.superbombPowerupPrefab);
+					parcelPool.RemoveAt(0);
+					SUPERBOMB = false;
+				}
 				if (flamePower == MAXFLAMEPOWER && parcelPool.Count > 0) {
 					parcelPool[0].addPowerup(new Powerup(PowerupType.GOLDEN_FLAME), Static.goldenFlamePowerupPrefab);
 					parcelPool.RemoveAt(0);
@@ -123,7 +140,12 @@ namespace AssemblyCSharp
 				while (speed > 0.4f && parcelPool.Count > 0) {
 					parcelPool[0].addPowerup(new Powerup(PowerupType.PLAYER_SPEED_UP), Static.playerSpeedUpPowerupPrefab);
 					parcelPool.RemoveAt(0);
-					speed -= 0.1f;
+					speed -= 0.05f;
+				}
+				while (delay < 0.2f && parcelPool.Count > 0) {
+					parcelPool[0].addPowerup(new Powerup(PowerupType.DELAY_SPEED_UP), Static.delaySpeedUpPowerupPrefab);
+					parcelPool.RemoveAt(0);
+					delay += 0.02f;
 				}
 			}
 		}
@@ -183,6 +205,14 @@ namespace AssemblyCSharp
 				sortedList.RemoveAt(randomIndex);
 			}
 			return randomList;
+		}
+		
+		public static bool getSuperbomb() {
+			return SUPERBOMB;
+		}
+		
+		public static float getDelay() {
+			return delay;
 		}
 	}
 }
