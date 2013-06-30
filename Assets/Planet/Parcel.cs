@@ -170,7 +170,7 @@ namespace AssemblyCSharp
 
 		public PowerupType destroyPowerup(bool shatter) {
 			if (shatter && Preferences.getExplodingPowerups() == false) { // if shatter
-				SplitMeshIntoTriangles.createMeshExplosion(obj); // Zerbersten lassen
+				SplitMeshIntoTriangles.createMeshExplosion(obj, getCenterPos()); // Zerbersten lassen
 			} else {
 				GameObject.Destroy(obj);
 			}

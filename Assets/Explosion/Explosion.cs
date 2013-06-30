@@ -92,24 +92,6 @@ public class Explosion : MonoBehaviour
 	
 	public void startExplosion(){
 		
-		Debug.Log ("Flammenstaerke: " + reach[1] + ", " + reach[2] + ", " + reach[3] + ", " + reach[4]);
-		
-		/*
-		for (int i = 1; i <= 4; i++) { //  CHANGE TO i = 1; i <= 4
-			explosion[i].GetComponent<ParticleEmitter>().minSize = 0.0f;
-			explosion[i].GetComponent<ParticleEmitter>().maxSize = 2.5f;
-			explosion[i].GetComponent<ParticleEmitter>().minEnergy = 0.2f;
-			explosion[i].GetComponent<ParticleEmitter>().maxEnergy = 0.2f * reach[i];
-			explosion[i].GetComponent<ParticleEmitter>().minEmission = 2000;
-			explosion[i].GetComponent<ParticleEmitter>().maxEmission = 2000;
-		}
-		*/
-		/*
-		foreach (ExplosionField explosionField in explosionChain) {
-			explosionField.decrement(); // Zähle Delay-Ticker runter
-		}
-		*/
-		
 		waitingForBombExplosion = false;
 		createTime = Time.time;
 
@@ -216,8 +198,15 @@ public class Explosion : MonoBehaviour
 
 						if (explodingCell.getType() == 1) {
 							explodingCell.setType(0);
+							
+							// Kiste explodieren lassen
+							GameObject obj = (GameObject) UnityEngine.Object.Instantiate(Resources.Load("Prefabs/boxCubePrefab"));
+							obj.transform.position = explodingCell.getCenterPos();
+							//GameObject obj = GameObject.Instantiate(prefab, explodingCell().getCenterPos(), Quaternion.identity);
+							SplitMeshIntoTriangles.createMeshExplosion(obj, cell.getCenterPos());
+							
 							int random = new System.Random().Next(0, (int) 100/DROPCHANCE);
-							Debug.Log("Placing Powerup for cell " + explodingCell.getCoordinates() + ": " + (random == 0 ? "yes" : "no"));
+							//Debug.Log("Placing Powerup for cell " + explodingCell.getCoordinates() + ": " + (random == 0 ? "yes" : "no"));
 							if (random == 0) { // Random().Next(0, 4) € {0, 1, 2, 3}
 								PowerupPool.setPowerup(explodingCell);
 							}
@@ -249,24 +238,6 @@ public class Explosion : MonoBehaviour
 			}
 		}
 	}
-	/*
-	private void placePowerup() {
-		if (!powerupsPlaced) {
-			foreach (ExplosionField explosionField in explosionChain) {
-				Parcel cell = explosionField.getCell();
-				Debug.Log("Cell " + cell.getCoordinates() + " has GameObject: " + (cell.hasGameObject() ? "yes" : "no"));
-				if (!cell.hasGameObject()) {
-					int random = new System.Random().Next(0, (int) 100/DROPCHANCE);
-					Debug.Log("Placing Powerup for cell " + cell.getCoordinates() + ": " + (random == 0 ? "yes" : "no"));
-					if (random == 0) { // Random().Next(0, 4) € {0, 1, 2, 3}
-						PowerupPool.setPowerup(cell);
-					}
-				}
-			}
-		}
-		powerupsPlaced = true;
-	}
-	*/
 	
 	private void instantiatePSystems(){
 		
