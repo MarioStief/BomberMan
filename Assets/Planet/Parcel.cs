@@ -132,7 +132,8 @@ namespace AssemblyCSharp
 		}
 		
 		public void destroyGameObject(){
-			GameObject.Destroy(obj);
+			//GameObject.Destroy(obj);
+			SplitMeshIntoTriangles.createMeshExplosion(obj, getCenterPos(), Preferences.getExplosionDetail()); // Zerbersten lassen
 			obj = null;
 		}
 		
@@ -169,8 +170,9 @@ namespace AssemblyCSharp
 		}
 
 		public PowerupType destroyPowerup(bool shatter) {
-			if (shatter && Preferences.getExplodingPowerups() == false) { // if shatter
-				SplitMeshIntoTriangles.createMeshExplosion(obj, getCenterPos()); // Zerbersten lassen
+			if (shatter) { // if shatter
+			//if (shatter && Preferences.getExplodingPowerups() == false) { // if shatter
+				SplitMeshIntoTriangles.createMeshExplosion(obj, getCenterPos(), Preferences.getExplosionDetail()); // Zerbersten lassen
 			} else {
 				GameObject.Destroy(obj);
 			}

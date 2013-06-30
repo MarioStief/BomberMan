@@ -103,6 +103,7 @@ namespace AssemblyCSharp
 		
 		public static void removeBomb() {
 			bombsActive--;
+			//Debug.Log ("Bombs: " + bombsActive + "/" + bombs);
 		}
 
 		public static int getFlamePower() {

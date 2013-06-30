@@ -16,6 +16,7 @@ public class Explosion : MonoBehaviour
 	private float delay;
 	private bool createBomb;
 	private bool self = false;
+	private bool bombDestroyed = false;
 	
 	private int []dists;
 	private bool waitingForBombExplosion = true;
@@ -119,14 +120,15 @@ public class Explosion : MonoBehaviour
 
 			// Explosionskette startet
 			if (elapsedTime > delay) {					// alle 100 ms
-				
-				// Zerstöre Bombe
-				cell.setBomb(false);
-				if (createBomb)
-					cell.destroyGameObject();
-				if (self)
-					Player.removeBomb();
-
+				if (!bombDestroyed) {
+					// Zerstöre Bombe
+					cell.setBomb(false);
+					if (createBomb)
+						cell.destroyGameObject();
+					if (self)
+						Player.removeBomb();
+					bombDestroyed = true;
+				}
 				foreach (ExplosionField explosionField in explosionChain) {
 					bool stillRunning = false;
 					if (explosionField.getDelay() == 0 && !explosionField.getCell().isExploding()) {
@@ -201,7 +203,7 @@ public class Explosion : MonoBehaviour
 							
 							// Kiste explodieren lassen
 							GameObject obj = GameObject.Instantiate(Static.boxCubePrefab, explodingCell.getCenterPos(), Quaternion.identity) as GameObject;
-							SplitMeshIntoTriangles.createMeshExplosion(obj, cell.getCenterPos());
+							SplitMeshIntoTriangles.createMeshExplosion(obj, cell.getCenterPos(), 1);
 							
 							int random = new System.Random().Next(0, (int) 100/DROPCHANCE);
 							//Debug.Log("Placing Powerup for cell " + explodingCell.getCoordinates() + ": " + (random == 0 ? "yes" : "no"));
@@ -213,7 +215,7 @@ public class Explosion : MonoBehaviour
 							
 							// Steinblock explodieren lassen
 							GameObject obj = GameObject.Instantiate(Static.stoneCubePrefab, explodingCell.getCenterPos(), Quaternion.identity) as GameObject;
-							SplitMeshIntoTriangles.createMeshExplosion(obj, cell.getCenterPos());
+							SplitMeshIntoTriangles.createMeshExplosion(obj, cell.getCenterPos(), 1);
 							
 							if (explodingCell.getHeight() == 1f) {
 								explodingCell.setType(0);
