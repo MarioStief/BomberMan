@@ -3,17 +3,22 @@ using System.Collections;
 
 public class anim : MonoBehaviour {
 
-    public float fac = 0.5f;
-	public float scale = 1.0f;
     float t = 0.0f;
+	public float timer = 3.0f;
+	
+	void Start() {
+		// Aufblinken beim Bomblegen verbeiden
+		transform.renderer.material.SetColor("_Color", Color.black);
+		transform.localScale = Vector3.zero;
+	}
 	
 	// Update is called once per frame
 	void Update () {
         t += Time.deltaTime;
-        float s = Mathf.Abs(Mathf.Sin(fac * t));
-        float f = 0.25f/scale + 0.25f*s*scale;
-		f *= 0.25f; // Größenanpassung auf Sphere
+        float s = Mathf.Abs(Mathf.Sin(2*t));
+        float f = 0.2f + (t/timer)/4 + 0.25f*s;
+		f *= 0.3f; // Größenanpassung auf Sphere
         transform.localScale = new Vector3(f, f, f);
-		transform.renderer.material.SetColor("_Color", new Color(s, 0.0f, 0.0f));
+		transform.renderer.material.SetColor("_Color", new Color(t/2, 0f, 0f));
 	}
 }

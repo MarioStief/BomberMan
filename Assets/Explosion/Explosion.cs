@@ -5,8 +5,7 @@ using AssemblyCSharp;
 
 public class Explosion : MonoBehaviour
 {
-	// private const float EXPLOSIONTIMER = 0.1f; // Debugwert
-	private const float EXPLOSIONTIMER = 3.0f;
+	public float EXPLOSIONTIMER = 0f;
 	private const int DROPCHANCE = PowerupPool.DROPCHANCE;
 	public Parcel cell;
 	private float xpos, ypos, zpos;
@@ -78,21 +77,17 @@ public class Explosion : MonoBehaviour
 
 		//explosions.Add(this);
 		//transform.position = cell.getCenterPos();
-		if (createBomb)
-			cell.setGameObject(GameObject.Instantiate(GameObject.Find("bomb"), transform.position, Quaternion.identity) as GameObject);
+		if (createBomb) {
+			GameObject bomb = GameObject.Instantiate(GameObject.Find("bomb"), transform.position, Quaternion.identity) as GameObject;
+			EXPLOSIONTIMER = bomb.GetComponent<anim>().timer;
+			cell.setGameObject(bomb);
+		}
 		cell.setExplosion(this);
 		cell.setBomb(true);
 
 	}
 	
 	public void startExplosion(){
-		
-		cell.setBomb(false);
-		if (createBomb)
-			cell.destroyGameObject();
-		if (self)
-			Player.removeBomb();
-		//bomb = null;
 		
 		Debug.Log ("Flammenstaerke: " + reach[1] + ", " + reach[2] + ", " + reach[3] + ", " + reach[4]);
 		
@@ -139,6 +134,14 @@ public class Explosion : MonoBehaviour
 
 			// Explosionskette startet
 			if (elapsedTime > delay) {					// alle 100 ms
+				
+				// Zerstöre Bombe
+				cell.setBomb(false);
+				if (createBomb)
+					cell.destroyGameObject();
+				if (self)
+					Player.removeBomb();
+
 				foreach (ExplosionField explosionField in explosionChain) {
 					bool stillRunning = false;
 					if (explosionField.getDelay() == 0 && !explosionField.getCell().isExploding()) {
