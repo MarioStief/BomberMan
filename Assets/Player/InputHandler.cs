@@ -109,7 +109,8 @@ public class InputHandler : MonoBehaviour {
 				horizontalMovement = ((float) new System.Random().Next(0, 3) - 1f) / 10;
 				
 				bool noMovement = (verticalMovement == 0f && horizontalMovement == 0f);
-				bool hardTurn = ((oldVerticalMovement - verticalMovement > 0.1) || (oldHorizontalMovement - horizontalMovement > 0.1));
+				bool hardTurn = ((oldVerticalMovement - verticalMovement > 0.1) || (oldHorizontalMovement - horizontalMovement > 0.1)) ||
+					((oldVerticalMovement - verticalMovement == 0.1) && (oldHorizontalMovement - horizontalMovement == 0.1));
 				bool noChange = ((oldVerticalMovement == verticalMovement) && (oldHorizontalMovement == horizontalMovement));
 				invalid = (noMovement || hardTurn || noChange);
 				
