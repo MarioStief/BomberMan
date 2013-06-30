@@ -91,7 +91,7 @@ public class Explosion : MonoBehaviour
 		if (createBomb)
 			cell.destroyGameObject();
 		if (self)
-			Player.removeBomb();
+			Static.player.removeBomb();
 		//bomb = null;
 		
 		Debug.Log ("Flammenstaerke: " + reach[1] + ", " + reach[2] + ", " + reach[3] + ", " + reach[4]);
@@ -148,7 +148,8 @@ public class Explosion : MonoBehaviour
 						//explosion.GetComponent<Detonator>().size = 10f;
 						Detonator detonator = explosion.GetComponent<Detonator>();
 						explosionField.getCell().decreaseHeight();
-						if (Player.getSuperbomb()) {
+                        if (Static.player.getSuperbomb())
+                        {
 							explosionField.getCell().decreaseHeight();
 							explosionField.getCell().decreaseHeight();
 						}
@@ -183,7 +184,7 @@ public class Explosion : MonoBehaviour
 						if (PowerupPool.getDestroyable()) {
 							if (explosionField.getCell().hasPowerup()) {
 								if (Preferences.getExplodingPowerups() == true) {
-									Explosion ex = Explosion.createExplosionOnCell(explosionField.getCell(), explosionField.getCell().getPowerupValue(), Player.getDelay(), false, false);
+                                    Explosion ex = Explosion.createExplosionOnCell(explosionField.getCell(), explosionField.getCell().getPowerupValue(), Static.player.getDelay(), false, false);
 									ex.startExplosion();
 								}
 								explosionField.getCell().destroyPowerup(true);
@@ -285,7 +286,7 @@ public class Explosion : MonoBehaviour
 						cell.colorCell(Color.red);
 						break;
 					case 1:
-						if (!Player.getSuperbomb())
+                        if (!Static.player.getSuperbomb())
 							stop[j] = 1;
 						cell.colorCell(Color.red);
 						break;

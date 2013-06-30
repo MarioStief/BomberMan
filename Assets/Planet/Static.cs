@@ -22,6 +22,7 @@ namespace AssemblyCSharp
 		public static GameObject superbombPowerupPrefab;
 		public static GameObject explosionPrefab;
 		public static GameObject deadPlayerPrefab;
+        public static Player player;
 		
 		static Static() {
 			//bombPrefab = (GameObject) UnityEngine.Object.Instantiate(Resources.Load("Prefabs/bombPrefab"));
@@ -37,6 +38,7 @@ namespace AssemblyCSharp
 			superbombPowerupPrefab = (GameObject) UnityEngine.Object.Instantiate(Resources.Load("Prefabs/superbombPrefab"));
 			explosionPrefab = (GameObject) UnityEngine.Object.Instantiate(Resources.Load("Prefabs/explosionPrefab"));
 			deadPlayerPrefab = (GameObject) UnityEngine.Object.Instantiate(Resources.Load("Prefabs/deadPlayerPrefab"));
+            player = new Player();
 		}
 		
 		public static void setSphereBuilder(SphereBuilder s) {

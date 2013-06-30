@@ -4,34 +4,34 @@ using System.Collections.Generic;
 
 namespace AssemblyCSharp
 {
-	public static class Player
+	public class Player
 	{
-		private static Parcel currentCell;	// current Parcel
-		private static float xpos, zpos;	// Player's position in the current Parcel
+		private Parcel currentCell;	// current Parcel
+		private float xpos, zpos;	// Player's position in the current Parcel
 		
-		private static float verticalHelper		= 0.0f;
-		private static float horizontalHelper 	= 0.0f;
+		private float verticalHelper		= 0.0f;
+		private float horizontalHelper 	= 0.0f;
 		
 		private const float MAXSPEED = 0.8f;
 		private const float MINDELAY = 0.04f;
 		private const float MAXDELAY = 0.28f;
 		private const int MAXFLAMEPOWER = 10;
 		private const int MAXHP = 100;
-		private static bool SUPERBOMB = false;
+		private bool SUPERBOMB = false;
 		
-		private static int bombs = 1;
-		private static int bombsActive = 0;
-		private static int flamePower = 1;
-		private static float speed = 0.4f;
-		private static float delay = 0.2f;
-		private static int hp = MAXHP;
+		private int bombs = 1;
+		private int bombsActive = 0;
+		private int flamePower = 1;
+		private float speed = 0.4f;
+		private float delay = 0.2f;
+		private int hp = MAXHP;
 		
-		private static bool dead = false;
+		private bool dead = false;
 		
-		static Player() {
+		public Player() {
 		}
 		
-		public static void powerupCollected(PowerupType type)
+		public void powerupCollected(PowerupType type)
 		{
 			if (type == PowerupType.BOMB_UP) {
 				bombs++;
@@ -64,7 +64,7 @@ namespace AssemblyCSharp
 			Debug.Log("bombs: " + bombs + ", flamePower: " + flamePower + ", speed: " + speed*1000 + " ms, delay: " + delay*1000 + " ms");
 		}
 		
-		public static bool addBomb() {
+		public bool addBomb() {
 			if (bombsActive < bombs) {
 				bombsActive++;
 				return true;
@@ -73,37 +73,37 @@ namespace AssemblyCSharp
 			}
 		}
 		
-		public static void setXPos(float x){
+		public void setXPos(float x){
 			if ( x > 1) xpos = 1;
 			xpos = x;	
 		}
 		
-		public static float getXPos(){
+		public float getXPos(){
 			return xpos;	
 		}
 		
-		public static void setZPos(float z){
+		public void setZPos(float z){
 			if ( zpos > 1) zpos = 1;
 			zpos = z;	
 		}
 		
-		public static float getZPos(){
+		public float getZPos(){
 			return zpos;	
 		}
 		
-		public static void removeBomb() {
+		public void removeBomb() {
 			bombsActive--;
 		}
 
-		public static int getFlamePower() {
+		public int getFlamePower() {
 			return flamePower;
 		}
 
-		public static float getSpeed() {
+		public float getSpeed() {
 			return speed;
 		}
 		
-		public static void setDead(bool d) {
+		public void setDead(bool d) {
 			dead = d;
 			if (d) {
 				// Verteile Powerups über das Spielfeld
@@ -150,33 +150,33 @@ namespace AssemblyCSharp
 			}
 		}
 		
-		public static bool isDead() {
+		public bool isDead() {
 			return dead;
 		}
 		
-		public static void decreaseHP() {
+		public void decreaseHP() {
 			hp--;
 			Debug.Log("Life: " + hp);
 			if (hp == 0)
 				dead = true;
 		}
 
-		public static void increaseHP() {
+		public void increaseHP() {
 			if (hp < 100) {
 				hp++;
 				Debug.Log("Life: " + hp);
 			}
 		}
 		
-		public static int getHP() {
+		public int getHP() {
 			return hp;
 		}
 
-		public static int getMaxHP() {
+		public int getMaxHP() {
 			return MAXHP;
 		}
 		
-		public static void setCurrentParcel(Parcel parcel){
+		public void setCurrentParcel(Parcel parcel){
 			
 			if ( currentCell != null){
 				currentCell.hightlightColor(false);	
@@ -188,7 +188,7 @@ namespace AssemblyCSharp
 			currentCell.hightlightColor(true);
 		}
 		
-		public static Parcel getCurrentParcel(){
+		public Parcel getCurrentParcel(){
 			return currentCell;	
 		}
 		
@@ -207,11 +207,11 @@ namespace AssemblyCSharp
 			return randomList;
 		}
 		
-		public static bool getSuperbomb() {
+		public bool getSuperbomb() {
 			return SUPERBOMB;
 		}
 		
-		public static float getDelay() {
+		public float getDelay() {
 			return delay;
 		}
 	}
