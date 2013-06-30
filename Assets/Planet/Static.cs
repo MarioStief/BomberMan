@@ -20,6 +20,7 @@ namespace AssemblyCSharp
 		public static GameObject delaySpeedDownPowerupPrefab;
 		public static GameObject goldenFlamePowerupPrefab;
 		public static GameObject superbombPowerupPrefab;
+		public static GameObject triggerbombPowerupPrefab;
 		public static GameObject explosionPrefab;
 		public static GameObject deadPlayerPrefab;
 		
@@ -35,6 +36,7 @@ namespace AssemblyCSharp
 			delaySpeedDownPowerupPrefab = (GameObject) UnityEngine.Object.Instantiate(Resources.Load("Prefabs/delaySpeedDownPrefab"));
 			goldenFlamePowerupPrefab = (GameObject) UnityEngine.Object.Instantiate(Resources.Load("Prefabs/goldenFlamePrefab"));
 			superbombPowerupPrefab = (GameObject) UnityEngine.Object.Instantiate(Resources.Load("Prefabs/superbombPrefab"));
+			triggerbombPowerupPrefab = (GameObject) UnityEngine.Object.Instantiate(Resources.Load("Prefabs/triggerbombPrefab"));
 			explosionPrefab = (GameObject) UnityEngine.Object.Instantiate(Resources.Load("Prefabs/explosionPrefab"));
 			deadPlayerPrefab = (GameObject) UnityEngine.Object.Instantiate(Resources.Load("Prefabs/deadPlayerPrefab"));
 		}

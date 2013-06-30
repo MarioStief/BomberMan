@@ -80,6 +80,9 @@ public class Explosion : MonoBehaviour
 		if (createBomb) {
 			GameObject bomb = GameObject.Instantiate(GameObject.Find("bomb"), transform.position, Quaternion.identity) as GameObject;
 			EXPLOSIONTIMER = bomb.GetComponent<anim>().timer;
+			if (Player.getTriggerbomb()) {
+				bomb.GetComponent<anim>().triggerBomb = true;
+			}
 			cell.setGameObject(bomb);
 		}
 		cell.setExplosion(this);
@@ -116,7 +119,7 @@ public class Explosion : MonoBehaviour
 	void Update() {
 		float elapsedTime = Time.time - createTime;
 		if (waitingForBombExplosion) {
-			if (elapsedTime > EXPLOSIONTIMER) {
+			if (elapsedTime > EXPLOSIONTIMER && !Player.getTriggerbomb()) {
 				waitingForBombExplosion = false;
 				startExplosion();
 			}

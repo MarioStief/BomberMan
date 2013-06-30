@@ -39,6 +39,8 @@ namespace AssemblyCSharp
 					pool.Add(new Powerup(PowerupType.GOLDEN_FLAME));
 				for (int j = 0; j < 1; j++)
 					pool.Add(new Powerup(PowerupType.SUPERBOMB));
+				for (int j = 0; j < 1; j++)
+					pool.Add(new Powerup(PowerupType.TRIGGERBOMB));
 				if (negative) {
 					for (int j = 0; j < 2; j++)
 						pool.Add(new Powerup(PowerupType.BOMB_DOWN));
@@ -108,8 +110,10 @@ namespace AssemblyCSharp
 			else if (p.getType() == PowerupType.DELAY_SPEED_DOWN)
 					powerup = Static.playerSpeedDownPowerupPrefab; 
 			else if (p.getType() == PowerupType.GOLDEN_FLAME)
-					powerup = Static.goldenFlamePowerupPrefab; 
+					powerup = Static.goldenFlamePowerupPrefab;
 			else if (p.getType() == PowerupType.SUPERBOMB)
+					powerup = Static.superbombPowerupPrefab; 
+			else if (p.getType() == PowerupType.TRIGGERBOMB)
 					powerup = Static.superbombPowerupPrefab; 
 
 			cell.addPowerup(new Powerup(type), powerup);

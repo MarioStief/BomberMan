@@ -18,6 +18,7 @@ namespace AssemblyCSharp
 		public const int MAXFLAMEPOWER = 10;
 		private const int MAXHP = 100;
 		private static bool SUPERBOMB = false;
+		private static bool TRIGGERBOMB = false;
 		
 		private static int bombs = 1;
 		private static int bombsActive = 0;
@@ -26,9 +27,16 @@ namespace AssemblyCSharp
 		private static float delay = 0.2f;
 		private static int hp = MAXHP;
 		
+		private static List<Parcel> triggerBombs = new List<Parcel>();
+		
 		private static bool dead = false;
 		
-		static Player() {
+		public static void addTriggerBomb(Parcel cell) {
+			triggerBombs.Add(cell);
+		}
+		
+		public static List<Parcel> getTriggerBombs() {
+			return triggerBombs;
 		}
 		
 		public static void powerupCollected(PowerupType type)
@@ -60,6 +68,8 @@ namespace AssemblyCSharp
 					flamePower = MAXFLAMEPOWER;
 			} else if (type == PowerupType.SUPERBOMB) {
 					SUPERBOMB = true;
+			} else if (type == PowerupType.TRIGGERBOMB) {
+					TRIGGERBOMB = true;
 			}
 			Debug.Log("bombs: " + bombs + ", flamePower: " + flamePower + ", speed: " + speed*1000 + " ms, delay: " + delay*1000 + " ms");
 		}
@@ -99,6 +109,10 @@ namespace AssemblyCSharp
 			return flamePower;
 		}
 
+		public static int getBombs() {
+			return bombs;
+		}
+
 		public static float getSpeed() {
 			return speed;
 		}
@@ -121,6 +135,11 @@ namespace AssemblyCSharp
 					parcelPool[0].addPowerup(new Powerup(PowerupType.SUPERBOMB), Static.superbombPowerupPrefab);
 					parcelPool.RemoveAt(0);
 					SUPERBOMB = false;
+				}
+				if (TRIGGERBOMB) {
+					parcelPool[0].addPowerup(new Powerup(PowerupType.TRIGGERBOMB), Static.superbombPowerupPrefab);
+					parcelPool.RemoveAt(0);
+					TRIGGERBOMB = false;
 				}
 				if (flamePower == MAXFLAMEPOWER && parcelPool.Count > 0) {
 					parcelPool[0].addPowerup(new Powerup(PowerupType.GOLDEN_FLAME), Static.goldenFlamePowerupPrefab);
@@ -210,7 +229,11 @@ namespace AssemblyCSharp
 		public static bool getSuperbomb() {
 			return SUPERBOMB;
 		}
-		
+
+		public static bool getTriggerbomb() {
+			return TRIGGERBOMB;
+		}
+
 		public static float getDelay() {
 			return delay;
 		}

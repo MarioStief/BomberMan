@@ -151,9 +151,21 @@ public class InputHandler : MonoBehaviour {
 						// Um eine Bombe eines anderen Spielers auf einer Zelle zu spawnen:
 						// Explosion.createExplosionOnCell(Parcel, flamePower, true);
 						// Powerup-ToDos: flameMight, flameSpeed
+						if (Player.getTriggerbomb()) {
+							Player.addTriggerBomb(currCell);
+						}
 					}
 				}
 			}
+			
+			if ((Input.GetKeyDown(KeyCode.LeftShift)) || (Input.GetKeyDown(KeyCode.RightShift))) {
+				foreach (Parcel triggerBomb in Player.getTriggerBombs()) {
+					triggerBomb.getExplosion().startExplosion();
+					Debug.Log ("triggering " + triggerBomb.getCoordinates());
+				}
+				Player.getTriggerBombs().Clear();
+			}
+
 			
 			if ((Time.time - createTime) > 1.0f) {
 				createTime = Time.time;
