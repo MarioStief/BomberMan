@@ -175,6 +175,19 @@ public class Explosion : MonoBehaviour
 						detonator.GetComponent<AudioSource>().Play();
 						//Debug.Log ("Explosion Volume: " + (100/(2*distance)) + " %");
 						
+						// Besonders hervorheben
+						if (flamePower == Player.MAXFLAMEPOWER) {
+							detonator.color = Color.yellow;
+						}
+						if (Player.getSuperbomb()) {
+							detonator.color = Color.blue;
+							detonator.addShockWave();
+						}
+						if (flamePower == Player.MAXFLAMEPOWER && Player.getSuperbomb()) {
+							detonator.color = Color.cyan;
+							detonator.addShockWave();
+						}
+						
 						detonator.Explode();
 						explosionField.getCell().setExploding(true);
 						explosionField.getCell().colorCell(Color.black);
@@ -183,7 +196,12 @@ public class Explosion : MonoBehaviour
 						if (PowerupPool.getDestroyable()) {
 							if (explosionField.getCell().hasPowerup()) {
 								if (Preferences.getExplodingPowerups() == true) {
-									Explosion ex = Explosion.createExplosionOnCell(explosionField.getCell(), explosionField.getCell().getPowerupValue(), Player.getDelay(), false, false);
+									float flameDelay = 0.2f;
+									int flameReach = explosionField.getCell().getPowerupValue();
+										flameDelay = 0.15f;
+									if (flameReach == 10)
+										flameDelay = 0.1f;
+									Explosion ex = Explosion.createExplosionOnCell(explosionField.getCell(), flameReach, flameDelay, false, false);
 									ex.startExplosion();
 								}
 								explosionField.getCell().destroyPowerup(true);

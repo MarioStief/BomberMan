@@ -15,7 +15,7 @@ namespace AssemblyCSharp
 		private const float MAXSPEED = 0.8f;
 		private const float MINDELAY = 0.04f;
 		private const float MAXDELAY = 0.28f;
-		private const int MAXFLAMEPOWER = 10;
+		public const int MAXFLAMEPOWER = 10;
 		private const int MAXHP = 100;
 		private static bool SUPERBOMB = false;
 		
