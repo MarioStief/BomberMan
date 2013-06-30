@@ -46,6 +46,10 @@ public class InputHandler : MonoBehaviour {
 	
 	// Use this for initialization
 	void Start () {
+		
+		// set my color
+		renderer.material.color = Menu.getPlayerColor();
+		
 		Static.sphereHandler.move(0.000001f); // CK, fixed color on startup :)
 		moveAlongEquator(0.000001f);
 		
