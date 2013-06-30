@@ -64,7 +64,7 @@ public class SplitMeshIntoTriangles : MonoBehaviour
                 GO.AddComponent<MeshFilter>().mesh = mesh;
                 GO.AddComponent<BoxCollider>();
 				GO.transform.localScale = scale;
-                GO.AddComponent<Rigidbody>().AddExplosionForce(200f, position, 0f, 3.0f, ForceMode.Force);
+                GO.AddComponent<Rigidbody>().AddExplosionForce(200f, position, 100f, 0f, ForceMode.Force);
  
                 Destroy(GO, 5 + Random.Range(0.0f, 5.0f));
             }
