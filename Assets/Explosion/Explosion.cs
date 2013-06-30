@@ -200,8 +200,7 @@ public class Explosion : MonoBehaviour
 							explodingCell.setType(0);
 							
 							// Kiste explodieren lassen
-							GameObject obj = (GameObject) UnityEngine.Object.Instantiate(Resources.Load("Prefabs/boxCubePrefab"));
-							obj.transform.position = explodingCell.getCenterPos();
+							GameObject obj = GameObject.Instantiate(Static.boxCubePrefab, explodingCell.getCenterPos(), Quaternion.identity) as GameObject;
 							//GameObject obj = GameObject.Instantiate(prefab, explodingCell().getCenterPos(), Quaternion.identity);
 							SplitMeshIntoTriangles.createMeshExplosion(obj, cell.getCenterPos());
 							
