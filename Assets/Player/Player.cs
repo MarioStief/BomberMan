@@ -198,14 +198,16 @@ namespace AssemblyCSharp
 		
 		public static void setCurrentParcel(Parcel parcel){
 			
+			/*
 			if ( currentCell != null){
 				currentCell.hightlightColor(false);	
 			}
+			*/
 			
 			currentCell = parcel;	
 			
 			//currentCell.setColor(Color.cyan);
-			currentCell.hightlightColor(true);
+			//currentCell.hightlightColor(true);
 		}
 		
 		public static Parcel getCurrentParcel(){
