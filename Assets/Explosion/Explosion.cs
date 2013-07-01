@@ -238,7 +238,7 @@ public class Explosion : MonoBehaviour
 		
 		if (true) {
 			//cell.colorCell(Color.red);
-			explosionChain.Add(new ExplosionField(0, cell, 0, 0, 0));
+			explosionChain.Add(new ExplosionField(0, cell, 0, 0));
 		}
 
 		int[] stop = {0, 0, 0, 0};
@@ -284,7 +284,7 @@ public class Explosion : MonoBehaviour
 						//cell.colorCell(Color.gray);
 						break;
 					}
-					explosionChain.Add(new ExplosionField(i,cell, stop[j], lpos, bpos));
+					explosionChain.Add(new ExplosionField(i,cell, lpos, bpos));
 				}
 				
 			}
