@@ -9,40 +9,39 @@ namespace AssemblyCSharp
 		public static Rink rink;
 		public static Parcel[][] gameArea;
 		public static MeshManipulator[][] drawnArea;
-		//public static GameObject bombPrefab;
-		public static GameObject bombUpPowerupPrefab;
-		public static GameObject bombDownPowerupPrefab;
-		public static GameObject flameUpPowerupPrefab;
-		public static GameObject flameDownPowerupPrefab;
-		public static GameObject playerSpeedUpPowerupPrefab;
-		public static GameObject playerSpeedDownPowerupPrefab;
-		public static GameObject delaySpeedUpPowerupPrefab;
-		public static GameObject delaySpeedDownPowerupPrefab;
-		public static GameObject goldenFlamePowerupPrefab;
-		public static GameObject superbombPowerupPrefab;
-		public static GameObject triggerbombPowerupPrefab;
-		public static GameObject explosionPrefab;
-		//public static GameObject deadPlayerPrefab;
-		public static GameObject boxCubePrefab;
-		public static GameObject stoneCubePrefab;
+		
+		public static UnityEngine.Object bombPrefab;
+		public static UnityEngine.Object bombUpPowerupPrefab;
+		public static UnityEngine.Object bombDownPowerupPrefab;
+		public static UnityEngine.Object flameUpPowerupPrefab;
+		public static UnityEngine.Object flameDownPowerupPrefab;
+		public static UnityEngine.Object playerSpeedUpPowerupPrefab;
+		public static UnityEngine.Object playerSpeedDownPowerupPrefab;
+		public static UnityEngine.Object delaySpeedUpPowerupPrefab;
+		public static UnityEngine.Object delaySpeedDownPowerupPrefab;
+		public static UnityEngine.Object goldenFlamePowerupPrefab;
+		public static UnityEngine.Object superbombPowerupPrefab;
+		public static UnityEngine.Object triggerbombPowerupPrefab;
+		public static UnityEngine.Object explosionPrefab;
+		public static UnityEngine.Object boxCubePrefab;
+		public static UnityEngine.Object stoneCubePrefab;
 		
 		static Static() {
-			//bombPrefab = (GameObject) UnityEngine.Object.Instantiate(Resources.Load("Prefabs/bombPrefab"));
-			bombUpPowerupPrefab = UnityEngine.Object.Instantiate(Resources.Load("Prefabs/bombUpPrefab")) as GameObject;
-			bombDownPowerupPrefab = UnityEngine.Object.Instantiate(Resources.Load("Prefabs/bombDownPrefab")) as GameObject;
-			flameUpPowerupPrefab = UnityEngine.Object.Instantiate(Resources.Load("Prefabs/flameUpPrefab")) as GameObject;
-			flameDownPowerupPrefab = UnityEngine.Object.Instantiate(Resources.Load("Prefabs/flameDownPrefab")) as GameObject;
-			playerSpeedUpPowerupPrefab = UnityEngine.Object.Instantiate(Resources.Load("Prefabs/playerSpeedUpPrefab")) as GameObject;
-			playerSpeedDownPowerupPrefab = UnityEngine.Object.Instantiate(Resources.Load("Prefabs/playerSpeedDownPrefab")) as GameObject;
-			delaySpeedUpPowerupPrefab = UnityEngine.Object.Instantiate(Resources.Load("Prefabs/delaySpeedUpPrefab")) as GameObject;
-			delaySpeedDownPowerupPrefab = UnityEngine.Object.Instantiate(Resources.Load("Prefabs/delaySpeedDownPrefab")) as GameObject;
-			goldenFlamePowerupPrefab = UnityEngine.Object.Instantiate(Resources.Load("Prefabs/goldenFlamePrefab")) as GameObject;
-			superbombPowerupPrefab = UnityEngine.Object.Instantiate(Resources.Load("Prefabs/superbombPrefab")) as GameObject;
-			triggerbombPowerupPrefab = UnityEngine.Object.Instantiate(Resources.Load("Prefabs/triggerbombPrefab")) as GameObject;
-			explosionPrefab = UnityEngine.Object.Instantiate(Resources.Load("Prefabs/explosionPrefab")) as GameObject;
-			//deadPlayerPrefab = UnityEngine.Object.Instantiate(Resources.Load("Prefabs/deadPlayerPrefab")) as GameObject;
-			boxCubePrefab = UnityEngine.Object.Instantiate(Resources.Load("Prefabs/boxCubePrefab")) as GameObject;
-			stoneCubePrefab = UnityEngine.Object.Instantiate(Resources.Load("Prefabs/stoneCubePrefab")) as GameObject;
+			bombPrefab = Resources.Load("Prefabs/bombPrefab");
+			bombUpPowerupPrefab = Resources.Load("Prefabs/bombUpPrefab");
+			bombDownPowerupPrefab = Resources.Load("Prefabs/bombDownPrefab");
+			flameUpPowerupPrefab = Resources.Load("Prefabs/flameUpPrefab");
+			flameDownPowerupPrefab = Resources.Load("Prefabs/flameDownPrefab");
+			playerSpeedUpPowerupPrefab = Resources.Load("Prefabs/playerSpeedUpPrefab");
+			playerSpeedDownPowerupPrefab = Resources.Load("Prefabs/playerSpeedDownPrefab");
+			delaySpeedUpPowerupPrefab = Resources.Load("Prefabs/delaySpeedUpPrefab");
+			delaySpeedDownPowerupPrefab = Resources.Load("Prefabs/delaySpeedDownPrefab");
+			goldenFlamePowerupPrefab = Resources.Load("Prefabs/goldenFlamePrefab");
+			superbombPowerupPrefab = Resources.Load("Prefabs/superbombPrefab");
+			triggerbombPowerupPrefab = Resources.Load("Prefabs/triggerbombPrefab");
+			explosionPrefab = Resources.Load("Prefabs/explosionPrefab");
+			boxCubePrefab = Resources.Load("Prefabs/boxCubePrefab");
+			stoneCubePrefab = Resources.Load("Prefabs/stoneCubePrefab");
 		}
 		
 		public static void setSphereBuilder(SphereBuilder s) {

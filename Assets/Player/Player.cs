@@ -138,7 +138,7 @@ namespace AssemblyCSharp
 					SUPERBOMB = false;
 				}
 				if (TRIGGERBOMB) {
-					parcelPool[0].addPowerup(new Powerup(PowerupType.TRIGGERBOMB), Static.superbombPowerupPrefab);
+					parcelPool[0].addPowerup(new Powerup(PowerupType.TRIGGERBOMB), Static.triggerbombPowerupPrefab);
 					parcelPool.RemoveAt(0);
 					TRIGGERBOMB = false;
 				}

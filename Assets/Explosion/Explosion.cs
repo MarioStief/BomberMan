@@ -79,7 +79,7 @@ public class Explosion : MonoBehaviour
 		//explosions.Add(this);
 		//transform.position = cell.getCenterPos();
 		if (createBomb) {
-			GameObject bomb = GameObject.Instantiate(GameObject.Find("bomb"), transform.position, Quaternion.identity) as GameObject;
+			GameObject bomb = GameObject.Instantiate(Static.bombPrefab, transform.position, Quaternion.identity) as GameObject;
 			EXPLOSIONTIMER = bomb.GetComponent<anim>().timer;
 			if (Player.getTriggerbomb()) {
 				bomb.GetComponent<anim>().triggerBomb = true;

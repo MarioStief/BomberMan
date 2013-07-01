@@ -255,18 +255,18 @@ public class InputHandler : MonoBehaviour {
 					// nach links oben schauen
 					//Debug.Log("links oben");
 					lookDirection = currCell.getSurroundingCell(GAP,GAP).getCenterPos();
-					currCell.getSurroundingCell(GAP,GAP).colorCell(Color.magenta);
+					//currCell.getSurroundingCell(GAP,GAP).colorCell(Color.magenta);
 				} else if (horizontalMovement > 0) {
 					// nach rechts oben schauen
 					//Debug.Log("rechts oben");
 					lookDirection = currCell.getSurroundingCell(GAP,-GAP).getCenterPos();
-					currCell.getSurroundingCell(GAP,-GAP).colorCell(Color.magenta);
+					//currCell.getSurroundingCell(GAP,-GAP).colorCell(Color.magenta);
 
 				} else {
 					// nur nach oben schauen
 					//Debug.Log("oben");
 					lookDirection = currCell.getSurroundingCell(GAP,0).getCenterPos();
-					currCell.getSurroundingCell(GAP,0).colorCell(Color.magenta);
+					//currCell.getSurroundingCell(GAP,0).colorCell(Color.magenta);
 				}
 			} else if (verticalMovement < 0) {
 				// nach unten schauen
@@ -274,29 +274,29 @@ public class InputHandler : MonoBehaviour {
 					// nach links unten schauen
 					//Debug.Log("links unten");
 					lookDirection = currCell.getSurroundingCell(-GAP,GAP).getCenterPos();
-					currCell.getSurroundingCell(-GAP,GAP).colorCell(Color.magenta);
+					//currCell.getSurroundingCell(-GAP,GAP).colorCell(Color.magenta);
 				} else if (horizontalMovement > 0) {
 					// nach rechts unten schauen
 					//Debug.Log("rechts unten");
 					lookDirection = currCell.getSurroundingCell(-GAP,-GAP).getCenterPos();
-					currCell.getSurroundingCell(-GAP,-GAP).colorCell(Color.magenta);
+					//currCell.getSurroundingCell(-GAP,-GAP).colorCell(Color.magenta);
 				} else {
 					// nur nach unten schauen
 					//Debug.Log("unten");
 					lookDirection = currCell.getSurroundingCell(-GAP,0).getCenterPos();
-					currCell.getSurroundingCell(-GAP,0).colorCell(Color.magenta);
+					//currCell.getSurroundingCell(-GAP,0).colorCell(Color.magenta);
 				}
 			} else {
 				if (horizontalMovement < 0) {
 					// nur nach links schauen
 					//Debug.Log("links");
 					lookDirection = currCell.getSurroundingCell(0,GAP).getCenterPos();
-					currCell.getSurroundingCell(0,GAP).colorCell(Color.magenta);
+					//currCell.getSurroundingCell(0,GAP).colorCell(Color.magenta);
 				} else {
 					// nur nach rechts schauen
 					//Debug.Log("rechts");
 					lookDirection = currCell.getSurroundingCell(0,-GAP).getCenterPos();
-					currCell.getSurroundingCell(0,-GAP).colorCell(Color.magenta);
+					//currCell.getSurroundingCell(0,-GAP).colorCell(Color.magenta);
 				}
 			}
 		

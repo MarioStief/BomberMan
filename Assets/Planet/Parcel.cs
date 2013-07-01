@@ -162,7 +162,7 @@ namespace AssemblyCSharp
 			center = v;	
 		}
 		
-		public void addPowerup(Powerup powerup, GameObject prefab) {
+		public void addPowerup(Powerup powerup, UnityEngine.Object prefab) {
 			this.obj = GameObject.Instantiate(prefab, getCenterPos(), Quaternion.identity) as GameObject;
 			this.powerupType = powerup.getType();
 			powerupExplodingValue = powerup.getValue();

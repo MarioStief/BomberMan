@@ -76,22 +76,20 @@ namespace AssemblyCSharp
 		
 		public static void setPowerup(Parcel cell)
 		{
-			// NNNNNNNNNNNNNNNEEEEEEEEEEEEEEEEEWWWWWWWWWWWWWWWW
 			Vector3 cellCenter = Vector3.zero; //cell.getCenterPoint();
-			//Vector3 cellNormal = cell.getNormal(); // wird benötigt, um das Powerup richtig zu drehen
 			
 			Powerup p = pool[0];
 			PowerupType type = p.getType();
 
 			// DEBUG
-			Debug.Log (p.getType().ToString());
+			Debug.Log (p.getType().ToString() + " spotted");
 
 
 			pool.RemoveAt(0);
 			if (pool.Count == 0)
 				createPool(1);
 			
-			GameObject powerup = null;
+			UnityEngine.Object powerup = null;
 
 				 if	(p.getType() == PowerupType.BOMB_UP)
 					powerup = Static.bombUpPowerupPrefab; 
