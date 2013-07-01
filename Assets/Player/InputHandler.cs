@@ -82,7 +82,7 @@ public class InputHandler : MonoBehaviour {
 	IEnumerator deadPlayer() {
 		float createTime = Time.time;
 		float elapsedTime = 0.0f;
-		while (elapsedTime < 0f) {
+		while (elapsedTime < 10f) {
 			float multiplicator = elapsedTime + 10f; // 10 <= multiplicator <= 20
 			float x = transform.position.x;
 			float y = transform.position.y;

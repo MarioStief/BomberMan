@@ -80,7 +80,7 @@ public class SplitMeshIntoTriangles : MonoBehaviour
     }
     void Start()
     {
-		Debug.Log (gameObject.ToString() + " has been destroyed.");
+		//Debug.Log (gameObject.ToString() + " has been destroyed.");
         StartCoroutine(SplitMesh());
     }
 }

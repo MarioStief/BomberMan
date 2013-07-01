@@ -126,8 +126,8 @@ namespace AssemblyCSharp
 				string newString = item.getType().ToString();
 			    builder.Append(newString).Append(" | ");
 			}
-			string result = "New Pool: " + builder.ToString();
-			//Debug.Log(result);
+			string result = "New Powerup Pool: " + builder.ToString();
+			Debug.Log(result);
 		}
 		
 		public static void setDestroyable(bool d) {

@@ -102,7 +102,7 @@ public class Explosion : MonoBehaviour
 			if (elapsedTime > 0.3f) {					// nach 300 ms ohne Aktualisierung:
 				foreach (ExplosionField explosionField in explosionChain) {
 					explosionField.getCell().setExploding(false);
-					explosionField.getCell().colorCell(Color.green);
+					//explosionField.getCell().colorCell(Color.green);
 				}
 			}
 
@@ -168,7 +168,7 @@ public class Explosion : MonoBehaviour
 						
 						detonator.Explode();
 						explosionField.getCell().setExploding(true);
-						explosionField.getCell().colorCell(Color.black);
+						//explosionField.getCell().colorCell(Color.black);
 						
 						// Wand zerstören, ggfls. Powerup setzen
 						if (PowerupPool.getDestroyable()) {
@@ -223,7 +223,7 @@ public class Explosion : MonoBehaviour
 						
 					} else if ((explosionField.getDelay() * delay) < -0.3f) { // Zellen sind wieder betretbar nach 300 ms
 						explosionField.getCell().setExploding(false);
-						explosionField.getCell().colorCell(Color.green);
+						//explosionField.getCell().colorCell(Color.green);
 					}
 
 					explosionField.decrement(); // Zähle Delay-Ticker runter
@@ -289,7 +289,7 @@ public class Explosion : MonoBehaviour
 				
 			}
 		}
-		Debug.Log ("#ExplosionFields: " + explosionChain.Count);
+		//Debug.Log ("#ExplosionFields: " + explosionChain.Count);
 	}
 }
 
