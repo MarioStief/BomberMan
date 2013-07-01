@@ -6,14 +6,14 @@ public static class Preferences
 	private static bool destroyablePowerups = true;
 	private static bool explodingPowerups = true;
 	private static bool negativePowerups = true;
-	private static int explosionDetail = 5; // 5 = very simple ... 1 = ultimate
+	private static int explosionDetail = 10; // 10 = very simple ... 1 = ultimate
 
 	
 	static Preferences() {
-		destroyablePowerups = (PlayerPrefs.GetInt("Destroyable Powerups",1) == 1 ? true : false);
-		explodingPowerups = (PlayerPrefs.GetInt("Exploding Powerups",1) == 1 ? true : false);
-		negativePowerups = (PlayerPrefs.GetInt("Negative Powerups",1) == 1 ? true : false);
-		explosionDetail = (PlayerPrefs.GetInt("Explosion Detail",5));
+		destroyablePowerups = (PlayerPrefs.GetInt("Destroyable Powerups",(destroyablePowerups ? 1 : 0)) == 1 ? true : false);
+		explodingPowerups = (PlayerPrefs.GetInt("Exploding Powerups",(explodingPowerups ? 1 : 0)) == 1 ? true : false);
+		negativePowerups = (PlayerPrefs.GetInt("Negative Powerups",(negativePowerups ? 1 : 0)) == 1 ? true : false);
+		explosionDetail = (PlayerPrefs.GetInt("Explosion Detail",explosionDetail));
 	}
 	
 	public static bool getDestroyablePowerups() {
@@ -49,6 +49,6 @@ public static class Preferences
 
 	public static void setExplosionDetail(int explosion) {
 		explosionDetail = explosion;
-		PlayerPrefs.SetInt("Explosion Detail", 5);
+		PlayerPrefs.SetInt("Explosion Detail", explosionDetail);
 	}
 }
