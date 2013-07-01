@@ -32,6 +32,15 @@ public class GM_World {
         public GameObject obj = null;
         public NetworkViewID viewID;
 
+        // additional properties of entities,
+        // not necessarily used by all types
+        public struct Props
+        {
+            // ENT_BOMB
+            public int flamePower;
+        }
+        Props props = new Props();
+
         public Vector3 lastPosition = Vector3.zero;
     }
 

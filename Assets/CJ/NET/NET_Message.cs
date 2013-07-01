@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using AssemblyCSharp;
 
 public abstract class NET_Message
 {
@@ -87,6 +88,7 @@ public class NET_MSG_SpawnEntity : NET_Message
     public int pid;
     public NetworkViewID viewID;
     public int bpos, lpos;
+    public GM_World.Entity.Props props = new GM_World.Entity.Props();
 
     public NET_MSG_SpawnEntity() : base(MSG_SPAWN_ENTITY)
     {
@@ -100,6 +102,8 @@ public class NET_MSG_SpawnEntity : NET_Message
         stream.Serialize(ref viewID);
         stream.Serialize(ref bpos);
         stream.Serialize(ref lpos);
+
+        if (GM_World.ENT_BOMB == type) stream.Serialize(ref props.flamePower);
     }
 }
 
@@ -121,6 +125,7 @@ public class NET_MSG_PlantBomb : NET_Message
 {
     public int pid;
     public float time;
+    public Rink.Pos rpos;
 
     public NET_MSG_PlantBomb() : base(MSG_PLANT_BOMB)
     {
@@ -130,6 +135,8 @@ public class NET_MSG_PlantBomb : NET_Message
     {
         stream.Serialize(ref pid);
         stream.Serialize(ref time);
+        stream.Serialize(ref rpos.bpos);
+        stream.Serialize(ref rpos.lpos);
     }
 }
 

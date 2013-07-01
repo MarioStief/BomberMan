@@ -38,7 +38,9 @@ public class InputHandler : MonoBehaviour {
 	private float createTime;
 
     private Player player = null;
-	
+
+    private NET_Client scr_netClient = null;
+
 	void Awake() {
 		playerHandler = GameObject.Find("Player");
 	}
@@ -57,6 +59,9 @@ public class InputHandler : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         camera = GameObject.FindGameObjectWithTag("MainCamera");
+
+        GameObject obj_gameController = GameObject.FindGameObjectWithTag("GameController");
+        scr_netClient = obj_gameController.GetComponent<NET_Client>();
 
 		Static.sphereHandler.move(0.000001f); // CK, fixed color on startup :)
 		moveAlongEquator(0.000001f);
@@ -132,6 +137,13 @@ public class InputHandler : MonoBehaviour {
 			
 			// Leertaste -> Bombe legen
 			if ( Input.GetKeyDown(KeyCode.Space)){
+                NET_MSG_PlantBomb plantBombMsg = new NET_MSG_PlantBomb();
+                plantBombMsg.pid = scr_netClient.GetLocalPID();
+                plantBombMsg.time = 0.0f; // ignored
+                plantBombMsg.rpos = player.GetPosition();
+                scr_netClient.Send(plantBombMsg);
+
+                /*
 				if ( !currCell.hasBomb()) {
 
                     if (player.addBomb())
@@ -142,6 +154,7 @@ public class InputHandler : MonoBehaviour {
 						// Powerup-ToDos: flameMight, flameSpeed
 					}
 				}
+                 */
 			}
 			
 			if ((Time.time - createTime) > 1.0f) {

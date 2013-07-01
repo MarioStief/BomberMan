@@ -63,7 +63,7 @@ public class GM_SvWorld : GM_World {
         }
     }
 
-    public Entity Spawn(int type, int pid, int bpos, int lpos)
+    public Entity Spawn(int type, int pid, int bpos, int lpos, Entity.Props props = new Entity.Props())
     {
         Entity entity = null;
 
@@ -95,9 +95,7 @@ public class GM_SvWorld : GM_World {
         if (ENT_BOMB == type)
         {
             SvBombEntity entBomb = new SvBombEntity();
-
-            entBomb.obj = (GameObject)GameObject.Instantiate(Resources.Load("Bomb"));
-
+            entBomb.obj = new GameObject("Bomb (dummy)");
             entity = entBomb;
         }
 
@@ -117,6 +115,7 @@ public class GM_SvWorld : GM_World {
         spawnEntityMsg.viewID = entity.viewID;
         spawnEntityMsg.bpos = bpos;
         spawnEntityMsg.lpos = lpos;
+        spawnEntityMsg.props = props;
         scr_netServer.Broadcast(spawnEntityMsg);
 
         return entity;
@@ -213,22 +212,19 @@ public class GM_SvWorld : GM_World {
     {
         if (NET_Message.MSG_PLANT_BOMB == msg.GetMsgID())
         {
-            /*
             Debug.Log("GM_SvWorld::HandleMessage: received msg of type MSG_PLANT_BOMB");
 
             NET_MSG_PlantBomb plantBombMsg = (NET_MSG_PlantBomb)msg;
-            Entity entity = ByPID(plantBombMsg.pid);
-            GM_GA_Cell cell = gameArea.getCell(entity.obj.transform.position.x, entity.obj.transform.position.z);
+            NET_Server.Client client = scr_netServer.ClientByPID(plantBombMsg.pid);
 
-            entity.charCtrl.Move(new Vector3(0.0f, 1.5f, 0.0f));
-
-            Vector3 position = gameArea.CenterOf(cell);
-            position.y = -0.2f; // accounts for playfield height and bomb size
-
-            SvBombEntity entBomb = (SvBombEntity)Spawn(ENT_BOMB, plantBombMsg.pid, position);
-            entBomb.cell = cell;
-            entBomb.spawnTime = plantBombMsg.time;
-            */
+            Rink.Pos rpos = plantBombMsg.rpos;
+            Parcel cell = rink.GetCell(rpos);
+            if (!cell.hasBomb() && client.player.addBomb())
+            {
+                Entity.Props props = new Entity.Props();
+                props.flamePower = client.player.getFlamePower();
+                Spawn(ENT_BOMB, client.pid, rpos.bpos, rpos.lpos, props);
+            }
         }
     }
 

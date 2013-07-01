@@ -262,6 +262,11 @@ namespace AssemblyCSharp
 			return gameArea;
 		}
 
+        public Parcel GetCell(Pos rpos)
+        {
+            return gameArea[rpos.lpos][rpos.bpos];
+        }
+
         // returns rpos in world space
         public Vector3 GetPosition(Pos rpos)
         {

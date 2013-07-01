@@ -28,6 +28,7 @@ public class NET_Server : MonoBehaviour {
         // game variables
         public bool isDead;
         public float time;
+        public Player player = new Player();
 
         // scratchpad variables
         public Vector3 trans;

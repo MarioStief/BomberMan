@@ -12,6 +12,7 @@ public abstract class NET_CL_Entity : MonoBehaviour
     }
 
     // position in xz-plane
+    public virtual void SetPosition(Rink.Pos rpos) { }
     public abstract void SetPosition(Vector3 position);
     public abstract Vector3 GetPosition();
 

@@ -86,9 +86,10 @@ public class GM_ClWorld : GM_World {
             }
             if (ENT_BOMB == spawnEntityMsg.type)
             {
-                entity.obj = (GameObject)GameObject.Instantiate(Resources.Load("Bomb"));
+                entity.obj = (GameObject)GameObject.Instantiate(Resources.Load("Prefabs/bombPrefab"));
 
                 entity.scr_clEntity = entity.obj.AddComponent<NET_CL_Static>();
+                entity.scr_clEntity.SetPosition(rpos);
             }
 
             entities.AddLast(entity);
