@@ -123,17 +123,21 @@ public class InputHandler : MonoBehaviour {
 			// -----------------------------------------------------------
 			moveCharacter();
 			currCell = Static.rink.gameArea[lpos][bpos];
+            /*
 			if (currCell.isExploding()) {
                 player.setDead(true);
 				renderer.material.color = Color.black;
 				StartCoroutine(deadPlayer());
 			}
+            */
 			
 			
 			// Falls die Zelle ein Powerup enthält -> aufsammeln
+            /*
 			if (currCell.hasPowerup()) {
                 player.powerupCollected(currCell.destroyPowerup(false));
 			}
+            */
 			
 			// Leertaste -> Bombe legen
 			if ( Input.GetKeyDown(KeyCode.Space)){
@@ -142,25 +146,14 @@ public class InputHandler : MonoBehaviour {
                 plantBombMsg.time = 0.0f; // ignored
                 plantBombMsg.rpos = player.GetPosition();
                 scr_netClient.Send(plantBombMsg);
-
-                /*
-				if ( !currCell.hasBomb()) {
-
-                    if (player.addBomb())
-                    {
-                        Explosion.createExplosionOnCell(currCell, player.getFlamePower(), player.getDelay(), true, true);
-						// Um eine Bombe eines anderen Spielers auf einer Zelle zu spawnen:
-						// Explosion.createExplosionOnCell(Parcel, flamePower, true);
-						// Powerup-ToDos: flameMight, flameSpeed
-					}
-				}
-                 */
 			}
 			
+            /*
 			if ((Time.time - createTime) > 1.0f) {
 				createTime = Time.time;
                 player.increaseHP();
 			}
+            */
 		}
 	}
 	

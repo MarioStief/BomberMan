@@ -180,6 +180,7 @@ public class Explosion : MonoBehaviour
 						explosionField.getCell().setExploding(true);
 						explosionField.getCell().colorCell(Color.black);
 						
+                        /*
 						// Wand zerstören, ggfls. Powerup setzen
 						if (PowerupPool.getDestroyable()) {
 							if (explosionField.getCell().hasPowerup()) {
@@ -210,6 +211,7 @@ public class Explosion : MonoBehaviour
 						if (explosionField.getCell().hasBomb()) {
 							explosionField.getCell().getExplosion().startExplosion();
 						}
+                        */
 						
 						stillRunning = true;
 
