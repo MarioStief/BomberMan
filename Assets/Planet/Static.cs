@@ -23,8 +23,10 @@ namespace AssemblyCSharp
 		public static UnityEngine.Object superbombPowerupPrefab;
 		public static UnityEngine.Object triggerbombPowerupPrefab;
 		public static UnityEngine.Object explosionPrefab;
-		public static UnityEngine.Object boxCubePrefab;
-		public static UnityEngine.Object stoneCubePrefab;
+		public static UnityEngine.Object boxCube1Prefab;
+		public static UnityEngine.Object boxCube2Prefab;
+		public static UnityEngine.Object stoneCube1Prefab;
+		public static UnityEngine.Object stoneCube2Prefab;
 		
 		static Static() {
 			bombPrefab = Resources.Load("Prefabs/bombPrefab");
@@ -40,8 +42,10 @@ namespace AssemblyCSharp
 			superbombPowerupPrefab = Resources.Load("Prefabs/superbombPrefab");
 			triggerbombPowerupPrefab = Resources.Load("Prefabs/triggerbombPrefab");
 			explosionPrefab = Resources.Load("Prefabs/explosionPrefab");
-			boxCubePrefab = Resources.Load("Prefabs/boxCubePrefab");
-			stoneCubePrefab = Resources.Load("Prefabs/stoneCubePrefab");
+			boxCube1Prefab = Resources.Load("Prefabs/boxCube1Prefab");
+			boxCube2Prefab = Resources.Load("Prefabs/boxCube2Prefab");
+			stoneCube1Prefab = Resources.Load("Prefabs/stoneCube1Prefab");
+			stoneCube2Prefab = Resources.Load("Prefabs/stoneCube2Prefab");
 		}
 		
 		public static void setSphereBuilder(SphereBuilder s) {

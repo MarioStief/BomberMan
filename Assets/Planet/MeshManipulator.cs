@@ -12,11 +12,16 @@ public class MeshManipulator : MonoBehaviour {
 	public Vector3 []vertexPosition;	// Position der eigenen Punkte in 3-dimensionalem Array im Spherebuilder.
 	
 	float height;
+	private int boxTexture;
 	
 	public Texture grassTex;
 	public Texture rockTex;
-	public Texture boxTex;
+	public Texture boxTex1;
+	public Texture boxTex2;
+	public Texture grassBump;
 	public Texture rockBump;
+	public Texture boxBump1;
+	public Texture boxBump2;
 	
 	// Use this for initialization
 	void Awake () {
@@ -24,28 +29,43 @@ public class MeshManipulator : MonoBehaviour {
 		sphere = Static.sphereHandler;
 		cubeMesh = GetComponent<MeshFilter>().mesh;
 		vertexPosition = new Vector3[8];
+		boxTexture = new System.Random().Next(0, 2);
 		
 		//grassTex = Resources.Load("Textures\\grassPlane2.jpg") as Texture;
 	}
 	
 	public void setParcel(Parcel p){
 		meshParcel = p;	
-
 	}
+	
+	public Object getBoxObject() {
+		if (boxTexture == 0) {
+			return Static.boxCube1Prefab;
+		} else {
+			return Static.boxCube2Prefab;
+		}
+	}
+	
 	
 	public void updateTexture(){
 		int type = meshParcel.getType();
 		if ( type == 0) {
-			//Debug.Log(grassTex);
 			renderer.material.mainTexture = grassTex;
 			renderer.material.mainTextureScale = new Vector2(0.3f,0.3f);
+			renderer.material.SetTexture("_BumpMap", grassBump);
 		}
 		else if ( type == 2){
 			renderer.material.mainTexture = rockTex;
 			renderer.material.SetTexture("_BumpMap", rockBump); 
 		}
 		else {
-			renderer.material.mainTexture = boxTex;
+			if (boxTexture == 0) {
+				renderer.material.mainTexture = boxTex1;
+				renderer.material.SetTexture("_BumpMap", boxBump1); 
+			} else {
+				renderer.material.mainTexture = boxTex2;
+				renderer.material.SetTexture("_BumpMap", boxBump2); 
+			}
 
 		}
 	}

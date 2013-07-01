@@ -17,8 +17,8 @@ public class Explosion : MonoBehaviour
 	private bool createBomb;
 	private bool self = false;
 	private bool bombDestroyed = false;
+	private bool triggerBomb;
 	
-	private int []dists;
 	private bool waitingForBombExplosion = true;
 	
 	private List<ExplosionField> explosionChain = new List<ExplosionField>();
@@ -62,28 +62,16 @@ public class Explosion : MonoBehaviour
 	}
 
 	void Start() {
-		// NEWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
-		//cell = sphereHandler.getGameArea().getCurrentParcel(0, 0);
-		//xpos = GameObject.Find("Player").GetComponent<InputHandler>().getXPos();
-		//ypos = GameObject.Find("Player").GetComponent<InputHandler>().getYPos();
-		//zpos = GameObject.Find("Player").GetComponent<InputHandler>().getZPos();
-		
-		//bomb = GameObject.Instantiate(bombPrefab, new Vector3(xpos + 0.5f, 0.3f, zpos + 0.5f), Quaternion.identity) as GameObject; 
-		//bomb = GameObject.Instantiate(bombPrefab, new Vector3(xpos, ypos, zpos), Quaternion.identity) as GameObject; 
 		timer = 0.0f;
 		createTime = Time.time;
+		triggerBomb = Player.getTriggerbomb();
 		
-		dists = new int[4];
 		instantiatePSystems();
 
-		//explosions.Add(this);
-		//transform.position = cell.getCenterPos();
 		if (createBomb) {
 			GameObject bomb = GameObject.Instantiate(Static.bombPrefab, transform.position, Quaternion.identity) as GameObject;
 			EXPLOSIONTIMER = bomb.GetComponent<anim>().timer;
-			if (Player.getTriggerbomb()) {
-				bomb.GetComponent<anim>().triggerBomb = true;
-			}
+			bomb.GetComponent<anim>().triggerBomb = triggerBomb;
 			cell.setGameObject(bomb);
 		}
 		cell.setExplosion(this);
@@ -102,7 +90,7 @@ public class Explosion : MonoBehaviour
 	void Update() {
 		float elapsedTime = Time.time - createTime;
 		if (waitingForBombExplosion) {
-			if (elapsedTime > EXPLOSIONTIMER && !Player.getTriggerbomb()) {
+			if (elapsedTime > EXPLOSIONTIMER && !triggerBomb) {
 				waitingForBombExplosion = false;
 				startExplosion();
 			}
@@ -202,7 +190,7 @@ public class Explosion : MonoBehaviour
 							explodingCell.setType(0);
 							
 							// Kiste explodieren lassen
-							GameObject obj = GameObject.Instantiate(Static.boxCubePrefab, explodingCell.getCenterPos(), Quaternion.identity) as GameObject;
+							GameObject obj = GameObject.Instantiate(explodingCell.getMeshManipulator().getBoxObject(), explodingCell.getCenterPos(), Quaternion.identity) as GameObject;
 							SplitMeshIntoTriangles.createMeshExplosion(obj, cell.getCenterPos(), 1);
 							
 							int random = new System.Random().Next(0, (int) 100/DROPCHANCE);
@@ -214,7 +202,7 @@ public class Explosion : MonoBehaviour
 						if (explodingCell.getType() == 2) {
 							
 							// Steinblock explodieren lassen
-							GameObject obj = GameObject.Instantiate(Static.stoneCubePrefab, explodingCell.getCenterPos(), Quaternion.identity) as GameObject;
+							GameObject obj = GameObject.Instantiate(Static.stoneCube2Prefab, explodingCell.getCenterPos(), Quaternion.identity) as GameObject;
 							SplitMeshIntoTriangles.createMeshExplosion(obj, cell.getCenterPos(), 1);
 							
 							if (explodingCell.getHeight() == 1f) {
@@ -249,7 +237,7 @@ public class Explosion : MonoBehaviour
 	private void instantiatePSystems(){
 		
 		if (true) {
-			cell.colorCell(Color.red);
+			//cell.colorCell(Color.red);
 			explosionChain.Add(new ExplosionField(0, cell, 0, 0, 0));
 		}
 
@@ -284,16 +272,16 @@ public class Explosion : MonoBehaviour
 						Debug.Log("Surrounding Cell: " + cell.getCoordinates() + ", Height: " + cell.getHeight());
 					switch (cell.getType()) {
 					case 0:
-						cell.colorCell(Color.red);
+						//cell.colorCell(Color.red);
 						break;
 					case 1:
 						if (!Player.getSuperbomb())
 							stop[j] = 1;
-						cell.colorCell(Color.red);
+						//cell.colorCell(Color.red);
 						break;
 					case 2:
 						stop[j] = 2;
-						cell.colorCell(Color.gray);
+						//cell.colorCell(Color.gray);
 						break;
 					}
 					explosionChain.Add(new ExplosionField(i,cell, stop[j], lpos, bpos));
@@ -303,59 +291,6 @@ public class Explosion : MonoBehaviour
 		}
 		Debug.Log ("#ExplosionFields: " + explosionChain.Count);
 	}
-	
-	/*
-	private int[] getDistances(){
-		
-		int range = Player.getFlamePower();
-		
-		// Right
-		int z = zpos+1;
-		while(z < Data.height && Data.area.getCell(xpos, z).getType() != 2  && z-zpos-1 < range){
-			if (Data.area.getCell(xpos, z).getType() == 1){
-				z++;
-				break;
-			}
-			z++;
-		}
-		dists[3] = z - zpos-1;
-		
-		// Left
-		z = zpos-1;
-		while( z >= 0 && Data.area.getCell(xpos, z).getType() != 2 &&  zpos-1-z < range){
-			if (Data.area.getCell(xpos, z).getType() == 1){
-				z--;
-				break;
-			}
-			z--;
-		}
-		dists[2] = zpos - 1 - z;
-		//Debug.Log("Right: " + dists[3] + ", LEFT: " + dists[2]);
-		// Down
-		int x = xpos+1;
-		while(x < Data.width && Data.area.getCell(x, zpos).getType() != 2 &&  x - xpos -1 < range){
-			if (Data.area.getCell(x, zpos).getType() == 1){
-				x++;
-				break;
-			}
-			x++;
-		}
-		dists[1] = x - xpos - 1;
-		
-		// Up
-		x = xpos-1;
-		while(x >= 0 && Data.area.getCell(x, zpos).getType() != 2 && xpos - 1 - x < range){
-			if (Data.area.getCell(x, zpos).getType() == 1){
-				x--;
-				break;
-			}
-			x--;
-		}
-		dists[0] = xpos -1 - x;
-		
-		return dists;
-	}
-	*/
 }
 
 

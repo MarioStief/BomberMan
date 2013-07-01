@@ -39,7 +39,7 @@ namespace AssemblyCSharp
 					pool.Add(new Powerup(PowerupType.GOLDEN_FLAME));
 				for (int j = 0; j < 1; j++)
 					pool.Add(new Powerup(PowerupType.SUPERBOMB));
-				for (int j = 0; j < 1; j++)
+				for (int j = 0; j < 1000; j++)
 					pool.Add(new Powerup(PowerupType.TRIGGERBOMB));
 				if (negative) {
 					for (int j = 0; j < 2; j++)
