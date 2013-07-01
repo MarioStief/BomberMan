@@ -121,7 +121,7 @@ public class Explosion : MonoBehaviour
 	void Update() {
 		float elapsedTime = Time.time - createTime;
 		if (waitingForBombExplosion) {
-			if (elapsedTime > EXPLOSIONTIMER) {
+			if (true /* cj start immediately */ || elapsedTime > EXPLOSIONTIMER) {
 				waitingForBombExplosion = false;
 				startExplosion();
 			}
@@ -171,7 +171,7 @@ public class Explosion : MonoBehaviour
 						*/
 						
 						// Explosionslautstärke der Spielerentfernung anpassen:
-						float distance = Vector3.Distance (GameObject.Find("Player").transform.position, position);
+						float distance = Vector3.Distance (GameObject.FindGameObjectWithTag("Player").transform.position, position);
 						detonator.GetComponent<AudioSource>().volume /= 2*distance;
 						detonator.GetComponent<AudioSource>().Play();
 						//Debug.Log ("Explosion Volume: " + (100/(2*distance)) + " %");

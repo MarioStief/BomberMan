@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using AssemblyCSharp;
 
 public class GM_World {
 
@@ -32,6 +33,8 @@ public class GM_World {
         public GameObject obj = null;
         public NetworkViewID viewID;
 
+        public Rink.Pos rpos;
+
         // additional properties of entities,
         // not necessarily used by all types
         public struct Props
@@ -39,7 +42,7 @@ public class GM_World {
             // ENT_BOMB
             public int flamePower;
         }
-        Props props = new Props();
+        public Props props = new Props();
 
         public Vector3 lastPosition = Vector3.zero;
     }

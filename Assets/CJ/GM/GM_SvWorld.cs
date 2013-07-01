@@ -17,7 +17,7 @@ public class GM_SvWorld : GM_World {
     {
         private const float BOMB_TIMEOUT = 3.0f;
 
-        public GM_GA_Cell cell = null;
+        public Parcel cell = null;
         public float spawnTime = 0.0f;
 
         public bool IsDead(float time)
@@ -95,7 +95,7 @@ public class GM_SvWorld : GM_World {
         if (ENT_BOMB == type)
         {
             SvBombEntity entBomb = new SvBombEntity();
-            entBomb.obj = new GameObject("Bomb (dummy)");
+            entBomb.obj = new GameObject("Bomb (dummy " + (svidCnt + 1) + ")");
             entity = entBomb;
         }
 
@@ -165,6 +165,74 @@ public class GM_SvWorld : GM_World {
         scr_netServer.Broadcast(setActiveMsg);
     }
 
+    private struct ExplodingField
+    {
+        public int barrier; // 0 = no barrier, 1 = destroyable block, 2 = barrier
+        public Parcel cell;
+
+        public ExplodingField(int barrier, Parcel cell)
+        {
+            this.barrier = barrier;
+            this.cell = cell;
+        }
+    }
+
+    /*
+    public List<ExplodingField> GetExplodingCells(SvBombEntity entBomb)
+    {
+        // cnf. Explosion::initiatePS
+
+        List<ExplodingField> fields = new List<ExplodingField>();
+
+        fields.Add(new ExplodingField(0, entBomb.cell));
+
+        int[] stop = { 0, 0, 0, 0 };
+
+        for (int i = 1; i <= entBomb.props.flamePower; i++)
+        {
+            for (int j = 0; j < 4; j++)
+            {
+                if (stop[j] == 0)
+                {
+                    int lpos = 0;
+                    int bpos = 0;
+                    switch (j)
+                    {
+                        case 0:
+                            lpos = -i;
+                            break;
+                        case 1:
+                            lpos = i;
+                            break;
+                        case 2:
+                            bpos = -i;
+                            break;
+                        case 3:
+                            bpos = i;
+                            break;
+                    }
+                    Parcel cell = entBomb.cell.getSurroundingCell(lpos, bpos);
+                    switch (cell.getType())
+                    {
+                        case 0:
+                            break;
+                        case 1:
+                            if (!Static.player.getSuperbomb())
+                                stop[j] = 1;
+                            break;
+                        case 2:
+                            stop[j] = 2;
+                            break;
+                    }
+                    fields.Add(new ExplodingField(stop[j], cell));
+                }
+            }
+        }
+
+        return fields;
+    }
+    */
+
     public Entity[] ShootDeathRays(Vector3 orig, Vector3 dir)
     {
         float size = explosionPlaneSize;
@@ -223,7 +291,8 @@ public class GM_SvWorld : GM_World {
             {
                 Entity.Props props = new Entity.Props();
                 props.flamePower = client.player.getFlamePower();
-                Spawn(ENT_BOMB, client.pid, rpos.bpos, rpos.lpos, props);
+                SvBombEntity entBomb = (SvBombEntity)Spawn(ENT_BOMB, client.pid, rpos.bpos, rpos.lpos, props);
+                entBomb.spawnTime = Time.time;
             }
         }
     }
@@ -240,6 +309,20 @@ public class GM_SvWorld : GM_World {
             LinkedListNode<Entity> next = entIt.Next;
             if (entIt.Value.isDead) entities.Remove(entIt);
             entIt = next;
+        }
+
+        // UPDATE BOMBS
+        foreach (Entity entity in entities)
+        {
+            if (ENT_BOMB == entity.type)
+            {
+                SvBombEntity entBomb = (SvBombEntity)entity;
+                if (entBomb.IsDead(time))
+                {
+                    scr_netServer.ClientByPID(entBomb.pid).player.removeBomb();
+                    DestroyEntity(entBomb.svid);
+                }
+            }
         }
 
         foreach (NET_Server.Client client in scr_netServer.Clients())

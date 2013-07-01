@@ -58,6 +58,10 @@ public class GM_ClWorld : GM_World {
             entity.pid = spawnEntityMsg.pid;
             entity.viewID = spawnEntityMsg.viewID;
 
+            entity.rpos = rpos;
+
+            entity.props = spawnEntityMsg.props;
+
             if (ENT_ACTOR == spawnEntityMsg.type)
             {
                 entity.obj = (GameObject)GameObject.Instantiate(Resources.Load("Actor"));
@@ -72,6 +76,7 @@ public class GM_ClWorld : GM_World {
                     entity.obj.transform.position = Static.rink.GetPosition(rpos);
 
                     localActor = entity;
+                    entity.obj.tag = "Player";
                 }
                 else
                 {
@@ -101,23 +106,10 @@ public class GM_ClWorld : GM_World {
 
             Entity entity = BySVID(destroyEntityMsg.svid);
 
-            if (ENT_ACTOR == entity.type)
-            {
-                if (entity.pid == scr_netClient.GetLocalPID())
-                {
-                    GameObject obj_mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
-                    GM_ActorCam scr_actorCam = obj_mainCamera.GetComponent<GM_ActorCam>();
-                    if (null != scr_actorCam) scr_actorCam.SetIdle();
-                }
-            }
-
             if (ENT_BOMB == entity.type)
             {
-                GameObject obj_explosion = new GameObject();
-                GM_Explosion scr_explosion = obj_explosion.AddComponent<GM_Explosion>();
-
-                GM_GA_Cell cell = gameArea.getCell(entity.obj.transform.position.x, entity.obj.transform.position.z);
-                scr_explosion.Init(gameArea, cell.getXPos(), cell.getZPos());
+                Parcel cell = Static.rink.GetCell(entity.rpos);
+                Explosion.createExplosionOnCell(cell, entity.props.flamePower, 0.2f, false);
             }
 
             GameObject.Destroy(entity.obj);
