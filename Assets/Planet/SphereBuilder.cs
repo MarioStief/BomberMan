@@ -21,12 +21,24 @@ public class SphereBuilder : MonoBehaviour {
 																				// [n_L][n_B] geben für jeweiligen Längen- und Breitenkreis den Punkt im Raum an
 	public float [/*r*/][/*n_L*/][/*n_B*/] vertexAngles;	// Wird _NUR_ für Update-Alternative II benötigt!
 	
-	
+	/*
 	public int n_B = 8; 							// Auflösung der Breitenkreise; !! >= 4 !!
 	public int n_L = 8; 							// Auflösung der Längenkreise ; !! >= 4 !!
-	
+     */
+
+    public int n_B = GM_World.N_B;
+    public int n_L = GM_World.N_L;
+
+    public void SetSize(int n_B, int n_L)
+    {
+        this.n_B = n_B;
+        this.n_L = n_L;
+    }
+
 	// Use this for initialization
-	void Start () {
+	public void Init () {
+
+        sphereCube = (GameObject)GameObject.Instantiate(Resources.Load("Prefabs/SphereCube"));
 		
 		Static.setSphereBuilder(this);
 		

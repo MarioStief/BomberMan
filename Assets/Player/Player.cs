@@ -214,6 +214,11 @@ namespace AssemblyCSharp
 		public float getDelay() {
 			return delay;
 		}
+
+        public Rink.Pos GetPosition()
+        {
+            return new Rink.Pos(currentCell.getBpos(), currentCell.getLpos(), xpos, zpos);
+        }
 	}
 }
 

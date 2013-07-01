@@ -37,27 +37,40 @@ public class InputHandler : MonoBehaviour {
 	
 	private float createTime;
 
-    private Player player;
+    private Player player = null;
 	
 	void Awake() {
 		playerHandler = GameObject.Find("Player");
 	}
+
+    public void SetPlayer(Player player) 
+    {
+        this.player = player;
+    }
+
+    public void SetPosition(Rink.Pos rpos)
+    {
+        this.bpos = rpos.bpos;
+        this.lpos = rpos.lpos;
+    }
 	
 	// Use this for initialization
 	void Start () {
-        player = Static.player;
+        camera = GameObject.FindGameObjectWithTag("MainCamera");
 
 		Static.sphereHandler.move(0.000001f); // CK, fixed color on startup :)
 		moveAlongEquator(0.000001f);
 		
 		createTime = Time.time;
-		
-		
-		n_L = Static.sphereHandler.n_L;
-		n_B = Static.sphereHandler.n_B;
-		
-		lpos = n_L/2-1;
-		bpos = n_B/4;
+
+        n_L = GM_World.N_L;
+        n_B = GM_World.N_B;
+
+        lpos = GM_World.N_L / 2 - 1;
+        bpos = GM_World.N_B / 4;
+
+        // be compatible with SP
+        if (null == player) player = Static.player;
 		
 		currCell = Static.rink.gameArea[lpos][bpos];
         player.setCurrentParcel(currCell);
@@ -530,7 +543,7 @@ public class InputHandler : MonoBehaviour {
 										Mathf.Sin(movement) * camera.transform.position.x + Mathf.Cos(movement) * camera.transform.position.y,
 										camera.transform.position.z);
 		camera.transform.LookAt(Vector3.zero, Vector3.forward);
-	}
+    }
 	
 	void OnParticleCollision(GameObject explosion) {
         player.decreaseHP();

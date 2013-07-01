@@ -4,6 +4,10 @@ using System.Collections.Generic;
 
 public class GM_World {
 
+    // gamearea parameters
+    public const int N_B = 30;
+    public const int N_L = 20;
+
     public static Vector3 GRAVITY_VEC = new Vector3(0.0f, -10.0f, 0.0f);
     public static Vector3 TO_HELL = new Vector3(0.0f, -1000.0f,  0.0f);
     public const float TIMESTEP = 0.01f;
@@ -26,7 +30,6 @@ public class GM_World {
         public bool isActive = true;
         public bool isDead = false;
         public GameObject obj = null;
-        public CharacterController charCtrl = null;
         public NetworkViewID viewID;
 
         public Vector3 lastPosition = Vector3.zero;

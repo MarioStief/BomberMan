@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using AssemblyCSharp;
 
 public abstract class NET_CL_Entity : MonoBehaviour
 {
@@ -7,7 +8,7 @@ public abstract class NET_CL_Entity : MonoBehaviour
     {
         public int reqId;
         public float time;
-        public Vector3 position;
+        public Rink.Pos rpos;
     }
 
     // position in xz-plane

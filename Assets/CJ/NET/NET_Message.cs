@@ -86,7 +86,7 @@ public class NET_MSG_SpawnEntity : NET_Message
     public int svid;
     public int pid;
     public NetworkViewID viewID;
-    public Vector3 position;
+    public int bpos, lpos;
 
     public NET_MSG_SpawnEntity() : base(MSG_SPAWN_ENTITY)
     {
@@ -98,7 +98,8 @@ public class NET_MSG_SpawnEntity : NET_Message
         stream.Serialize(ref svid);
         stream.Serialize(ref pid);
         stream.Serialize(ref viewID);
-        stream.Serialize(ref position);
+        stream.Serialize(ref bpos);
+        stream.Serialize(ref lpos);
     }
 }
 

@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using AssemblyCSharp;
 
 public class NET_Server : MonoBehaviour {
 
@@ -20,6 +21,9 @@ public class NET_Server : MonoBehaviour {
 
         public GameObject obj_input = null;
         public NET_SV_Input scr_input = null;
+
+        public GameObject obj_actorState = null;
+        public NET_SV_ActorState scr_actorState = null;
 
         // game variables
         public bool isDead;
@@ -104,7 +108,7 @@ public class NET_Server : MonoBehaviour {
     }
 
     [RPC]
-    public void NET_Ack1(string name, int pid, NetworkViewID inputViewID, NetworkViewID inQueueID)
+    public void NET_Ack1(string name, int pid, NetworkViewID inputViewID, NetworkViewID actorStateViewID, NetworkViewID inQueueID)
     {
         Client client = ClientByPID(pid);
 
@@ -116,16 +120,27 @@ public class NET_Server : MonoBehaviour {
         client.obj_input.networkView.viewID = inputViewID;
         client.obj_input.networkView.group = pid;
 
+        client.obj_actorState = new GameObject("SvActorState (pid=" + pid + ")");
+        client.scr_actorState = client.obj_actorState.AddComponent<NET_SV_ActorState>();
+        client.obj_actorState.AddComponent<NetworkView>();
+        client.obj_actorState.networkView.viewID = actorStateViewID;
+        client.obj_actorState.networkView.group = pid;
+        client.obj_actorState.networkView.observed = client.scr_actorState;
+
         client.inQueue = NET_InMessageQueue.Create(inQueueID, "SvInQueue (pid = " + pid + ")");
 
         Debug.Log("SV: created SvInput object for pid = " + pid + ", with inputViewID = " + inputViewID);
-
+        Debug.Log("SV: created SvActorState object for pid = " + pid + ", with actorStateViewID = " + actorStateViewID);
+        
         foreach (Client peer in clients)
         {
             if (client.pid != peer.pid)
             {
                 peer.obj_input.networkView.SetScope(client.netPlayer, false);
                 client.obj_input.networkView.SetScope(peer.netPlayer, false);
+
+                peer.obj_actorState.networkView.SetScope(client.netPlayer, false);
+                client.obj_actorState.networkView.SetScope(peer.netPlayer, false);
 
                 networkView.RPC("NET_ClientConnected", peer.netPlayer, client.name, client.pid);
             }

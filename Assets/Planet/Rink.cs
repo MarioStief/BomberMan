@@ -19,6 +19,28 @@ namespace AssemblyCSharp
 	//
 	public class Rink
 	{
+        public struct Pos
+        {
+            public int bpos, lpos;      // cell
+            public float xoff, yoff;    // offset in cell
+
+            public Pos(int bpos, int lpos, float xoff, float yoff)
+            {
+                this.bpos = bpos;
+                this.lpos = lpos;
+                this.xoff = xoff;
+                this.yoff = yoff;
+            }
+
+            public static void Serialize(ref Pos rpos, BitStream stream)
+            {
+                stream.Serialize(ref rpos.bpos);
+                stream.Serialize(ref rpos.lpos);
+                stream.Serialize(ref rpos.xoff);
+                stream.Serialize(ref rpos.yoff);
+            }
+        } 
+
 		private bool DEBUG = true;					// Debug-Modus aktivieren/ deaktivieren (s.o.)
 		
 		public Parcel[][] gameArea;					// Gesamtspielfläche LOGIK
@@ -239,6 +261,13 @@ namespace AssemblyCSharp
 		public Parcel[][] getGameArea() {
 			return gameArea;
 		}
+
+        // returns rpos in world space
+        public Vector3 GetPosition(Pos rpos)
+        {
+            // TODO
+            return gameArea[rpos.lpos][rpos.bpos].getCenterPos();
+        }
 	}
 }
 

@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using AssemblyCSharp;
 
 public class NET_CL_Moveable : NET_CL_Entity {
 
@@ -46,7 +47,11 @@ public class NET_CL_Moveable : NET_CL_Entity {
             if (i + 1 < buffer.Count)
             {
                 float t = (dtime - buffer[i].time) / (buffer[i + 1].time - buffer[i].time);
-                position = Vector3.Lerp(buffer[i].position, buffer[i + 1].position, t);
+
+                Vector3 p0 = Static.rink.GetPosition(buffer[i].rpos);
+                Vector3 p1 = Static.rink.GetPosition(buffer[i + 1].rpos);
+
+                position = Vector3.Lerp(p0, p1, t);
             }
             if(0 < i) buffer.RemoveRange(0, i - 1);
         }
@@ -66,12 +71,17 @@ public class NET_CL_Moveable : NET_CL_Entity {
 
         stream.Serialize(ref state.reqId);
         stream.Serialize(ref state.time);
-        stream.Serialize(ref state.position);
+
+        state.rpos = new Rink.Pos();
+        stream.Serialize(ref state.rpos.bpos);
+        stream.Serialize(ref state.rpos.lpos);
+        stream.Serialize(ref state.rpos.xoff);
+        stream.Serialize(ref state.rpos.yoff);
 
         buffer.Add(state);
         buffer.Sort(new CompareTime());
 
-        serverPosition = state.position;
+        serverPosition = Static.rink.GetPosition(state.rpos);
         time = state.time; // accept server time
     }
 	

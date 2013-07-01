@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using AssemblyCSharp;
 
 public class GM_ClWorld : GM_World {
 
@@ -11,7 +12,8 @@ public class GM_ClWorld : GM_World {
 
     private class ClEntity : Entity
     {
-        public NET_CL_Entity scr_clEntity;
+        public NET_CL_Entity scr_clEntity = null;       // remote actors
+        public InputHandler scr_inputHandler = null;    // local actor
 
         public GameObject obj_ghost = null;
     }
@@ -20,6 +22,9 @@ public class GM_ClWorld : GM_World {
 
     private GM_GameArea gameArea = null;
 
+    private SphereBuilder scr_sphereBuilder = null;
+
+    private Player localPlayer = new Player();
     private ClEntity localActor = null;
 
     public void Genesis()
@@ -41,6 +46,8 @@ public class GM_ClWorld : GM_World {
         {
             NET_MSG_SpawnEntity spawnEntityMsg = (NET_MSG_SpawnEntity)msg;
 
+            Rink.Pos rpos = new Rink.Pos(spawnEntityMsg.bpos, spawnEntityMsg.lpos, 0, 0);
+
             ClEntity entity = null;
             NetworkView netView = null;
 
@@ -54,22 +61,23 @@ public class GM_ClWorld : GM_World {
             if (ENT_ACTOR == spawnEntityMsg.type)
             {
                 entity.obj = (GameObject)GameObject.Instantiate(Resources.Load("Actor"));
-                entity.charCtrl = entity.obj.GetComponent<CharacterController>();
                 entity.obj_ghost = (GameObject)GameObject.Instantiate(Resources.Load("GhostActor"));
                 entity.obj_ghost.GetComponent<MeshRenderer>().enabled = false;
 
                 if (spawnEntityMsg.pid == scr_netClient.GetLocalPID())
                 {
-                    entity.scr_clEntity = entity.obj.AddComponent<NET_CL_LocalActor>();
-
-                    GameObject obj_mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
-                    scr_actorCam = obj_mainCamera.GetComponent<GM_ActorCam>();
-                    if (null == scr_actorCam) scr_actorCam = obj_mainCamera.AddComponent<GM_ActorCam>();
-                    scr_actorCam.Init(entity.obj);
+                    entity.scr_inputHandler = entity.obj.AddComponent<InputHandler>();
+                    entity.scr_inputHandler.SetPlayer(localPlayer);
+                    entity.scr_inputHandler.SetPosition(rpos);
+                    entity.obj.transform.position = Static.rink.GetPosition(rpos);
 
                     localActor = entity;
                 }
-                else entity.scr_clEntity = entity.obj.AddComponent<NET_CL_Moveable>();
+                else
+                {
+                    entity.scr_clEntity = entity.obj.AddComponent<NET_CL_Moveable>();
+                    entity.scr_clEntity.SetPosition(Static.rink.GetPosition(rpos));
+                }
 
                 netView = entity.obj.AddComponent<NetworkView>();
                 netView.viewID = entity.viewID;
@@ -82,8 +90,6 @@ public class GM_ClWorld : GM_World {
 
                 entity.scr_clEntity = entity.obj.AddComponent<NET_CL_Static>();
             }
-
-            entity.scr_clEntity.SetPosition(spawnEntityMsg.position);
 
             entities.AddLast(entity);
         }
@@ -155,8 +161,10 @@ public class GM_ClWorld : GM_World {
             NET_MSG_GenerateArea genAreaMsg = (NET_MSG_GenerateArea)msg;
             Random.seed = genAreaMsg.seed;
 
-            GM_GA_Generator gameAreaGenerator = new GM_GA_Generator();
-            gameArea = gameAreaGenerator.Generate();
+            GameObject obj_sphereBuilder = new GameObject("SphereBuilder");
+            scr_sphereBuilder = obj_sphereBuilder.AddComponent<SphereBuilder>();
+            scr_sphereBuilder.SetSize(N_B, N_L);
+            scr_sphereBuilder.Init();
         }
     }
 
@@ -171,16 +179,21 @@ public class GM_ClWorld : GM_World {
             if (entity.isDead) entities.Remove(entIt);
             else
             {
-                entity.obj.transform.position = entity.scr_clEntity.GetPosition();
-
-                if (entity.obj_ghost)
+                if (entity.scr_clEntity)
                 {
-                    entity.obj_ghost.transform.position = entity.scr_clEntity.GetServerPosition();
+                    entity.obj.transform.position = entity.scr_clEntity.GetPosition();
+
+                    if (entity.obj_ghost)
+                    {
+                        entity.obj_ghost.transform.position = entity.scr_clEntity.GetServerPosition();
+                    }
                 }
             }
 
             entIt = next;
         }
+
+        scr_netClient.GetLocalState().AddState(localPlayer.GetPosition());
     }
 	
 }
