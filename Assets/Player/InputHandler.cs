@@ -82,7 +82,7 @@ public class InputHandler : MonoBehaviour {
 	IEnumerator deadPlayer() {
 		float createTime = Time.time;
 		float elapsedTime = 0.0f;
-		while (elapsedTime < 10f) {
+		while (elapsedTime < 0f) {
 			float multiplicator = elapsedTime + 10f; // 10 <= multiplicator <= 20
 			float x = transform.position.x;
 			float y = transform.position.y;
@@ -105,22 +105,24 @@ public class InputHandler : MonoBehaviour {
 		playerHandler.transform.localScale = Vector3.zero;
 		playerHandler.GetComponent<CapsuleCollider>().enabled = false;
 		while (Player.isDead()) {
-			bool invalid = true;
-			do {
-				float oldVerticalMovement = verticalMovement;
-				float oldHorizontalMovement = horizontalMovement;
-				verticalMovement = ((float) new System.Random().Next(0, 3) - 1f) / 10;
-				horizontalMovement = ((float) new System.Random().Next(0, 3) - 1f) / 10;
-				
-				bool noMovement = (verticalMovement == 0f && horizontalMovement == 0f);
-				bool hardTurn = ((oldVerticalMovement - verticalMovement > 0.1) || (oldHorizontalMovement - horizontalMovement > 0.1)) ||
-					((oldVerticalMovement - verticalMovement == 0.1) && (oldHorizontalMovement - horizontalMovement == 0.1));
-				bool noChange = ((oldVerticalMovement == verticalMovement) && (oldHorizontalMovement == horizontalMovement));
-				invalid = (noMovement || hardTurn || noChange);
-				
-				//Debug.Log ("verticalMovement: " + verticalMovement);
-				//Debug.Log ("horizontalMovement: " + horizontalMovement);
-			} while (invalid);
+			do {			
+				switch (new System.Random().Next(0, 2)) {
+				case 0:
+					if (verticalMovement != 0f) {
+						verticalMovement = 0f;
+					} else {
+						verticalMovement = (new System.Random().Next(0, 2) == 0 ? 0.1f : -0.1f);
+					}
+					break;
+				case 1:
+					if (horizontalMovement != 0f) {
+						horizontalMovement = 0f;
+					} else {
+						horizontalMovement = (new System.Random().Next(0, 2) == 0 ? 0.1f : -0.1f);
+					}
+					break;
+				}
+			} while (verticalMovement == 0f && horizontalMovement == 0f);
 			yield return new WaitForSeconds(Random.value*5 + 5f);
 		}
 	}
