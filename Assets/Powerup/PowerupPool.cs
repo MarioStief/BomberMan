@@ -72,7 +72,7 @@ namespace AssemblyCSharp
 			return randomList;
 		}
 		
-		public static void setPowerup(Parcel cell)
+		public static PowerupType setPowerup(Parcel cell)
 		{
 			// NNNNNNNNNNNNNNNEEEEEEEEEEEEEEEEEWWWWWWWWWWWWWWWW
 			Vector3 cellCenter = Vector3.zero; //cell.getCenterPoint();
@@ -114,6 +114,7 @@ namespace AssemblyCSharp
 
 			cell.addPowerup(new Powerup(type), powerup);
 
+            return type;
 		}
 		
 		private static void poolContent()

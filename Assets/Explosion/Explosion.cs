@@ -192,19 +192,6 @@ public class Explosion : MonoBehaviour
 							}
 						}
 
-						if (explodingCell.getType() == 1) {
-							explodingCell.setType(0);
-							int random = new System.Random().Next(0, (int) 100/DROPCHANCE);
-							Debug.Log("Placing Powerup for cell " + explodingCell.getCoordinates() + ": " + (random == 0 ? "yes" : "no"));
-							if (random == 0) { // Random().Next(0, 4) € {0, 1, 2, 3}
-								PowerupPool.setPowerup(explodingCell);
-							}
-						}
-						if (explodingCell.getType() == 2 && explodingCell.getHeight() == 1f) {
-							explodingCell.setType(0);
-							PowerupPool.setPowerup(explodingCell);
-						}
-
 						explodingCell.getMeshManipulator().updateCoordinates();
 
 						// Bomben jagen sich gegenseitig hoch:
@@ -212,6 +199,12 @@ public class Explosion : MonoBehaviour
 							explosionField.getCell().getExplosion().startExplosion();
 						}
                         */
+
+                        if (explosionField.getCell().getType() == 1 || (explosionField.getCell().getType() == 2 && explosionField.getCell().getHeight() == 1f))
+                        {
+                            explosionField.getCell().setType(0);
+                            explodingCell.getMeshManipulator().updateCoordinates();
+                        }   
 						
 						stillRunning = true;
 

@@ -40,6 +40,32 @@ public class GM_ClWorld : GM_World {
             entity.obj_ghost.renderer.enabled = !entity.obj_ghost.renderer.enabled;
     }
 
+    private GameObject PowerupObjectFromType(PowerupType puType)
+    {
+        GameObject powerup = null;
+        if (puType == PowerupType.BOMB_UP)
+            powerup = Static.bombUpPowerupPrefab;
+        else if (puType == PowerupType.BOMB_DOWN)
+            powerup = Static.bombDownPowerupPrefab;
+        else if (puType == PowerupType.FLAME_UP)
+            powerup = Static.flameUpPowerupPrefab;
+        else if (puType == PowerupType.FLAME_DOWN)
+            powerup = Static.flameDownPowerupPrefab;
+        else if (puType == PowerupType.PLAYER_SPEED_UP)
+            powerup = Static.playerSpeedUpPowerupPrefab;
+        else if (puType == PowerupType.PLAYER_SPEED_DOWN)
+            powerup = Static.playerSpeedDownPowerupPrefab;
+        else if (puType == PowerupType.DELAY_SPEED_UP)
+            powerup = Static.playerSpeedUpPowerupPrefab;
+        else if (puType == PowerupType.DELAY_SPEED_DOWN)
+            powerup = Static.playerSpeedDownPowerupPrefab;
+        else if (puType == PowerupType.GOLDEN_FLAME)
+            powerup = Static.goldenFlamePowerupPrefab;
+        else if (puType == PowerupType.SUPERBOMB)
+            powerup = Static.superbombPowerupPrefab;
+        return powerup;
+    }
+
     public void HandleMessage(NET_Message msg)
     {
         if (NET_Message.MSG_SPAWN_ENTITY == msg.GetMsgID())
@@ -93,6 +119,12 @@ public class GM_ClWorld : GM_World {
             {
                 entity.obj = (GameObject)GameObject.Instantiate(Resources.Load("Prefabs/bombPrefab"));
 
+                entity.scr_clEntity = entity.obj.AddComponent<NET_CL_Static>();
+                entity.scr_clEntity.SetPosition(rpos);
+            }
+            if (ENT_POWERUP == spawnEntityMsg.type)
+            {
+                entity.obj = PowerupObjectFromType(spawnEntityMsg.props.puType);
                 entity.scr_clEntity = entity.obj.AddComponent<NET_CL_Static>();
                 entity.scr_clEntity.SetPosition(rpos);
             }

@@ -93,7 +93,8 @@ namespace AssemblyCSharp
 					gameArea[i][j].setIdentity(i,j);	// DEBUG
 				}
 			}
-			
+
+            UnityEngine.Random.seed = 0;
 			for(int i = 0; i < 3*width; i++){
 				gameArea[(int)(UnityEngine.Random.value*height)][(int)(UnityEngine.Random.value*width)].setType(1);	
 			}
@@ -273,6 +274,27 @@ namespace AssemblyCSharp
             // TODO
             return gameArea[rpos.lpos][rpos.bpos].getCenterPos();
         }
+
+        /*
+        public Vector3 GetPosition(Pos rpos)
+        {
+            int xpos = rpos.lpos;
+            int zpos = rpos.bpos;
+
+            float xoff = rpos.xoff;
+            float zoff = rpos.yoff;
+
+            MeshManipulator cellMesh = drawnArea[xpos][zpos];
+
+            //Debug.Log(xoff +" :: " + zoff);
+            Vector3 tl = cellMesh.getTopLeft();
+            Vector3 br = cellMesh.getBottomRight();
+            Vector3 pos = tl + new Vector3((-tl.x+br.x)*zoff, -tl.y+br.y, (-tl.z+br.z)*xoff);
+            //GameObject.Instantiate(Static.bombPrefab,pos,Quaternion.identity);// (Static.bombPrefab, pos , Quaternion.identity) as GameObject;
+
+            return pos;
+        }
+         * */
 	}
 }
 

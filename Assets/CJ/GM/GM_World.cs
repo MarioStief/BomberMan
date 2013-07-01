@@ -21,6 +21,7 @@ public class GM_World {
     // entity types
     public const int ENT_ACTOR = 1;
     public const int ENT_BOMB = 2;
+    public const int ENT_POWERUP = 3;
 
     public class Entity
     {
@@ -41,6 +42,9 @@ public class GM_World {
         {
             // ENT_BOMB
             public int flamePower;
+
+            // ENT_POWERUP
+            public PowerupType puType;
         }
         public Props props = new Props();
 

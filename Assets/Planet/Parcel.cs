@@ -67,6 +67,18 @@ namespace AssemblyCSharp
 			return exploding;
 		}
 
+        // decreases the height of a cell without updating the mesh manipulator.
+        // used by server
+        public void decreaseHeight_NoManip()
+        {
+            if (height > (1.0f + STEP - 0.0001f))
+            { // also 1.01 oder höher
+                height -= STEP;
+            }
+            else if (height > 1f)
+                height = 1f;
+        }
+
 		public void decreaseHeight() {
 			if (height > (1.0f + STEP - 0.0001f)) { // also 1.01 oder höher
 				height -= STEP;
@@ -162,8 +174,11 @@ namespace AssemblyCSharp
 		}
 		
 		public void addPowerup(Powerup powerup, GameObject prefab) {
-			this.obj = GameObject.Instantiate(prefab, getCenterPos(), Quaternion.identity) as GameObject;
-			this.powerupType = powerup.getType();
+			// cj: this method is called by the server only, which does not
+            // need to draw anything
+            // this.obj = GameObject.Instantiate(prefab, getCenterPos(), Quaternion.identity) as GameObject;
+			
+            this.powerupType = powerup.getType();
 			powerupExplodingValue = powerup.getValue();
 			powerupOnCell = true;
 		}

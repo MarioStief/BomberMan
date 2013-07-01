@@ -17,7 +17,6 @@ public class GM_SvWorld : GM_World {
     {
         private const float BOMB_TIMEOUT = 3.0f;
 
-        public Parcel cell = null;
         public float spawnTime = 0.0f;
 
         public bool IsDead(float time)
@@ -25,6 +24,8 @@ public class GM_SvWorld : GM_World {
             return (time - spawnTime) > BOMB_TIMEOUT;
         }
     }
+
+    private class SvPowerupEntity : Entity { /* ... */ }
 
     private GM_GameArea gameArea = null;
 
@@ -67,6 +68,8 @@ public class GM_SvWorld : GM_World {
     {
         Entity entity = null;
 
+        Rink.Pos rpos = new Rink.Pos(bpos, lpos, 0.0f, 0.0f);
+
         if (ENT_ACTOR == type)
         {
             SvActorEntity entActor = new SvActorEntity();
@@ -98,10 +101,19 @@ public class GM_SvWorld : GM_World {
             entBomb.obj = new GameObject("Bomb (dummy " + (svidCnt + 1) + ")");
             entity = entBomb;
         }
+        if (ENT_POWERUP == type) 
+        {
+            entity = new SvPowerupEntity();
+            entity.obj = new GameObject("Powerup (dummy " + (svidCnt + 1) + ")");
+        }
 
         entity.type = type;
         entity.svid = ++svidCnt;
         entity.pid = pid;
+
+        entity.rpos = rpos;
+
+        entity.props = props;
 
         GM_SvidTag scr_svidTag = entity.obj.AddComponent<GM_SvidTag>();
         scr_svidTag.svid = entity.svid;
@@ -165,26 +177,15 @@ public class GM_SvWorld : GM_World {
         scr_netServer.Broadcast(setActiveMsg);
     }
 
-    private struct ExplodingField
-    {
-        public int barrier; // 0 = no barrier, 1 = destroyable block, 2 = barrier
-        public Parcel cell;
-
-        public ExplodingField(int barrier, Parcel cell)
-        {
-            this.barrier = barrier;
-            this.cell = cell;
-        }
-    }
-
-    /*
-    public List<ExplodingField> GetExplodingCells(SvBombEntity entBomb)
+    private List<Parcel> GetExplodingCells(SvBombEntity entBomb)
     {
         // cnf. Explosion::initiatePS
 
-        List<ExplodingField> fields = new List<ExplodingField>();
+        List<Parcel> fields = new List<Parcel>();
 
-        fields.Add(new ExplodingField(0, entBomb.cell));
+        Parcel bombCell = Static.rink.GetCell(entBomb.rpos);
+
+        fields.Add(bombCell);
 
         int[] stop = { 0, 0, 0, 0 };
 
@@ -211,7 +212,7 @@ public class GM_SvWorld : GM_World {
                             bpos = i;
                             break;
                     }
-                    Parcel cell = entBomb.cell.getSurroundingCell(lpos, bpos);
+                    Parcel cell = bombCell.getSurroundingCell(lpos, bpos);
                     switch (cell.getType())
                     {
                         case 0:
@@ -224,14 +225,13 @@ public class GM_SvWorld : GM_World {
                             stop[j] = 2;
                             break;
                     }
-                    fields.Add(new ExplodingField(stop[j], cell));
+                    fields.Add(cell);
                 }
             }
         }
 
         return fields;
     }
-    */
 
     public Entity[] ShootDeathRays(Vector3 orig, Vector3 dir)
     {
@@ -292,9 +292,15 @@ public class GM_SvWorld : GM_World {
                 Entity.Props props = new Entity.Props();
                 props.flamePower = client.player.getFlamePower();
                 SvBombEntity entBomb = (SvBombEntity)Spawn(ENT_BOMB, client.pid, rpos.bpos, rpos.lpos, props);
-                entBomb.spawnTime = Time.time;
+                entBomb.spawnTime = time;
             }
         }
+    }
+
+    private struct SpawnArgs
+    {
+        public int type, pid, lpos, bpos;
+        public Entity.Props props;
     }
 
     public void Update()
@@ -311,6 +317,8 @@ public class GM_SvWorld : GM_World {
             entIt = next;
         }
 
+        List<SpawnArgs> spawnList = new List<SpawnArgs>();
+
         // UPDATE BOMBS
         foreach (Entity entity in entities)
         {
@@ -319,10 +327,64 @@ public class GM_SvWorld : GM_World {
                 SvBombEntity entBomb = (SvBombEntity)entity;
                 if (entBomb.IsDead(time))
                 {
+                    // keep this consistent with Explosion::Update!
+                    // TODO: 100ms steps
+
+                    List<Parcel> explodingCells = GetExplodingCells(entBomb);
+                    Debug.Log("GM_SvWorld: number of exploding cells = " + explodingCells.Count);
+                    foreach (Parcel cell in explodingCells)
+                    {
+                        cell.decreaseHeight_NoManip();
+                        /*
+                        if (Static.player.getSuperbomb())
+                        {
+                            cell.decreaseHeight();
+                            cell.decreaseHeight();
+                        }
+                        */
+
+                        Debug.Log("parcel type = " + cell.getType() + "(" + cell.getBpos() + ", " + cell.getLpos() + ")");
+                        PowerupType puType = PowerupType.NONE;
+                        if (cell.getType() == 1)
+                        {
+                            cell.setType(0);
+                            int random = new System.Random().Next(0, (int)100 / PowerupPool.DROPCHANCE);
+                            if (true || random == 0)
+                            { // Random().Next(0, 4) € {0, 1, 2, 3}
+                                puType = PowerupPool.setPowerup(cell);
+                            }
+                        }
+                        if (cell.getType() == 2 && cell.getHeight() == 1f)
+                        {
+                            cell.setType(0);
+                            puType = PowerupPool.setPowerup(cell);
+                        }
+
+                        if (PowerupType.NONE != puType)
+                        {
+                            Debug.Log("GM_SvWorld: spawning powerup (type = " + (int)puType + ")");
+                            Entity.Props props = new Entity.Props();
+                            props.puType = puType;
+
+                            SpawnArgs spawnArgs = new SpawnArgs();
+                            spawnArgs.type = ENT_POWERUP;
+                            spawnArgs.pid = 0;
+                            spawnArgs.bpos = cell.getBpos();
+                            spawnArgs.lpos = cell.getLpos();
+                            spawnArgs.props = props;
+                            spawnList.Add(spawnArgs);
+                        }
+                    }
+
                     scr_netServer.ClientByPID(entBomb.pid).player.removeBomb();
                     DestroyEntity(entBomb.svid);
                 }
-            }
+            } // ENT_BOMB == type
+        } // \forall entities
+
+        foreach (SpawnArgs spawnArgs in spawnList)
+        {
+            Spawn(spawnArgs.type, spawnArgs.pid, spawnArgs.bpos, spawnArgs.lpos, spawnArgs.props);
         }
 
         foreach (NET_Server.Client client in scr_netServer.Clients())
