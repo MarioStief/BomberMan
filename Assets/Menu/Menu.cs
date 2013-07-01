@@ -18,6 +18,8 @@ public class Menu : MonoBehaviour {
 	private Dictionary<NetworkPlayer,string> playerList = new Dictionary<NetworkPlayer, string>();
 	public static bool showGUI = true;
 	
+	public Transform playerPrefab;
+	
 	// CJs stuff
 	private GameObject obj_gameController;
 	private NET_Client scr_netClient;
@@ -225,8 +227,10 @@ public class Menu : MonoBehaviour {
 			showGUI = false;
 			
 			// change State
-			MenuState m = MenuState.instance;
-			m.startGameServer();
+			//MenuState m = MenuState.instance;
+			//m.startGameServer();
+			
+			networkView.RPC("startGame",RPCMode.AllBuffered, (int)Random.value*100000);
 		}
 		GUI.EndGroup();
 		
@@ -389,5 +393,11 @@ public class Menu : MonoBehaviour {
 		playerList.Remove(p);
 		scr_netClient.removeClient(pid);
 	}	
+	
+	[RPC]
+	void startGame(int seed) {
+		Random.seed = seed;
+		Application.LoadLevel(1);
+	}
 
 }

@@ -25,9 +25,10 @@ public class SphereBuilder : MonoBehaviour {
 	public int n_B = 8; 							// Auflösung der Breitenkreise; !! >= 4 !!
 	public int n_L = 8; 							// Auflösung der Längenkreise ; !! >= 4 !!
 	
+	public Transform playerPrefab;
+	
 	// Use this for initialization
 	void Start () {
-		
 		Static.setSphereBuilder(this);
 		
 		adjSouthPole = n_L-2;
@@ -41,6 +42,10 @@ public class SphereBuilder : MonoBehaviour {
 		
 		// Gebe den Würfeln korrekte Höhen gemäß der Werte aus gameArea
 		gameArea.updateHeight();
+		
+		// instantiate the player
+		Vector3 pos = new Vector3(-1.41561e-07f, 2.080631f, 0.01059199f);
+		Network.Instantiate(playerPrefab, pos, transform.rotation, 1);
 	}
 	
 	private void tesselateSphere(){

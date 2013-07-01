@@ -30,7 +30,7 @@ public class InputHandler : MonoBehaviour {
 	private int vDirection;			// Bewegungsrichtung
 	private int hDirection;
 	
-	public GameObject camera;
+	private GameObject camera;
 	private Quaternion cameraRotation;
 	
 	private Parcel currCell;
@@ -38,11 +38,24 @@ public class InputHandler : MonoBehaviour {
 	private float createTime;
 	
 	void Awake() {
-		playerHandler = GameObject.Find("Player");
+		//playerHandler = GameObject.Find("Player");
+		playerHandler = GameObject.FindGameObjectWithTag("Player");
+	}
+	
+	void OnNetworkInstantiate(NetworkMessageInfo info) {
+		if (info.sender != Network.player) {
+		}
+		Debug.Log("New object instantiated by " + info.sender);
 	}
 	
 	// Use this for initialization
 	void Start () {
+		if (!networkView.isMine) {
+			return;
+		}
+		
+		camera = GameObject.FindGameObjectWithTag("MainCamera");
+		
 		Static.sphereHandler.move(0.000001f); // CK, fixed color on startup :)
 		moveAlongEquator(0.000001f);
 		
@@ -72,6 +85,44 @@ public class InputHandler : MonoBehaviour {
 		transform.LookAt(currCell.up.getCenterPos());
 	}
 	
+	void OnSerializeNetworkView(BitStream stream, NetworkMessageInfo info) {
+		if (stream.isWriting)
+		{
+			// calculate my position on sphere
+			/*Vector3 p = new Vector3(
+				transform.position.x,
+				Mathf.Cos(verticalAngle) * transform.position.y - Mathf.Sin(verticalAngle) * transform.position.z,
+				Mathf.Sin(verticalAngle) * transform.position.y + Mathf.Cos(verticalAngle) * transform.position.z
+			);*/
+			Vector3 p = transform.position;
+			stream.Serialize(ref p);
+			
+			float va = verticalAngle;
+			stream.Serialize(ref va);
+			
+			Quaternion r = transform.rotation;
+			stream.Serialize(ref r);
+		}
+		else
+		{
+			Vector3 fp = Vector3.zero;
+			stream.Serialize(ref fp);
+			
+			float fva = 0f;
+			stream.Serialize(ref fva);
+			transform.position = new Vector3(
+				fp.x,
+				Mathf.Cos(fva-verticalAngle) * fp.y - Mathf.Sin(fva-verticalAngle) * fp.z,
+				Mathf.Sin(fva-verticalAngle) * fp.y + Mathf.Cos(fva-verticalAngle) * fp.z
+			);
+			
+			Quaternion fr = Quaternion.Euler(new Vector3(0, 0, 0));
+			stream.Serialize(ref fr);
+			transform.rotation = fr;
+		}
+	
+	}
+	
 	IEnumerator deadPlayer() {
 		while (true) {
 			float x = transform.position.x;
@@ -90,8 +141,25 @@ public class InputHandler : MonoBehaviour {
 		}
 	}
 	
-	// Update is called once per frame
 	void Update () {
+		
+		// Gegner drehen mit dem Planeten..!
+		if (!networkView.isMine) {
+			
+			float verticalMovement = Input.GetAxis("Vertical");
+			float vm = Player.getSpeed() * verticalMovement * Time.deltaTime;
+			vm = determineVerticalParcelPosition( verticalMovement, vm);
+			verticalAngle += vm;
+			if (vm != 0) {
+				transform.position = new Vector3(
+					transform.position.x,
+					Mathf.Cos(-vm) * transform.position.y - Mathf.Sin(-vm) * transform.position.z,
+					Mathf.Sin(-vm) * transform.position.y + Mathf.Cos(-vm) * transform.position.z
+				);
+			}
+			
+			return;
+		}
 		
 		if (!Player.isDead()) {
 			
@@ -195,50 +263,33 @@ public class InputHandler : MonoBehaviour {
 				// nach oben schauen
 				if (hm > 0) {
 					// nach links oben schauen
-					//Debug.Log("links oben");
 					lookDirection = currCell.getSurroundingCell(GAP,GAP).getCenterPos();
-					currCell.getSurroundingCell(GAP,GAP).colorCell(Color.magenta);
 				} else if (hm < 0) {
 					// nach rechts oben schauen
-					//Debug.Log("rechts oben");
 					lookDirection = currCell.getSurroundingCell(GAP,-GAP).getCenterPos();
-					currCell.getSurroundingCell(GAP,-GAP).colorCell(Color.magenta);
-
 				} else {
 					// nur nach oben schauen
-					//Debug.Log("oben");
 					lookDirection = currCell.getSurroundingCell(GAP,0).getCenterPos();
-					currCell.getSurroundingCell(GAP,0).colorCell(Color.magenta);
 				}
 			} else if (vm < 0) {
 				// nach unten schauen
 				if (hm > 0) {
 					// nach links unten schauen
-					//Debug.Log("links unten");
 					lookDirection = currCell.getSurroundingCell(-GAP,GAP).getCenterPos();
-					currCell.getSurroundingCell(-GAP,GAP).colorCell(Color.magenta);
 				} else if (hm < 0) {
 					// nach rechts unten schauen
-					//Debug.Log("rechts unten");
 					lookDirection = currCell.getSurroundingCell(-GAP,-GAP).getCenterPos();
-					currCell.getSurroundingCell(-GAP,-GAP).colorCell(Color.magenta);
 				} else {
 					// nur nach unten schauen
-					//Debug.Log("unten");
 					lookDirection = currCell.getSurroundingCell(-GAP,0).getCenterPos();
-					currCell.getSurroundingCell(-GAP,0).colorCell(Color.magenta);
 				}
 			} else {
 				if (hm > 0) {
 					// nur nach links schauen
-					//Debug.Log("links");
 					lookDirection = currCell.getSurroundingCell(0,GAP).getCenterPos();
-					currCell.getSurroundingCell(0,GAP).colorCell(Color.magenta);
 				} else {
 					// nur nach rechts schauen
-					//Debug.Log("rechts");
 					lookDirection = currCell.getSurroundingCell(0,-GAP).getCenterPos();
-					currCell.getSurroundingCell(0,-GAP).colorCell(Color.magenta);
 				}
 			}
 		
