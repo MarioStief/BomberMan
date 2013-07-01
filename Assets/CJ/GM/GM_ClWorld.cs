@@ -40,7 +40,7 @@ public class GM_ClWorld : GM_World {
             entity.obj_ghost.renderer.enabled = !entity.obj_ghost.renderer.enabled;
     }
 
-    private GameObject PowerupObjectFromType(PowerupType puType)
+    private GameObject PowerupPrefabFromType(PowerupType puType)
     {
         GameObject powerup = null;
         if (puType == PowerupType.BOMB_UP)
@@ -63,6 +63,11 @@ public class GM_ClWorld : GM_World {
             powerup = Static.goldenFlamePowerupPrefab;
         else if (puType == PowerupType.SUPERBOMB)
             powerup = Static.superbombPowerupPrefab;
+        if (null == powerup) Debug.Log("GM_ClWorld: warning, invalid powerup mesh!");
+
+        // cj: okay, use the same mesh for testing purposes...
+        powerup = Static.bombDownPowerupPrefab;
+
         return powerup;
     }
 
@@ -124,7 +129,7 @@ public class GM_ClWorld : GM_World {
             }
             if (ENT_POWERUP == spawnEntityMsg.type)
             {
-                entity.obj = PowerupObjectFromType(spawnEntityMsg.props.puType);
+                entity.obj = (GameObject)GameObject.Instantiate(PowerupPrefabFromType(spawnEntityMsg.props.puType));
                 entity.scr_clEntity = entity.obj.AddComponent<NET_CL_Static>();
                 entity.scr_clEntity.SetPosition(rpos);
             }

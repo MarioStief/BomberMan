@@ -131,14 +131,6 @@ public class InputHandler : MonoBehaviour {
 			}
             */
 			
-			
-			// Falls die Zelle ein Powerup enthält -> aufsammeln
-            /*
-			if (currCell.hasPowerup()) {
-                player.powerupCollected(currCell.destroyPowerup(false));
-			}
-            */
-			
 			// Leertaste -> Bombe legen
 			if ( Input.GetKeyDown(KeyCode.Space)){
                 NET_MSG_PlantBomb plantBombMsg = new NET_MSG_PlantBomb();

@@ -29,6 +29,8 @@ namespace AssemblyCSharp
 		Color highlightColor = Color.cyan;
 		
 		float height = 1.0f;
+
+        public int svid = 0; // used by server
 		
 		GameObject obj;					// Object auf der Parzelle, das gezeichnet werden soll.
 		
@@ -184,11 +186,14 @@ namespace AssemblyCSharp
 		}
 
 		public PowerupType destroyPowerup(bool shatter) {
+            // cj: again, ignore this in server code
+            /*
 			if (shatter && Preferences.getExplodingPowerups() == false) { // if shatter
 				SplitMeshIntoTriangles.createMeshExplosion(obj); // Zerbersten lassen
 			} else {
 				GameObject.Destroy(obj);
 			}
+            */
 			obj = null;
 			powerupOnCell = false;
 			powerupExplodingValue = 0;

@@ -301,6 +301,7 @@ public class GM_SvWorld : GM_World {
     {
         public int type, pid, lpos, bpos;
         public Entity.Props props;
+        public Parcel cell;
     }
 
     public void Update()
@@ -372,6 +373,7 @@ public class GM_SvWorld : GM_World {
                             spawnArgs.bpos = cell.getBpos();
                             spawnArgs.lpos = cell.getLpos();
                             spawnArgs.props = props;
+                            spawnArgs.cell = cell;
                             spawnList.Add(spawnArgs);
                         }
                     }
@@ -384,7 +386,8 @@ public class GM_SvWorld : GM_World {
 
         foreach (SpawnArgs spawnArgs in spawnList)
         {
-            Spawn(spawnArgs.type, spawnArgs.pid, spawnArgs.bpos, spawnArgs.lpos, spawnArgs.props);
+            Entity entity = Spawn(spawnArgs.type, spawnArgs.pid, spawnArgs.bpos, spawnArgs.lpos, spawnArgs.props);
+            spawnArgs.cell.svid = entity.svid;
         }
 
         foreach (NET_Server.Client client in scr_netServer.Clients())
@@ -400,6 +403,14 @@ public class GM_SvWorld : GM_World {
                 {
                     entity.scr_moveable.rpos = msg.rpos;
                 }
+            }
+
+            // pick up powerups
+            Parcel cell = Static.rink.GetCell(entity.scr_moveable.rpos);
+            if (cell.hasPowerup()) {
+                client.player.powerupCollected(cell.destroyPowerup(false));
+                DestroyEntity(cell.svid);
+                cell.svid = 0;
             }
 
             if (client.isDead)
