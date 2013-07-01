@@ -185,12 +185,18 @@ public class Explosion : MonoBehaviour
 								explosionField.getCell().destroyPowerup(true);
 							}
 						}
-
-						if (explodingCell.getType() == 1) {
+						
+						GameObject obj;
+						switch (explodingCell.getType()) {
+						case 0:
+							// Inaktiv derzeit und wird wohl nicht implementiert
+							// explodingCell.decreaseFloor();
+							break;
+						case 1:
 							explodingCell.setType(0);
 							
 							// Kiste explodieren lassen
-							GameObject obj = GameObject.Instantiate(explodingCell.getMeshManipulator().getBoxObject(), explodingCell.getCenterPos(), Quaternion.identity) as GameObject;
+							obj = GameObject.Instantiate(explodingCell.getMeshManipulator().getBoxObject(), explodingCell.getCenterPos(), Quaternion.identity) as GameObject;
 							SplitMeshIntoTriangles.createMeshExplosion(obj, cell.getCenterPos(), 1);
 							
 							int random = new System.Random().Next(0, (int) 100/DROPCHANCE);
@@ -198,17 +204,17 @@ public class Explosion : MonoBehaviour
 							if (random == 0) { // Random().Next(0, 4) € {0, 1, 2, 3}
 								PowerupPool.setPowerup(explodingCell);
 							}
-						}
-						if (explodingCell.getType() == 2) {
-							
+							break;
+						case 2:
 							// Steinblock explodieren lassen
-							GameObject obj = GameObject.Instantiate(Static.stoneCube2Prefab, explodingCell.getCenterPos(), Quaternion.identity) as GameObject;
+							obj = GameObject.Instantiate(Static.stoneCube2Prefab, explodingCell.getCenterPos(), Quaternion.identity) as GameObject;
 							SplitMeshIntoTriangles.createMeshExplosion(obj, cell.getCenterPos(), 1);
 							
 							if (explodingCell.getHeight() == 1f) {
 								explodingCell.setType(0);
 								PowerupPool.setPowerup(explodingCell);
 							}
+							break;
 						}
 
 						explodingCell.getMeshManipulator().updateCoordinates();

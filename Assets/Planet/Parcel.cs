@@ -79,6 +79,21 @@ namespace AssemblyCSharp
 				height = 1f;
 		}
 		
+		// Inaktiv derzeit und wird wohl nicht implementiert
+		public void decreaseFloor() {
+			int MAXDEPTH = 4;
+			if (height > (1.0f - STEP*(MAXDEPTH-1) - 0.0001f)) { // also 1.01 oder höher
+				height -= STEP;
+				for (int i = 0; i < 5; i++) {
+					if (i < 2 || i > 3)
+					getMeshManipulator().updateCoordinates();
+					//Debug.Log("MeshManipulator says: " + getMeshManipulator().vertexPosition[i].x);
+				}
+			} else if (height > (1f - STEP*MAXDEPTH))
+				height = 1f - STEP*MAXDEPTH;
+
+		}
+		
 		public void setIdentity(int lpos, int bpos) {
 			this.lpos = lpos;
 			this.bpos = bpos;
