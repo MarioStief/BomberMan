@@ -37,6 +37,9 @@ public class InputHandler : MonoBehaviour {
 	
 	private float createTime;
 	
+	float verticalMovement;
+	float horizontalMovement;
+	
 	void Awake() {
 		//playerHandler = GameObject.Find("Player");
 		playerHandler = GameObject.FindGameObjectWithTag("Player");
@@ -50,11 +53,15 @@ public class InputHandler : MonoBehaviour {
 	
 	// Use this for initialization
 	void Start () {
+		
 		if (!networkView.isMine) {
 			return;
 		}
 		
 		camera = GameObject.FindGameObjectWithTag("MainCamera");
+		
+		// set my color
+		renderer.material.color = Menu.getPlayerColor();
 		
 		Static.sphereHandler.move(0.000001f); // CK, fixed color on startup :)
 		moveAlongEquator(0.000001f);
@@ -124,7 +131,10 @@ public class InputHandler : MonoBehaviour {
 	}
 	
 	IEnumerator deadPlayer() {
-		while (true) {
+		float createTime = Time.time;
+		float elapsedTime = 0.0f;
+		while (elapsedTime < 10f) {
+			float multiplicator = elapsedTime + 10f; // 10 <= multiplicator <= 20
 			float x = transform.position.x;
 			float y = transform.position.y;
 			float z = transform.position.z;
@@ -132,12 +142,39 @@ public class InputHandler : MonoBehaviour {
 			Vector3 position = new Vector3(Random.Range(x-0.1f, x+0.1f), Random.Range(y-0.1f, y+0.1f), Random.Range(z-0.1f, z+0.1f));
 			GameObject explosion = GameObject.Instantiate(Static.explosionPrefab, position, Quaternion.identity) as GameObject;
 			Detonator detonator = explosion.GetComponent<Detonator>();
-			detonator.setSize(Random.Range(500f, 1000f));
+			detonator.setSize(Random.Range(50f * multiplicator, 100f * multiplicator));
 			detonator.setDuration(5f);
 			float distance = Vector3.Distance (GameObject.Find("Player").transform.position, position);
-			detonator.GetComponent<AudioSource>().volume /= 20*distance;
+			detonator.GetComponent<AudioSource>().volume /= distance * multiplicator;
 			detonator.GetComponent<AudioSource>().Play();
 			detonator.Explode();
+			float scale = 1f - ((multiplicator - 10f) / 10f); // Range: 1 - 0
+			//Debug.Log ("---> " + scale);
+			playerHandler.transform.localScale *= scale;
+			elapsedTime = Time.time - createTime;
+		}
+		playerHandler.transform.localScale = Vector3.zero;
+		playerHandler.GetComponent<CapsuleCollider>().enabled = false;
+		while (Player.isDead()) {
+			do {			
+				switch (new System.Random().Next(0, 2)) {
+				case 0:
+					if (verticalMovement != 0f) {
+						verticalMovement = 0f;
+					} else {
+						verticalMovement = (new System.Random().Next(0, 2) == 0 ? 0.1f : -0.1f);
+					}
+					break;
+				case 1:
+					if (horizontalMovement != 0f) {
+						horizontalMovement = 0f;
+					} else {
+						horizontalMovement = (new System.Random().Next(0, 2) == 0 ? 0.1f : -0.1f);
+					}
+					break;
+				}
+			} while (verticalMovement == 0f && horizontalMovement == 0f);
+			yield return new WaitForSeconds(Random.value*5 + 5f);
 		}
 	}
 	
@@ -189,26 +226,44 @@ public class InputHandler : MonoBehaviour {
 						// Um eine Bombe eines anderen Spielers auf einer Zelle zu spawnen:
 						// Explosion.createExplosionOnCell(Parcel, flamePower, true);
 						// Powerup-ToDos: flameMight, flameSpeed
+						if (Player.getTriggerbomb()) {
+							Player.addTriggerBomb(currCell);
+						}
 					}
 				}
 			}
+			
+			if ((Input.GetKeyDown(KeyCode.LeftShift)) || (Input.GetKeyDown(KeyCode.RightShift))) {
+				foreach (Parcel triggerBomb in Player.getTriggerBombs()) {
+					triggerBomb.getExplosion().startExplosion();
+					Debug.Log ("triggering " + triggerBomb.getCoordinates());
+				}
+				Player.getTriggerBombs().Clear();
+			}
+
 			
 			if ((Time.time - createTime) > 1.0f) {
 				createTime = Time.time;
 				Player.increaseHP();
 			}
+		} else {
+			moveCharacter();
 		}
 	}
 	
 	private void moveCharacter(){
 		
-		float verticalMovement = Input.GetAxis("Vertical");
-		float vm = Player.getSpeed() * verticalMovement * Time.deltaTime;
+		float verticalMovement;
+		if (Player.isDead()) {
+			verticalMovement = this.verticalMovement;
+		} else {
+			verticalMovement = Input.GetAxis("Vertical");
+		}
 		if ( verticalMovement != 0) {
-			
+			float m = Player.getSpeed() * verticalMovement * Time.deltaTime;
 			if ( vDirection == 0) {
 				
-				vDirection = (int)Mathf.Sign(vm);
+				vDirection = (int)Mathf.Sign(m);
 				
 				if ( vDirection == 1){
 					verticalHelper -= 	Mathf.PI/(2*(n_L-1));
@@ -218,40 +273,45 @@ public class InputHandler : MonoBehaviour {
 			}
 		
 			float vAngle = verticalAngle;
-			verticalAngle += vm;
+			verticalAngle += m;
 
-			vm = determineVerticalParcelPosition( verticalMovement, vm);
+			if (!Player.isDead()) {
+				m = determineVerticalParcelPosition( verticalMovement, m);
+			}
 			
-			Static.sphereHandler.move(vm);
-			if ( vm == 0) verticalAngle = vAngle;
+			Static.sphereHandler.move(m);
+			if ( m == 0) verticalAngle = vAngle;
 		}
 		
-		
-		
-		float horizontalMovement = Input.GetAxis("Horizontal") * Player.getSpeed();
-		float hm = 0f;
+		float horizontalMovement;
+		if (Player.isDead()) {
+			horizontalMovement = this.horizontalMovement;
+		} else {
+			horizontalMovement = Input.GetAxis("Horizontal") * Player.getSpeed();
+		}
 		if ( horizontalMovement != 0){
-			hm = horizontalMovement*Time.deltaTime*Player.getSpeed()*(-2);
+			float m = horizontalMovement*Time.deltaTime*Player.getSpeed()*(-2);
 			if ( hDirection == 0) {
 				
-				hDirection = (int)Mathf.Sign(hm);
+				hDirection = (int)Mathf.Sign(m);
 				
 				if ( hDirection == 1){
 					horizontalHelper += 	Mathf.PI/(n_B);
 				} else{
 					horizontalHelper -= 	Mathf.PI/(n_B);
 				}
-				horizontalHelper += hm;
+				horizontalHelper += m;
 			}
 		 
 			float hAngle = horizontalAngle;
-			horizontalAngle += hm;
+			horizontalAngle += m;
 			
-
-			hm = determineHorizontalParcelPosition( horizontalMovement, hm);
+			if (!Player.isDead()) {
+				m = determineHorizontalParcelPosition( horizontalMovement, m);
+			}
 			
-			moveAlongEquator( hm);
-			if ( hm == 0) horizontalAngle = hAngle;
+			moveAlongEquator(m);
+			if ( m == 0) horizontalAngle = hAngle;
 			//rink.renderAll();	// 4Debug !!! Achtung: Muss im fertigen Spiel raus. Zieht locker 20 FPS!
 		}
 		
@@ -259,37 +319,47 @@ public class InputHandler : MonoBehaviour {
 
 			// Spielerrotation
 			int GAP = 2;
-			if (vm > 0) {
+			if (verticalMovement > 0) {
 				// nach oben schauen
-				if (hm > 0) {
+				if (horizontalMovement < 0) {
 					// nach links oben schauen
 					lookDirection = currCell.getSurroundingCell(GAP,GAP).getCenterPos();
 				} else if (hm < 0) {
+					//currCell.getSurroundingCell(GAP,GAP).colorCell(Color.magenta);
+				} else if (horizontalMovement > 0) {
 					// nach rechts oben schauen
 					lookDirection = currCell.getSurroundingCell(GAP,-GAP).getCenterPos();
+					//currCell.getSurroundingCell(GAP,-GAP).colorCell(Color.magenta);
 				} else {
 					// nur nach oben schauen
 					lookDirection = currCell.getSurroundingCell(GAP,0).getCenterPos();
+					//currCell.getSurroundingCell(GAP,0).colorCell(Color.magenta);
 				}
-			} else if (vm < 0) {
+			} else if (verticalMovement < 0) {
 				// nach unten schauen
-				if (hm > 0) {
+				if (horizontalMovement < 0) {
 					// nach links unten schauen
 					lookDirection = currCell.getSurroundingCell(-GAP,GAP).getCenterPos();
 				} else if (hm < 0) {
+					//currCell.getSurroundingCell(-GAP,GAP).colorCell(Color.magenta);
+				} else if (horizontalMovement > 0) {
 					// nach rechts unten schauen
 					lookDirection = currCell.getSurroundingCell(-GAP,-GAP).getCenterPos();
+					//currCell.getSurroundingCell(-GAP,-GAP).colorCell(Color.magenta);
 				} else {
 					// nur nach unten schauen
 					lookDirection = currCell.getSurroundingCell(-GAP,0).getCenterPos();
+					//currCell.getSurroundingCell(-GAP,0).colorCell(Color.magenta);
 				}
 			} else {
-				if (hm > 0) {
+				if (horizontalMovement < 0) {
 					// nur nach links schauen
 					lookDirection = currCell.getSurroundingCell(0,GAP).getCenterPos();
+					//currCell.getSurroundingCell(0,GAP).colorCell(Color.magenta);
 				} else {
 					// nur nach rechts schauen
 					lookDirection = currCell.getSurroundingCell(0,-GAP).getCenterPos();
+					//currCell.getSurroundingCell(0,-GAP).colorCell(Color.magenta);
 				}
 			}
 		

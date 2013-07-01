@@ -79,6 +79,21 @@ namespace AssemblyCSharp
 				height = 1f;
 		}
 		
+		// Inaktiv derzeit und wird wohl nicht implementiert
+		public void decreaseFloor() {
+			int MAXDEPTH = 4;
+			if (height > (1.0f - STEP*(MAXDEPTH-1) - 0.0001f)) { // also 1.01 oder höher
+				height -= STEP;
+				for (int i = 0; i < 5; i++) {
+					if (i < 2 || i > 3)
+					getMeshManipulator().updateCoordinates();
+					//Debug.Log("MeshManipulator says: " + getMeshManipulator().vertexPosition[i].x);
+				}
+			} else if (height > (1f - STEP*MAXDEPTH))
+				height = 1f - STEP*MAXDEPTH;
+
+		}
+		
 		public void setIdentity(int lpos, int bpos) {
 			this.lpos = lpos;
 			this.bpos = bpos;
@@ -132,7 +147,8 @@ namespace AssemblyCSharp
 		}
 		
 		public void destroyGameObject(){
-			GameObject.Destroy(obj);
+			//GameObject.Destroy(obj);
+			SplitMeshIntoTriangles.createMeshExplosion(obj, getCenterPos(), Preferences.getExplosionDetail()); // Zerbersten lassen
 			obj = null;
 		}
 		
@@ -161,7 +177,7 @@ namespace AssemblyCSharp
 			center = v;	
 		}
 		
-		public void addPowerup(Powerup powerup, GameObject prefab) {
+		public void addPowerup(Powerup powerup, UnityEngine.Object prefab) {
 			this.obj = GameObject.Instantiate(prefab, getCenterPos(), Quaternion.identity) as GameObject;
 			this.powerupType = powerup.getType();
 			powerupExplodingValue = powerup.getValue();
@@ -169,8 +185,9 @@ namespace AssemblyCSharp
 		}
 
 		public PowerupType destroyPowerup(bool shatter) {
-			if (shatter && Preferences.getExplodingPowerups() == false) { // if shatter
-				SplitMeshIntoTriangles.createMeshExplosion(obj); // Zerbersten lassen
+			if (shatter) { // if shatter
+			//if (shatter && Preferences.getExplodingPowerups() == false) { // if shatter
+				SplitMeshIntoTriangles.createMeshExplosion(obj, getCenterPos(), Preferences.getExplosionDetail()); // Zerbersten lassen
 			} else {
 				GameObject.Destroy(obj);
 			}

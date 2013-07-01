@@ -174,6 +174,23 @@ public class Detonator : MonoBehaviour {
 		Detonator._baseDuration = duration;
 	}
 	
+	public void addShockWave() {
+		if (!_shockwave && autoCreateShockwave)
+		{
+			_shockwave = gameObject.AddComponent("DetonatorShockwave") as DetonatorShockwave;
+			_shockwave.Reset();
+		}
+		
+        if (!_heatwave && autoCreateHeatwave && SystemInfo.supportsImageEffects)
+		{
+			_heatwave = gameObject.AddComponent("DetonatorHeatwave") as DetonatorHeatwave;
+			_heatwave.Reset();
+		}
+		
+		components = this.GetComponents(typeof(DetonatorComponent));
+
+	}
+	
 	void Awake() 
 	{
 		FillDefaultMaterials();
@@ -233,12 +250,6 @@ public class Detonator : MonoBehaviour {
 			_sparks.Reset();
 		}
 		
-		if (!_shockwave && autoCreateShockwave)
-		{
-			_shockwave = gameObject.AddComponent("DetonatorShockwave") as DetonatorShockwave;
-			_shockwave.Reset();
-		}
-		
 		if (!_glow && autoCreateGlow)
 		{
 			_glow = gameObject.AddComponent("DetonatorGlow") as DetonatorGlow;
@@ -255,12 +266,6 @@ public class Detonator : MonoBehaviour {
 		{
 			_force = gameObject.AddComponent("DetonatorForce") as DetonatorForce;
 			_force.Reset();
-		}
-
-        if (!_heatwave && autoCreateHeatwave && SystemInfo.supportsImageEffects)
-		{
-			_heatwave = gameObject.AddComponent("DetonatorHeatwave") as DetonatorHeatwave;
-			_heatwave.Reset();
 		}
 		
 		components = this.GetComponents(typeof(DetonatorComponent));
