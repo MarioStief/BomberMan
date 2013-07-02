@@ -33,11 +33,9 @@ public class Menu : MonoBehaviour {
 	public void Awake() {
 	    if (!created) {
 			DontDestroyOnLoad(transform.gameObject);
-			DontDestroyOnLoad(colorPicker.transform.gameObject);
 	        created = true;
 	    } else {
 	        Destroy(transform.gameObject);
-			Destroy(colorPicker.transform.gameObject);
 	    } 
 	}
 	
