@@ -39,6 +39,8 @@ namespace AssemblyCSharp
 					pool.Add(new Powerup(PowerupType.GOLDEN_FLAME));
 				for (int j = 0; j < 1; j++)
 					pool.Add(new Powerup(PowerupType.SUPERBOMB));
+				for (int j = 0; j < 1; j++)
+					pool.Add(new Powerup(PowerupType.TRIGGERBOMB));
 				if (negative) {
 					for (int j = 0; j < 2; j++)
 						pool.Add(new Powerup(PowerupType.BOMB_DOWN));
@@ -74,44 +76,44 @@ namespace AssemblyCSharp
 		
 		public static PowerupType setPowerup(Parcel cell)
 		{
-			// NNNNNNNNNNNNNNNEEEEEEEEEEEEEEEEEWWWWWWWWWWWWWWWW
 			Vector3 cellCenter = Vector3.zero; //cell.getCenterPoint();
-			//Vector3 cellNormal = cell.getNormal(); // wird benötigt, um das Powerup richtig zu drehen
 			
 			Powerup p = pool[0];
 			PowerupType type = p.getType();
 
 			// DEBUG
-			Debug.Log (p.getType().ToString());
+			Debug.Log (p.getType().ToString() + " spotted");
 
 
 			pool.RemoveAt(0);
 			if (pool.Count == 0)
 				createPool(1);
 			
-			GameObject powerup = null;
+			UnityEngine.Object powerup = null;
 
-				 if	(p.getType() == PowerupType.BOMB_UP)
-					powerup = Static.bombUpPowerupPrefab; 
+			if	(p.getType() == PowerupType.BOMB_UP)
+				powerup = Static.powerupPrefab;
 			else if	(p.getType() == PowerupType.BOMB_DOWN)
-					powerup = Static.bombDownPowerupPrefab; 
+					powerup = Static.powerdownPrefab; 
 			else if (p.getType() == PowerupType.FLAME_UP)
-					powerup = Static.flameUpPowerupPrefab; 
+					powerup = Static.powerupPrefab; 
 			else if (p.getType() == PowerupType.FLAME_DOWN)
-					powerup = Static.flameDownPowerupPrefab; 
+					powerup = Static.powerdownPrefab; 
 			else if (p.getType() == PowerupType.PLAYER_SPEED_UP)
-					powerup = Static.playerSpeedUpPowerupPrefab; 
+					powerup = Static.powerupPrefab; 
 			else if (p.getType() == PowerupType.PLAYER_SPEED_DOWN)
-					powerup = Static.playerSpeedDownPowerupPrefab; 
+					powerup = Static.powerdownPrefab; 
 			else if (p.getType() == PowerupType.DELAY_SPEED_UP)
-					powerup = Static.playerSpeedUpPowerupPrefab; 
+					powerup = Static.powerupPrefab; 
 			else if (p.getType() == PowerupType.DELAY_SPEED_DOWN)
-					powerup = Static.playerSpeedDownPowerupPrefab; 
+					powerup = Static.powerdownPrefab; 
 			else if (p.getType() == PowerupType.GOLDEN_FLAME)
-					powerup = Static.goldenFlamePowerupPrefab; 
+					powerup = Static.superPowerupPrefab;
 			else if (p.getType() == PowerupType.SUPERBOMB)
-					powerup = Static.superbombPowerupPrefab; 
-
+					powerup = Static.superPowerupPrefab; 
+			else if (p.getType() == PowerupType.TRIGGERBOMB)
+					powerup = Static.superPowerupPrefab; 
+					
 			cell.addPowerup(new Powerup(type), powerup);
 
             return type;
@@ -125,8 +127,8 @@ namespace AssemblyCSharp
 				string newString = item.getType().ToString();
 			    builder.Append(newString).Append(" | ");
 			}
-			string result = "New Pool: " + builder.ToString();
-			//Debug.Log(result);
+			string result = "New Powerup Pool: " + builder.ToString();
+			Debug.Log(result);
 		}
 		
 		public static void setDestroyable(bool d) {

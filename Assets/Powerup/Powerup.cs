@@ -37,6 +37,8 @@ namespace AssemblyCSharp
 					value = 10;
 			else if (type == PowerupType.SUPERBOMB)
 					value = 10;
+			else if (type == PowerupType.TRIGGERBOMB)
+					value = 10;
 			return value;
 		}
 	}

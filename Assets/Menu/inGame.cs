@@ -3,20 +3,18 @@ using System.Collections;
 
 public class inGame : MonoBehaviour {
 	
-	// Use this for initialization
 	void Start () {
-	
 	}
 	
-	// Update is called once per frame
 	void Update () {
-		if (Input.GetKeyDown(KeyCode.Escape) && MenuState.instance.Update() == GM_State.UpdateRet.NEXT_STATE)
+		if (Input.GetKeyDown(KeyCode.Escape) && Application.loadedLevel != 0) //MenuState.instance.Update() == GM_State.UpdateRet.NEXT_STATE
 			Menu.showGUI = !Menu.showGUI;
 	}
 	
 	bool showSure = false;
 	void OnGUI () {
-		if (MenuState.instance.Update() == GM_State.UpdateRet.CONTINUE) // we are not ingame!
+		//if (MenuState.instance.Update() == GM_State.UpdateRet.CONTINUE) // we are not ingame!
+		if (Application.loadedLevel == 0)
 			return;
 		
 		if (GUI.Button(new Rect(10,10,80,20), "MENU")) {

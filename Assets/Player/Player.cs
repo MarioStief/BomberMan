@@ -15,9 +15,10 @@ namespace AssemblyCSharp
 		private const float MAXSPEED = 0.8f;
 		private const float MINDELAY = 0.04f;
 		private const float MAXDELAY = 0.28f;
-		private const int MAXFLAMEPOWER = 10;
+		public const int MAXFLAMEPOWER = 10;
 		private const int MAXHP = 100;
-		private bool SUPERBOMB = false;
+		private static bool SUPERBOMB = false;
+		private static bool TRIGGERBOMB = false;
 		
 		private int bombs = 1;
 		private int bombsActive = 0;
@@ -28,7 +29,16 @@ namespace AssemblyCSharp
 		
 		private bool dead = false;
 		
-		public Player() {
+		public Player() { }
+
+		private static List<Parcel> triggerBombs = new List<Parcel>();
+		
+		public static void addTriggerBomb(Parcel cell) {
+			triggerBombs.Add(cell);
+		}
+		
+		public static List<Parcel> getTriggerBombs() {
+			return triggerBombs;
 		}
 		
 		public void powerupCollected(PowerupType type)
@@ -60,6 +70,8 @@ namespace AssemblyCSharp
 					flamePower = MAXFLAMEPOWER;
 			} else if (type == PowerupType.SUPERBOMB) {
 					SUPERBOMB = true;
+			} else if (type == PowerupType.TRIGGERBOMB) {
+					TRIGGERBOMB = true;
 			}
 			Debug.Log("bombs: " + bombs + ", flamePower: " + flamePower + ", speed: " + speed*1000 + " ms, delay: " + delay*1000 + " ms");
 		}
@@ -93,10 +105,15 @@ namespace AssemblyCSharp
 		
 		public void removeBomb() {
 			bombsActive--;
+			//Debug.Log ("Bombs: " + bombsActive + "/" + bombs);
 		}
 
 		public int getFlamePower() {
 			return flamePower;
+		}
+
+		public int getBombs() {
+			return bombs;
 		}
 
 		public float getSpeed() {
@@ -118,32 +135,37 @@ namespace AssemblyCSharp
 				}
 				parcelPool = shuffleList(parcelPool);
 				if (SUPERBOMB) {
-					parcelPool[0].addPowerup(new Powerup(PowerupType.SUPERBOMB), Static.superbombPowerupPrefab);
+					parcelPool[0].addPowerup(new Powerup(PowerupType.SUPERBOMB), Static.superPowerupPrefab);
 					parcelPool.RemoveAt(0);
 					SUPERBOMB = false;
 				}
+				if (TRIGGERBOMB) {
+					parcelPool[0].addPowerup(new Powerup(PowerupType.TRIGGERBOMB), Static.superPowerupPrefab);
+					parcelPool.RemoveAt(0);
+					TRIGGERBOMB = false;
+				}
 				if (flamePower == MAXFLAMEPOWER && parcelPool.Count > 0) {
-					parcelPool[0].addPowerup(new Powerup(PowerupType.GOLDEN_FLAME), Static.goldenFlamePowerupPrefab);
+					parcelPool[0].addPowerup(new Powerup(PowerupType.GOLDEN_FLAME), Static.superPowerupPrefab);
 					parcelPool.RemoveAt(0);
 					bombs = 1;
 				}
 				while (bombs > 1 && parcelPool.Count > 0) {
-					parcelPool[0].addPowerup(new Powerup(PowerupType.BOMB_UP), Static.bombUpPowerupPrefab);
+					parcelPool[0].addPowerup(new Powerup(PowerupType.BOMB_UP), Static.powerupPrefab);
 					parcelPool.RemoveAt(0);
 					bombs--;
 				}
 				while (flamePower > 1 && parcelPool.Count > 0) {
-					parcelPool[0].addPowerup(new Powerup(PowerupType.FLAME_UP), Static.flameUpPowerupPrefab);
+					parcelPool[0].addPowerup(new Powerup(PowerupType.FLAME_UP), Static.powerupPrefab);
 					parcelPool.RemoveAt(0);
 					flamePower--;
 				}
 				while (speed > 0.4f && parcelPool.Count > 0) {
-					parcelPool[0].addPowerup(new Powerup(PowerupType.PLAYER_SPEED_UP), Static.playerSpeedUpPowerupPrefab);
+					parcelPool[0].addPowerup(new Powerup(PowerupType.PLAYER_SPEED_UP), Static.powerupPrefab);
 					parcelPool.RemoveAt(0);
 					speed -= 0.05f;
 				}
 				while (delay < 0.2f && parcelPool.Count > 0) {
-					parcelPool[0].addPowerup(new Powerup(PowerupType.DELAY_SPEED_UP), Static.delaySpeedUpPowerupPrefab);
+					parcelPool[0].addPowerup(new Powerup(PowerupType.DELAY_SPEED_UP), Static.powerupPrefab);
 					parcelPool.RemoveAt(0);
 					delay += 0.02f;
 				}
@@ -178,14 +200,16 @@ namespace AssemblyCSharp
 		
 		public void setCurrentParcel(Parcel parcel){
 			
+			/*
 			if ( currentCell != null){
 				currentCell.hightlightColor(false);	
 			}
+			*/
 			
 			currentCell = parcel;	
 			
 			//currentCell.setColor(Color.cyan);
-			currentCell.hightlightColor(true);
+			//currentCell.hightlightColor(true);
 		}
 		
 		public Parcel getCurrentParcel(){
@@ -210,7 +234,11 @@ namespace AssemblyCSharp
 		public bool getSuperbomb() {
 			return SUPERBOMB;
 		}
-		
+
+		public bool getTriggerbomb() {
+			return TRIGGERBOMB;
+		}
+
 		public float getDelay() {
 			return delay;
 		}

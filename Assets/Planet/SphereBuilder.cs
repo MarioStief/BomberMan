@@ -53,6 +53,11 @@ public class SphereBuilder : MonoBehaviour {
 		
 		// Gebe den Würfeln korrekte Höhen gemäß der Werte aus gameArea
 		gameArea.updateHeight();
+		
+		// instantiate the player
+        Object playerPrefab = Resources.Load("Prefabs/Actor");
+		Vector3 pos = new Vector3(-1.41561e-07f, 2.080631f, 0.01059199f);
+		Network.Instantiate(playerPrefab, pos, transform.rotation, 1);
 	}
 	
 	private void tesselateSphere(){

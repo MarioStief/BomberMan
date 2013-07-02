@@ -40,9 +40,10 @@ public class GM_ClWorld : GM_World {
             entity.obj_ghost.renderer.enabled = !entity.obj_ghost.renderer.enabled;
     }
 
-    private GameObject PowerupPrefabFromType(PowerupType puType)
+    private Object PowerupPrefabFromType(PowerupType puType)
     {
-        GameObject powerup = null;
+        Object powerup = null;
+        /*
         if (puType == PowerupType.BOMB_UP)
             powerup = Static.bombUpPowerupPrefab;
         else if (puType == PowerupType.BOMB_DOWN)
@@ -64,9 +65,10 @@ public class GM_ClWorld : GM_World {
         else if (puType == PowerupType.SUPERBOMB)
             powerup = Static.superbombPowerupPrefab;
         if (null == powerup) Debug.Log("GM_ClWorld: warning, invalid powerup mesh!");
+         */
 
         // cj: okay, use the same mesh for testing purposes...
-        powerup = Static.bombDownPowerupPrefab;
+        powerup = Static.powerupPrefab;
 
         return powerup;
     }

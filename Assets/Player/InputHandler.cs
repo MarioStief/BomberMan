@@ -24,13 +24,15 @@ public class InputHandler : MonoBehaviour {
 	private float oldVerticalAngle;
 	private float horizontalAngle;
 	
+	private static float vertAngle; // statische Kopie von verticalAngle
+	
 	private float verticalHelper;
 	private float horizontalHelper;
 	
 	private int vDirection;			// Bewegungsrichtung
 	private int hDirection;
 	
-	public GameObject camera;
+	private GameObject camera;
 	private Quaternion cameraRotation;
 	
 	private Parcel currCell;
@@ -40,9 +42,19 @@ public class InputHandler : MonoBehaviour {
     private Player player = null;
 
     private NET_Client scr_netClient = null;
-
+	
+	float verticalMovement;
+	float horizontalMovement;
+	
 	void Awake() {
-		playerHandler = GameObject.Find("Player");
+		//playerHandler = GameObject.Find("Player");
+		playerHandler = GameObject.FindGameObjectWithTag("Player");
+	}
+	
+	void OnNetworkInstantiate(NetworkMessageInfo info) {
+		if (info.sender != Network.player) {
+		}
+		Debug.Log("New object instantiated by " + info.sender);
 	}
 
     public void SetPlayer(Player player) 
@@ -58,11 +70,18 @@ public class InputHandler : MonoBehaviour {
 	
 	// Use this for initialization
 	void Start () {
-        camera = GameObject.FindGameObjectWithTag("MainCamera");
+		camera = GameObject.FindGameObjectWithTag("MainCamera");
 
         GameObject obj_gameController = GameObject.FindGameObjectWithTag("GameController");
         scr_netClient = obj_gameController.GetComponent<NET_Client>();
 
+		if (!networkView.isMine) {
+			return;
+		}
+		
+		// set my color
+		renderer.material.color = Menu.getPlayerColor();
+		
 		Static.sphereHandler.move(0.000001f); // CK, fixed color on startup :)
 		moveAlongEquator(0.000001f);
 		
@@ -94,8 +113,69 @@ public class InputHandler : MonoBehaviour {
 		transform.LookAt(currCell.up.getCenterPos());
 	}
 	
+	void OnSerializeNetworkView(BitStream stream, NetworkMessageInfo info) {
+		if (stream.isWriting)
+		{
+			// calculate my position on sphere
+			/*Vector3 p = new Vector3(
+				transform.position.x,
+				Mathf.Cos(verticalAngle) * transform.position.y - Mathf.Sin(verticalAngle) * transform.position.z,
+				Mathf.Sin(verticalAngle) * transform.position.y + Mathf.Cos(verticalAngle) * transform.position.z
+			);*/
+			Vector3 p = transform.position;
+			stream.Serialize(ref p);
+			
+			float va = verticalAngle;
+			stream.Serialize(ref va);
+			float ha = horizontalAngle;
+			stream.Serialize(ref ha);
+			
+			Quaternion r = transform.rotation;
+			stream.Serialize(ref r);
+		}
+		else
+		{
+			Vector3 fp = Vector3.zero;
+			stream.Serialize(ref fp);
+			
+			float fva = 0f;
+			stream.Serialize(ref fva);
+			
+			float fha = 0f;
+			stream.Serialize(ref fha);
+			
+			// turn the player to our zero
+			fp = new Vector3(
+				Mathf.Cos(-fha) * fp.x - Mathf.Sin(-fha) * fp.y,
+				Mathf.Sin(-fha) * fp.x + Mathf.Cos(-fha) * fp.y,
+				fp.z
+			);
+			// now turn him up/down
+			fp = new Vector3(
+				fp.x,
+				Mathf.Cos(fva-verticalAngle) * fp.y - Mathf.Sin(fva-verticalAngle) * fp.z,
+				Mathf.Sin(fva-verticalAngle) * fp.y + Mathf.Cos(fva-verticalAngle) * fp.z
+			);
+			// and back
+			transform.position = new Vector3(
+				Mathf.Cos(fha) * fp.x - Mathf.Sin(fha) * fp.y,
+				Mathf.Sin(fha) * fp.x + Mathf.Cos(fha) * fp.y,
+				fp.z
+			);
+			
+			
+			Quaternion fr = Quaternion.Euler(new Vector3(0, 0, 0));
+			stream.Serialize(ref fr);
+			transform.rotation = fr;
+		}
+	
+	}
+	
 	IEnumerator deadPlayer() {
-		while (true) {
+		float createTime = Time.time;
+		float elapsedTime = 0.0f;
+		while (elapsedTime < 10f) {
+			float multiplicator = elapsedTime + 10f; // 10 <= multiplicator <= 20
 			float x = transform.position.x;
 			float y = transform.position.y;
 			float z = transform.position.z;
@@ -103,20 +183,90 @@ public class InputHandler : MonoBehaviour {
 			Vector3 position = new Vector3(Random.Range(x-0.1f, x+0.1f), Random.Range(y-0.1f, y+0.1f), Random.Range(z-0.1f, z+0.1f));
 			GameObject explosion = GameObject.Instantiate(Static.explosionPrefab, position, Quaternion.identity) as GameObject;
 			Detonator detonator = explosion.GetComponent<Detonator>();
-			detonator.setSize(Random.Range(500f, 1000f));
+			detonator.setSize(Random.Range(50f * multiplicator, 100f * multiplicator));
 			detonator.setDuration(5f);
-			float distance = Vector3.Distance (GameObject.Find("Player").transform.position, position);
-			detonator.GetComponent<AudioSource>().volume /= 20*distance;
+			float distance = Vector3.Distance (GameObject.FindGameObjectWithTag("Player").transform.position, position);
+			detonator.GetComponent<AudioSource>().volume /= distance * multiplicator;
 			detonator.GetComponent<AudioSource>().Play();
 			detonator.Explode();
+			float scale = 1f - ((multiplicator - 10f) / 10f); // Range: 1 - 0
+			//Debug.Log ("---> " + scale);
+			playerHandler.transform.localScale *= scale;
+			elapsedTime = Time.time - createTime;
+		}
+		playerHandler.transform.localScale = Vector3.zero;
+		playerHandler.GetComponent<CapsuleCollider>().enabled = false;
+		while (Static.player.isDead()) {
+			do {			
+				switch (new System.Random().Next(0, 2)) {
+				case 0:
+					if (verticalMovement != 0f) {
+						verticalMovement = 0f;
+					} else {
+						verticalMovement = (new System.Random().Next(0, 2) == 0 ? 0.1f : -0.1f);
+					}
+					break;
+				case 1:
+					if (horizontalMovement != 0f) {
+						horizontalMovement = 0f;
+					} else {
+						horizontalMovement = (new System.Random().Next(0, 2) == 0 ? 0.1f : -0.1f);
+					}
+					break;
+				}
+			} while (verticalMovement == 0f && horizontalMovement == 0f);
+			yield return new WaitForSeconds(Random.value*5 + 5f);
 		}
 	}
+
+    void UpdateFoe()
+    {
+        // Gegner drehen mit dem Planeten..!
+        if (!networkView.isMine)
+        {
+
+            float verticalMovement = Input.GetAxis("Vertical");
+            float vm = Static.player.getSpeed() * verticalMovement * Time.deltaTime;
+            vm = determineVerticalParcelPosition(verticalMovement, vm);
+            verticalAngle += vm;
+
+            horizontalMovement = Input.GetAxis("Horizontal") * Static.player.getSpeed();
+            float m = horizontalMovement * Time.deltaTime * Static.player.getSpeed() * (-2);
+            m = determineHorizontalParcelPosition(horizontalMovement, m);
+            horizontalAngle += m;
+
+            if (vertAngle != 0)
+            {
+                // turn the player to our zero
+                Vector3 tmp = new Vector3(
+                    Mathf.Cos(-horizontalAngle) * transform.position.x - Mathf.Sin(-horizontalAngle) * transform.position.y,
+                    Mathf.Sin(-horizontalAngle) * transform.position.x + Mathf.Cos(-horizontalAngle) * transform.position.y,
+                    transform.position.z
+                );
+                // now turn him up/down
+                tmp = new Vector3(
+                    tmp.x,
+                    Mathf.Cos(-vm) * tmp.y - Mathf.Sin(-vm) * tmp.z,
+                    Mathf.Sin(-vm) * tmp.y + Mathf.Cos(-vm) * tmp.z
+                );
+                // and back
+                transform.position = new Vector3(
+                    Mathf.Cos(horizontalAngle) * tmp.x - Mathf.Sin(horizontalAngle) * tmp.y,
+                    Mathf.Sin(horizontalAngle) * tmp.x + Mathf.Cos(horizontalAngle) * tmp.y,
+                    tmp.z
+                );
+            }
+
+            return;
+        }
+    }
 	
-	// Update is called once per frame
+
 	void Update () {
 
-        if (!player.isDead())
-        {
+        UpdateFoe();
+		
+		if (!Static.player.isDead()) {
 			
 			// -----------------------------------------------------------
 			// Bewegung und Bestimmung einer möglichen neuen currentParcel
@@ -140,24 +290,37 @@ public class InputHandler : MonoBehaviour {
                 scr_netClient.Send(plantBombMsg);
 			}
 			
-            /*
+			if ((Input.GetKeyDown(KeyCode.LeftShift)) || (Input.GetKeyDown(KeyCode.RightShift))) {
+				foreach (Parcel triggerBomb in Player.getTriggerBombs()) {
+					triggerBomb.getExplosion().startExplosion();
+					Debug.Log ("triggering " + triggerBomb.getCoordinates());
+				}
+				Player.getTriggerBombs().Clear();
+			}
+
+			
 			if ((Time.time - createTime) > 1.0f) {
 				createTime = Time.time;
                 player.increaseHP();
 			}
-            */
+		} else {
+			moveCharacter();
 		}
 	}
 	
 	private void moveCharacter(){
 		
-		float verticalMovement = Input.GetAxis("Vertical");
-        float vm = player.getSpeed() * verticalMovement * Time.deltaTime;
+		float verticalMovement;
+		if (Static.player.isDead()) {
+			verticalMovement = this.verticalMovement;
+		} else {
+			verticalMovement = Input.GetAxis("Vertical");
+		}
 		if ( verticalMovement != 0) {
-			
+			float m = Static.player.getSpeed() * verticalMovement * Time.deltaTime;
 			if ( vDirection == 0) {
 				
-				vDirection = (int)Mathf.Sign(vm);
+				vDirection = (int)Mathf.Sign(m);
 				
 				if ( vDirection == 1){
 					verticalHelper -= 	Mathf.PI/(2*(n_L-1));
@@ -167,40 +330,46 @@ public class InputHandler : MonoBehaviour {
 			}
 		
 			float vAngle = verticalAngle;
-			verticalAngle += vm;
+			verticalAngle += m;
 
-			vm = determineVerticalParcelPosition( verticalMovement, vm);
+			if (!Static.player.isDead()) {
+				m = determineVerticalParcelPosition( verticalMovement, m);
+			}
 			
-			Static.sphereHandler.move(vm);
-			if ( vm == 0) verticalAngle = vAngle;
+			Static.sphereHandler.move(m);
+			if ( m == 0) verticalAngle = vAngle;
+			vertAngle = m;
 		}
-
-
-
-        float horizontalMovement = Input.GetAxis("Horizontal") * player.getSpeed();
-		float hm = 0f;
+		
+		float horizontalMovement;
+		if (Static.player.isDead()) {
+			horizontalMovement = this.horizontalMovement;
+		} else {
+			horizontalMovement = Input.GetAxis("Horizontal") * Static.player.getSpeed();
+		}
 		if ( horizontalMovement != 0){
-            hm = horizontalMovement * Time.deltaTime * player.getSpeed() * (-2);
+			float m = horizontalMovement*Time.deltaTime*Static.player.getSpeed()*(-2);
 			if ( hDirection == 0) {
 				
-				hDirection = (int)Mathf.Sign(hm);
+				hDirection = (int)Mathf.Sign(m);
 				
 				if ( hDirection == 1){
 					horizontalHelper += 	Mathf.PI/(n_B);
 				} else{
 					horizontalHelper -= 	Mathf.PI/(n_B);
 				}
-				horizontalHelper += hm;
+				horizontalHelper += m;
 			}
 		 
 			float hAngle = horizontalAngle;
-			horizontalAngle += hm;
+			horizontalAngle += m;
 			
-
-			hm = determineHorizontalParcelPosition( horizontalMovement, hm);
+			if (!Static.player.isDead()) {
+				m = determineHorizontalParcelPosition( horizontalMovement, m);
+			}
 			
-			moveAlongEquator( hm);
-			if ( hm == 0) horizontalAngle = hAngle;
+			moveAlongEquator(m);
+			if ( m == 0) horizontalAngle = hAngle;
 			//rink.renderAll();	// 4Debug !!! Achtung: Muss im fertigen Spiel raus. Zieht locker 20 FPS!
 		}
 		
@@ -208,54 +377,45 @@ public class InputHandler : MonoBehaviour {
 
 			// Spielerrotation
 			int GAP = 2;
-			if (vm > 0) {
+			if (verticalMovement > 0) {
 				// nach oben schauen
-				if (hm > 0) {
+				if (horizontalMovement < 0) {
 					// nach links oben schauen
-					//Debug.Log("links oben");
 					lookDirection = currCell.getSurroundingCell(GAP,GAP).getCenterPos();
-					currCell.getSurroundingCell(GAP,GAP).colorCell(Color.magenta);
-				} else if (hm < 0) {
+					//currCell.getSurroundingCell(GAP,GAP).colorCell(Color.magenta);
+				} else if (horizontalMovement > 0) {
 					// nach rechts oben schauen
-					//Debug.Log("rechts oben");
 					lookDirection = currCell.getSurroundingCell(GAP,-GAP).getCenterPos();
-					currCell.getSurroundingCell(GAP,-GAP).colorCell(Color.magenta);
-
+					//currCell.getSurroundingCell(GAP,-GAP).colorCell(Color.magenta);
 				} else {
 					// nur nach oben schauen
-					//Debug.Log("oben");
 					lookDirection = currCell.getSurroundingCell(GAP,0).getCenterPos();
-					currCell.getSurroundingCell(GAP,0).colorCell(Color.magenta);
+					//currCell.getSurroundingCell(GAP,0).colorCell(Color.magenta);
 				}
-			} else if (vm < 0) {
+			} else if (verticalMovement < 0) {
 				// nach unten schauen
-				if (hm > 0) {
+				if (horizontalMovement < 0) {
 					// nach links unten schauen
-					//Debug.Log("links unten");
 					lookDirection = currCell.getSurroundingCell(-GAP,GAP).getCenterPos();
-					currCell.getSurroundingCell(-GAP,GAP).colorCell(Color.magenta);
-				} else if (hm < 0) {
+					//currCell.getSurroundingCell(-GAP,GAP).colorCell(Color.magenta);
+				} else if (horizontalMovement > 0) {
 					// nach rechts unten schauen
-					//Debug.Log("rechts unten");
 					lookDirection = currCell.getSurroundingCell(-GAP,-GAP).getCenterPos();
-					currCell.getSurroundingCell(-GAP,-GAP).colorCell(Color.magenta);
+					//currCell.getSurroundingCell(-GAP,-GAP).colorCell(Color.magenta);
 				} else {
 					// nur nach unten schauen
-					//Debug.Log("unten");
 					lookDirection = currCell.getSurroundingCell(-GAP,0).getCenterPos();
-					currCell.getSurroundingCell(-GAP,0).colorCell(Color.magenta);
+					//currCell.getSurroundingCell(-GAP,0).colorCell(Color.magenta);
 				}
 			} else {
-				if (hm > 0) {
+				if (horizontalMovement < 0) {
 					// nur nach links schauen
-					//Debug.Log("links");
 					lookDirection = currCell.getSurroundingCell(0,GAP).getCenterPos();
-					currCell.getSurroundingCell(0,GAP).colorCell(Color.magenta);
+					//currCell.getSurroundingCell(0,GAP).colorCell(Color.magenta);
 				} else {
 					// nur nach rechts schauen
-					//Debug.Log("rechts");
 					lookDirection = currCell.getSurroundingCell(0,-GAP).getCenterPos();
-					currCell.getSurroundingCell(0,-GAP).colorCell(Color.magenta);
+					//currCell.getSurroundingCell(0,-GAP).colorCell(Color.magenta);
 				}
 			}
 		
@@ -531,7 +691,7 @@ public class InputHandler : MonoBehaviour {
 	}
 	
 	private void moveAlongEquator(float movement){
-	
+		
 		transform.position = new Vector3(Mathf.Cos(movement)* transform.position.x - Mathf.Sin(movement) * transform.position.y,
 										Mathf.Sin(movement) * transform.position.x + Mathf.Cos(movement) * transform.position.y,
 										transform.position.z);
