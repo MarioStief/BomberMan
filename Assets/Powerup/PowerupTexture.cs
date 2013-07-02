@@ -4,9 +4,9 @@ namespace AssemblyCSharp
 {
 	public class PowerupTexture  : MonoBehaviour {
 		
-		public Material powerdownBox;
-		public Material powerupBox;
-		public Material superPowerupBox;
+		public Material powerdown;
+		public Material powerup;
+		public Material superPowerup;
 
 		public Texture bomb;
 		public Texture flame;
@@ -20,37 +20,37 @@ namespace AssemblyCSharp
 			Material boxMaterial = null;
 			Texture powerupTexture = null;
 			if	(type == PowerupType.BOMB_UP) {
-				boxMaterial = powerupBox;
+				boxMaterial = powerup;
 				powerupTexture = bomb;
 			} else if (type == PowerupType.BOMB_DOWN) {
-				boxMaterial = powerdownBox;
+				boxMaterial = powerdown;
 				powerupTexture = bomb;
 			} else if (type == PowerupType.FLAME_UP) {
-				boxMaterial = powerupBox;
+				boxMaterial = powerup;
 				powerupTexture = flame;
 			} else if (type == PowerupType.FLAME_DOWN) {
-				boxMaterial = powerdownBox;
+				boxMaterial = powerdown;
 				powerupTexture = flame;
 			} else if (type == PowerupType.PLAYER_SPEED_UP) {
-				boxMaterial = powerupBox;
+				boxMaterial = powerup;
 				powerupTexture = playerSpeed;
 			} else if (type == PowerupType.PLAYER_SPEED_DOWN) {
-				boxMaterial = powerdownBox;
+				boxMaterial = powerdown;
 				powerupTexture = playerSpeed;
 			} else if (type == PowerupType.DELAY_SPEED_UP) {
-				boxMaterial = powerupBox;
+				boxMaterial = powerup;
 				powerupTexture = delaySpeed;
 			} else if (type == PowerupType.DELAY_SPEED_DOWN) {
-				boxMaterial = powerdownBox;
+				boxMaterial = powerdown;
 				powerupTexture = delaySpeed;
 			} else if (type == PowerupType.GOLDEN_FLAME) {
-				boxMaterial = superPowerupBox;
+				boxMaterial = superPowerup;
 				powerupTexture = goldenFlame;
 			} else if (type == PowerupType.SUPERBOMB) {
-				boxMaterial = superPowerupBox;
+				boxMaterial = superPowerup;
 				powerupTexture = superBomb;
 			} else if (type == PowerupType.TRIGGERBOMB) {
-				boxMaterial = superPowerupBox;
+				boxMaterial = superPowerup;
 				powerupTexture = triggerBomb;
 			}
 			Material[] boxMaterials = new Material[2];
