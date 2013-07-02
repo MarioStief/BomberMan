@@ -7,7 +7,7 @@ namespace AssemblyCSharp
 {
 	public static class PowerupPool
 	{
-		public const int DROPCHANCE = 25; // Drop chance in %
+		public const int DROPCHANCE = 100; // Drop chance in %
 		private static bool destroyable = Preferences.getDestroyablePowerups();
 		private static bool negative = Preferences.getNegativePowerups();
 		private static List<Powerup> pool = new List<Powerup>();
@@ -27,13 +27,13 @@ namespace AssemblyCSharp
 		{
 			for (int i = 0; i < size; i++)
 			{
-				for (int j = 0; j < 10; j++)
+				for (int j = 0; j < 1; j++)
 					pool.Add(new Powerup(PowerupType.BOMB_UP));
-				for (int j = 0; j < 10; j++)
+				for (int j = 0; j < 1; j++)
 					pool.Add(new Powerup(PowerupType.FLAME_UP));
-				for (int j = 0; j < 10; j++)
+				for (int j = 0; j < 1; j++)
 					pool.Add(new Powerup(PowerupType.PLAYER_SPEED_UP));
-				for (int j = 0; j < 10; j++)
+				for (int j = 0; j < 1; j++)
 					pool.Add(new Powerup(PowerupType.DELAY_SPEED_UP));
 				for (int j = 0; j < 1; j++)
 					pool.Add(new Powerup(PowerupType.GOLDEN_FLAME));
@@ -91,31 +91,30 @@ namespace AssemblyCSharp
 			
 			UnityEngine.Object powerup = null;
 
-				 if	(p.getType() == PowerupType.BOMB_UP)
-					powerup = Static.bombUpPowerupPrefab; 
+			if	(p.getType() == PowerupType.BOMB_UP)
+				powerup = Static.powerupPrefab;
 			else if	(p.getType() == PowerupType.BOMB_DOWN)
-					powerup = Static.bombDownPowerupPrefab; 
+					powerup = Static.powerdownPrefab; 
 			else if (p.getType() == PowerupType.FLAME_UP)
-					powerup = Static.flameUpPowerupPrefab; 
+					powerup = Static.powerupPrefab; 
 			else if (p.getType() == PowerupType.FLAME_DOWN)
-					powerup = Static.flameDownPowerupPrefab; 
+					powerup = Static.powerdownPrefab; 
 			else if (p.getType() == PowerupType.PLAYER_SPEED_UP)
-					powerup = Static.playerSpeedUpPowerupPrefab; 
+					powerup = Static.powerupPrefab; 
 			else if (p.getType() == PowerupType.PLAYER_SPEED_DOWN)
-					powerup = Static.playerSpeedDownPowerupPrefab; 
+					powerup = Static.powerdownPrefab; 
 			else if (p.getType() == PowerupType.DELAY_SPEED_UP)
-					powerup = Static.playerSpeedUpPowerupPrefab; 
+					powerup = Static.powerupPrefab; 
 			else if (p.getType() == PowerupType.DELAY_SPEED_DOWN)
-					powerup = Static.playerSpeedDownPowerupPrefab; 
+					powerup = Static.powerdownPrefab; 
 			else if (p.getType() == PowerupType.GOLDEN_FLAME)
-					powerup = Static.goldenFlamePowerupPrefab;
+					powerup = Static.superPowerupPrefab;
 			else if (p.getType() == PowerupType.SUPERBOMB)
-					powerup = Static.superbombPowerupPrefab; 
+					powerup = Static.superPowerupPrefab; 
 			else if (p.getType() == PowerupType.TRIGGERBOMB)
-					powerup = Static.superbombPowerupPrefab; 
-
+					powerup = Static.superPowerupPrefab; 
+					
 			cell.addPowerup(new Powerup(type), powerup);
-
 		}
 		
 		private static void poolContent()

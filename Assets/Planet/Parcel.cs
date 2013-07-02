@@ -178,8 +178,9 @@ namespace AssemblyCSharp
 		}
 		
 		public void addPowerup(Powerup powerup, UnityEngine.Object prefab) {
-			this.obj = GameObject.Instantiate(prefab, getCenterPos(), Quaternion.identity) as GameObject;
-			this.powerupType = powerup.getType();
+			obj = GameObject.Instantiate(prefab, getCenterPos(), Quaternion.identity) as GameObject;
+			powerupType = powerup.getType();
+			obj.GetComponent<PowerupTexture>().setType(powerupType);
 			powerupExplodingValue = powerup.getValue();
 			powerupOnCell = true;
 		}
