@@ -11,6 +11,10 @@ namespace AssemblyCSharp
 		public static MeshManipulator[][] drawnArea;
 		
 		public static UnityEngine.Object bombPrefab;
+		public static UnityEngine.Object powerupPrefab;
+		public static UnityEngine.Object powerdownPrefab;
+		public static UnityEngine.Object superPowerupPrefab;
+		/*
 		public static UnityEngine.Object bombUpPowerupPrefab;
 		public static UnityEngine.Object bombDownPowerupPrefab;
 		public static UnityEngine.Object flameUpPowerupPrefab;
@@ -22,6 +26,7 @@ namespace AssemblyCSharp
 		public static UnityEngine.Object goldenFlamePowerupPrefab;
 		public static UnityEngine.Object superbombPowerupPrefab;
 		public static UnityEngine.Object triggerbombPowerupPrefab;
+		*/
 		public static UnityEngine.Object explosionPrefab;
 		public static UnityEngine.Object boxCube1Prefab;
 		public static UnityEngine.Object boxCube2Prefab;
@@ -30,6 +35,10 @@ namespace AssemblyCSharp
 		
 		static Static() {
 			bombPrefab = Resources.Load("Prefabs/bombPrefab");
+			powerupPrefab = Resources.Load("Prefabs/powerupPrefab");
+			powerdownPrefab = Resources.Load("Prefabs/powerdownPrefab");
+			superPowerupPrefab = Resources.Load("Prefabs/superPowerupPrefab");
+			/*
 			bombUpPowerupPrefab = Resources.Load("Prefabs/bombUpPrefab");
 			bombDownPowerupPrefab = Resources.Load("Prefabs/bombDownPrefab");
 			flameUpPowerupPrefab = Resources.Load("Prefabs/flameUpPrefab");
@@ -41,6 +50,7 @@ namespace AssemblyCSharp
 			goldenFlamePowerupPrefab = Resources.Load("Prefabs/goldenFlamePrefab");
 			superbombPowerupPrefab = Resources.Load("Prefabs/superbombPrefab");
 			triggerbombPowerupPrefab = Resources.Load("Prefabs/triggerbombPrefab");
+			*/
 			explosionPrefab = Resources.Load("Prefabs/explosionPrefab");
 			boxCube1Prefab = Resources.Load("Prefabs/boxCube1Prefab");
 			boxCube2Prefab = Resources.Load("Prefabs/boxCube2Prefab");

@@ -91,31 +91,30 @@ namespace AssemblyCSharp
 			
 			UnityEngine.Object powerup = null;
 
-				 if	(p.getType() == PowerupType.BOMB_UP)
-					powerup = Static.bombUpPowerupPrefab; 
+			if	(p.getType() == PowerupType.BOMB_UP)
+				powerup = Static.powerupPrefab;
 			else if	(p.getType() == PowerupType.BOMB_DOWN)
-					powerup = Static.bombDownPowerupPrefab; 
+					powerup = Static.powerdownPrefab; 
 			else if (p.getType() == PowerupType.FLAME_UP)
-					powerup = Static.flameUpPowerupPrefab; 
+					powerup = Static.powerupPrefab; 
 			else if (p.getType() == PowerupType.FLAME_DOWN)
-					powerup = Static.flameDownPowerupPrefab; 
+					powerup = Static.powerdownPrefab; 
 			else if (p.getType() == PowerupType.PLAYER_SPEED_UP)
-					powerup = Static.playerSpeedUpPowerupPrefab; 
+					powerup = Static.powerupPrefab; 
 			else if (p.getType() == PowerupType.PLAYER_SPEED_DOWN)
-					powerup = Static.playerSpeedDownPowerupPrefab; 
+					powerup = Static.powerdownPrefab; 
 			else if (p.getType() == PowerupType.DELAY_SPEED_UP)
-					powerup = Static.playerSpeedUpPowerupPrefab; 
+					powerup = Static.powerupPrefab; 
 			else if (p.getType() == PowerupType.DELAY_SPEED_DOWN)
-					powerup = Static.playerSpeedDownPowerupPrefab; 
+					powerup = Static.powerdownPrefab; 
 			else if (p.getType() == PowerupType.GOLDEN_FLAME)
-					powerup = Static.goldenFlamePowerupPrefab;
+					powerup = Static.superPowerupPrefab;
 			else if (p.getType() == PowerupType.SUPERBOMB)
-					powerup = Static.superbombPowerupPrefab; 
+					powerup = Static.superPowerupPrefab; 
 			else if (p.getType() == PowerupType.TRIGGERBOMB)
-					powerup = Static.superbombPowerupPrefab; 
-
+					powerup = Static.superPowerupPrefab; 
+					
 			cell.addPowerup(new Powerup(type), powerup);
-
 		}
 		
 		private static void poolContent()

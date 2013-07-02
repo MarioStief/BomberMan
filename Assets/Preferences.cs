@@ -6,7 +6,7 @@ public static class Preferences
 	private static bool destroyablePowerups = true;
 	private static bool explodingPowerups = true;
 	private static bool negativePowerups = true;
-	private static int explosionDetail = 10; // 10 = very simple ... 1 = ultimate
+	private static int explosionDetail = 3; // 10 = very simple ... 1 = ultimate
 
 	
 	static Preferences() {
