@@ -259,10 +259,10 @@ public class Menu : MonoBehaviour {
 				showGUI = false;
 				
 				// change State
-				//MenuState m = MenuState.instance;
-				//m.startGameServer();
+				MenuState m = MenuState.instance;
+				m.startGameServer();
 				
-				networkView.RPC("startGame",RPCMode.AllBuffered, (int)Random.value*100000);
+				// networkView.RPC("startGame",RPCMode.AllBuffered, (int)Random.value*100000);
 			}
 		}
 		GUI.EndGroup();

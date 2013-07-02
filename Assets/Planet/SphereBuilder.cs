@@ -55,7 +55,7 @@ public class SphereBuilder : MonoBehaviour {
 		gameArea.updateHeight();
 		
 		// instantiate the player
-        Object playerPrefab = Resources.Load("Prefabs/Actor");
+        Object playerPrefab = Resources.Load("Actor");
 		Vector3 pos = new Vector3(-1.41561e-07f, 2.080631f, 0.01059199f);
 		Network.Instantiate(playerPrefab, pos, transform.rotation, 1);
 	}

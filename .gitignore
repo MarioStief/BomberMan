@@ -14,3 +14,10 @@ Temp
 *.unityproj
 *.sln
 *.userprefs
+
+# cj local stuff
+Assets/TEST_*
+*.suo
+build/
+build.zip
+obj/
