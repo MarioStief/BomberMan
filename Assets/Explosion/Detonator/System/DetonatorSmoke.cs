@@ -62,7 +62,7 @@ public class DetonatorSmoke : DetonatorComponent
 		
 		//move slightly away from the main camera so it sorts properly
 		_smokeA.transform.LookAt(Camera.main.transform);
-		_smokeA.transform.localPosition = -(Vector3.forward * -1.5f);
+		//_smokeA.transform.localPosition = -(Vector3.forward * -1.5f);
 		
 		_smokeAEmitter.color = color;
 		_smokeAEmitter.duration =  duration * .5f;
@@ -110,7 +110,7 @@ public class DetonatorSmoke : DetonatorComponent
 		
 		//move slightly away from the main camera so it sorts properly
 		_smokeB.transform.LookAt(Camera.main.transform);
-		_smokeB.transform.localPosition = -(Vector3.forward * -1f);
+		//_smokeB.transform.localPosition = -(Vector3.forward * -1f);
 		
 		_smokeBEmitter.color = color;
 		_smokeBEmitter.duration =  duration * .5f;
@@ -152,6 +152,8 @@ public class DetonatorSmoke : DetonatorComponent
     override public void Explode()
     {
 		if (detailThreshold > detail) return;
+		
+		on = false; // Disabled wegen deutlicher Rectangle-Bildung (Mario)
 		
 		if (on)
 		{

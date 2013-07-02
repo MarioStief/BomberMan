@@ -237,13 +237,11 @@ public class Detonator : MonoBehaviour {
 			_fireball = gameObject.AddComponent("DetonatorFireball") as DetonatorFireball;
 			_fireball.Reset();
 		}
-		/*
 		if (!_smoke && autoCreateSmoke)
 		{
 			_smoke = gameObject.AddComponent("DetonatorSmoke") as DetonatorSmoke;
 			_smoke.Reset();
 		}
-		*/
 		
 		if (!_sparks && autoCreateSparks)
 		{
