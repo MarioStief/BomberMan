@@ -166,7 +166,7 @@ public class InputHandler : MonoBehaviour {
 			Detonator detonator = explosion.GetComponent<Detonator>();
 			detonator.setSize(Random.Range(50f * multiplicator, 100f * multiplicator));
 			detonator.setDuration(5f);
-			float distance = Vector3.Distance (GameObject.Find("Player").transform.position, position);
+			float distance = Vector3.Distance (GameObject.FindGameObjectWithTag("Player").transform.position, position);
 			detonator.GetComponent<AudioSource>().volume /= distance * multiplicator;
 			detonator.GetComponent<AudioSource>().Play();
 			detonator.Explode();
