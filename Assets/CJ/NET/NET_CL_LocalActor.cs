@@ -72,7 +72,7 @@ public class NET_CL_LocalActor : NET_CL_Entity {
 
         stream.Serialize(ref state.reqId);
         stream.Serialize(ref state.time);
-        stream.Serialize(ref state.position);
+        //stream.Serialize(ref state.position);
 
         time = state.time;
 
@@ -83,7 +83,7 @@ public class NET_CL_LocalActor : NET_CL_Entity {
             position = gameObject.transform.position;
         }
 
-        serverPosition = state.position;
+        // serverPosition = state.position;
     }
 
 }

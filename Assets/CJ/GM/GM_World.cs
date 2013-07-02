@@ -1,8 +1,13 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using AssemblyCSharp;
 
 public class GM_World {
+
+    // gamearea parameters
+    public const int N_B = 30;
+    public const int N_L = 20;
 
     public static Vector3 GRAVITY_VEC = new Vector3(0.0f, -10.0f, 0.0f);
     public static Vector3 TO_HELL = new Vector3(0.0f, -1000.0f,  0.0f);
@@ -16,6 +21,7 @@ public class GM_World {
     // entity types
     public const int ENT_ACTOR = 1;
     public const int ENT_BOMB = 2;
+    public const int ENT_POWERUP = 3;
 
     public class Entity
     {
@@ -26,8 +32,21 @@ public class GM_World {
         public bool isActive = true;
         public bool isDead = false;
         public GameObject obj = null;
-        public CharacterController charCtrl = null;
         public NetworkViewID viewID;
+
+        public Rink.Pos rpos;
+
+        // additional properties of entities,
+        // not necessarily used by all types
+        public struct Props
+        {
+            // ENT_BOMB
+            public int flamePower;
+
+            // ENT_POWERUP
+            public PowerupType puType;
+        }
+        public Props props = new Props();
 
         public Vector3 lastPosition = Vector3.zero;
     }

@@ -26,7 +26,7 @@ public class NET_CL_Input : MonoBehaviour {
     {
         while (0 < inputBuffer.Count && inputBuffer.First.Value.reqId <= state.reqId)
             inputBuffer.RemoveFirst();
-        obj.transform.position = state.position;
+        // obj.transform.position = state.position;
         foreach (NET_Input.Message msg in inputBuffer)
         {
             Vector3 trans = NET_Input.DecodeTranslation(msg.input);

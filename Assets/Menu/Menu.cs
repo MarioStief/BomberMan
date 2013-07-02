@@ -33,11 +33,9 @@ public class Menu : MonoBehaviour {
 	public void Awake() {
 	    if (!created) {
 			DontDestroyOnLoad(transform.gameObject);
-			DontDestroyOnLoad(colorPicker.transform.gameObject);
 	        created = true;
 	    } else {
 	        Destroy(transform.gameObject);
-			Destroy(colorPicker.transform.gameObject);
 	    } 
 	}
 	
@@ -261,10 +259,10 @@ public class Menu : MonoBehaviour {
 				showGUI = false;
 				
 				// change State
-				//MenuState m = MenuState.instance;
-				//m.startGameServer();
+				MenuState m = MenuState.instance;
+				m.startGameServer();
 				
-				networkView.RPC("startGame",RPCMode.AllBuffered, (int)Random.value*100000);
+				// networkView.RPC("startGame",RPCMode.AllBuffered, (int)Random.value*100000);
 			}
 		}
 		GUI.EndGroup();

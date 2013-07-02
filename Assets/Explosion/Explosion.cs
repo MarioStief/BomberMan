@@ -64,7 +64,7 @@ public class Explosion : MonoBehaviour
 	void Start() {
 		timer = 0.0f;
 		createTime = Time.time;
-		triggerBomb = Player.getTriggerbomb();
+		triggerBomb = Static.player.getTriggerbomb();
 		
 		instantiatePSystems();
 
@@ -90,7 +90,7 @@ public class Explosion : MonoBehaviour
 	void Update() {
 		float elapsedTime = Time.time - createTime;
 		if (waitingForBombExplosion) {
-			if (elapsedTime > EXPLOSIONTIMER && !triggerBomb) {
+			if (true /* cj start immediately */ || (elapsedTime > EXPLOSIONTIMER && !triggerBomb)) {
 				waitingForBombExplosion = false;
 				startExplosion();
 			}
@@ -114,7 +114,7 @@ public class Explosion : MonoBehaviour
 					if (createBomb)
 						cell.destroyGameObject();
 					if (self)
-						Player.removeBomb();
+						Static.player.removeBomb();
 					bombDestroyed = true;
 				}
 				foreach (ExplosionField explosionField in explosionChain) {
@@ -126,7 +126,8 @@ public class Explosion : MonoBehaviour
 						//explosion.GetComponent<Detonator>().size = 10f;
 						Detonator detonator = explosion.GetComponent<Detonator>();
 						explosionField.getCell().decreaseHeight();
-						if (Player.getSuperbomb()) {
+                        if (Static.player.getSuperbomb())
+                        {
 							explosionField.getCell().decreaseHeight();
 							explosionField.getCell().decreaseHeight();
 						}
@@ -157,11 +158,11 @@ public class Explosion : MonoBehaviour
 						if (flamePower == Player.MAXFLAMEPOWER) {
 							detonator.color = Color.yellow;
 						}
-						if (Player.getSuperbomb()) {
+						if (Static.player.getSuperbomb()) {
 							detonator.color = Color.blue;
 							detonator.addShockWave();
 						}
-						if (flamePower == Player.MAXFLAMEPOWER && Player.getSuperbomb()) {
+						if (flamePower == Player.MAXFLAMEPOWER && Static.player.getSuperbomb()) {
 							detonator.color = Color.cyan;
 							detonator.addShockWave();
 						}
@@ -169,10 +170,13 @@ public class Explosion : MonoBehaviour
 						detonator.Explode();
 						explosionField.getCell().setExploding(true);
 						//explosionField.getCell().colorCell(Color.black);
+
 						
+                        /*
 						// Wand zerstören, ggfls. Powerup setzen
 						if (PowerupPool.getDestroyable()) {
 							if (explosionField.getCell().hasPowerup()) {
+                         
 								if (Preferences.getExplodingPowerups() == true) {
 									float flameDelay = 0.2f;
 									int flameReach = explosionField.getCell().getPowerupValue();
@@ -180,41 +184,11 @@ public class Explosion : MonoBehaviour
 									if (flameReach == 10)
 										flameDelay = 0.1f;
 									Explosion ex = Explosion.createExplosionOnCell(explosionField.getCell(), flameReach, flameDelay, false, false);
-									ex.startExplosion();
+						
+                                ex.startExplosion();
 								}
 								explosionField.getCell().destroyPowerup(true);
 							}
-						}
-						
-						GameObject obj;
-						switch (explodingCell.getType()) {
-						case 0:
-							// Inaktiv derzeit und wird wohl nicht implementiert
-							// explodingCell.decreaseFloor();
-							break;
-						case 1:
-							explodingCell.setType(0);
-							
-							// Kiste explodieren lassen
-							obj = GameObject.Instantiate(explodingCell.getMeshManipulator().getBoxObject(), explodingCell.getCenterPos(), Quaternion.identity) as GameObject;
-							SplitMeshIntoTriangles.createMeshExplosion(obj, cell.getCenterPos(), 1);
-							
-							int random = new System.Random().Next(0, (int) 100/DROPCHANCE);
-							//Debug.Log("Placing Powerup for cell " + explodingCell.getCoordinates() + ": " + (random == 0 ? "yes" : "no"));
-							if (random == 0) { // Random().Next(0, 4) € {0, 1, 2, 3}
-								PowerupPool.setPowerup(explodingCell);
-							}
-							break;
-						case 2:
-							// Steinblock explodieren lassen
-							obj = GameObject.Instantiate(Static.stoneCube2Prefab, explodingCell.getCenterPos(), Quaternion.identity) as GameObject;
-							SplitMeshIntoTriangles.createMeshExplosion(obj, cell.getCenterPos(), 1);
-							
-							if (explodingCell.getHeight() == 1f) {
-								explodingCell.setType(0);
-								PowerupPool.setPowerup(explodingCell);
-							}
-							break;
 						}
 
 						explodingCell.getMeshManipulator().updateCoordinates();
@@ -223,6 +197,13 @@ public class Explosion : MonoBehaviour
 						if (explosionField.getCell().hasBomb()) {
 							explosionField.getCell().getExplosion().startExplosion();
 						}
+                        */
+
+                        if (explosionField.getCell().getType() == 1 || (explosionField.getCell().getType() == 2 && explosionField.getCell().getHeight() == 1f))
+                        {
+                            explosionField.getCell().setType(0);
+                            explodingCell.getMeshManipulator().updateCoordinates();
+                        }   
 						
 						stillRunning = true;
 
@@ -281,7 +262,7 @@ public class Explosion : MonoBehaviour
 						//cell.colorCell(Color.red);
 						break;
 					case 1:
-						if (!Player.getSuperbomb())
+                        if (!Static.player.getSuperbomb())
 							stop[j] = 1;
 						//cell.colorCell(Color.red);
 						break;

@@ -230,4 +230,14 @@ public class MeshManipulator : MonoBehaviour {
 		cubeMesh.RecalculateBounds();
 		cubeMesh.Optimize();
 	}
+
+    public Vector3 getTopLeft()
+    {
+        return cubeMesh.vertices[4];
+    }
+
+    public Vector3 getBottomRight()
+    {
+        return cubeMesh.vertices[9];
+    }
 }

@@ -43,7 +43,7 @@ namespace AssemblyCSharp
 					pool.Add(new Powerup(PowerupType.TRIGGERBOMB));
 				if (negative) {
 					for (int j = 0; j < 2; j++)
-						pool.Add(new Powerup(PowerupType.BOMB_DOWN));
+						pool.Add(new Powerup(PowerupType.BOMB_DOWN)); // 2
 					for (int j = 0; j < 2; j++)
 						pool.Add(new Powerup(PowerupType.FLAME_DOWN));
 					for (int j = 0; j < 2; j++)
@@ -117,10 +117,16 @@ namespace AssemblyCSharp
 			else if (p.getType() == PowerupType.TRIGGERBOMB)
 					powerup = Static.superPowerupPrefab; 
 					
+<<<<<<< HEAD
 			cell.addPowerup(new Powerup(type), powerup);
 			*/
+||||||| merged common ancestors
+			cell.addPowerup(new Powerup(type), powerup);
+=======
+			cell.addPowerup(new Powerup(type), powerup);
 
-		return type;
+            return type;
+>>>>>>> e496e7e38831f93594073260da712453628ea719
 		}
 		
 		private static void poolContent()

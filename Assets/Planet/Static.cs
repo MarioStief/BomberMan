@@ -9,6 +9,7 @@ namespace AssemblyCSharp
 		public static Rink rink;
 		public static Parcel[][] gameArea;
 		public static MeshManipulator[][] drawnArea;
+        public static Player player = new Player();
 		
 		public static UnityEngine.Object bombPrefab;
 		public static UnityEngine.Object powerupPrefab;

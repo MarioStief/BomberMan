@@ -1,9 +1,10 @@
 using UnityEngine;
 using System.Collections;
+using AssemblyCSharp;
 
 public class NET_SV_Movable : MonoBehaviour {
 
-    public Vector3 position;
+    public Rink.Pos rpos = new Rink.Pos();
     public int resId = 0; // for owning player only
     public float time = 0.0f;
 
@@ -21,7 +22,10 @@ public class NET_SV_Movable : MonoBehaviour {
     {
         stream.Serialize(ref resId);
         stream.Serialize(ref time);
-        stream.Serialize(ref position);
+        stream.Serialize(ref rpos.bpos);
+        stream.Serialize(ref rpos.lpos);
+        stream.Serialize(ref rpos.xoff);
+        stream.Serialize(ref rpos.yoff);
     }
 	
 }

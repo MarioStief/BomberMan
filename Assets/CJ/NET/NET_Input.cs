@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using AssemblyCSharp;
 
 public class NET_Input : MonoBehaviour {
 

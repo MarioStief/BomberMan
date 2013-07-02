@@ -11,6 +11,8 @@ public class NET_Client : MonoBehaviour {
 
     private GameObject obj_input = null;
     private NET_CL_Input scr_input = null;
+    private GameObject obj_actorState = null;
+    private NET_CL_ActorState scr_actorState = null;
 
     private NetworkPlayer serverPlayer;
 
@@ -71,6 +73,11 @@ public class NET_Client : MonoBehaviour {
         return scr_input;
     }
 
+    public NET_CL_ActorState GetLocalState()
+    {
+        return scr_actorState;
+    }
+
     public int AvgPing()
     {
         return Network.GetAveragePing(serverPlayer);
@@ -89,6 +96,9 @@ public class NET_Client : MonoBehaviour {
         obj_input = (GameObject)GameObject.Instantiate(pre_clInput);
         scr_input = obj_input.GetComponent<NET_CL_Input>();
 
+        obj_actorState = new GameObject("ClActorState");
+        scr_actorState = obj_actorState.AddComponent<NET_CL_ActorState>();
+
         this.name = name;
 
         //Network.Connect(ipAddress, port);
@@ -105,9 +115,15 @@ public class NET_Client : MonoBehaviour {
         obj_input.networkView.viewID = inputViewID;
         obj_input.networkView.group = pid;
 
+        NetworkViewID actorStateViewID = Network.AllocateViewID();
+        obj_actorState.AddComponent<NetworkView>();
+        obj_actorState.networkView.viewID = actorStateViewID;
+        obj_actorState.networkView.group = pid;
+        obj_actorState.networkView.observed = scr_actorState;
+
         outQueue = NET_OutMessageQueue.Create("ClOut");
 
-        networkView.RPC("NET_Ack1", serverPlayer, name, pid, inputViewID, outQueue.viewID);
+        networkView.RPC("NET_Ack1", serverPlayer, name, pid, inputViewID, actorStateViewID, outQueue.viewID);
 
         Debug.Log("CL(" + pid + "): created ClInput with inputViewID = " + inputViewID);
 

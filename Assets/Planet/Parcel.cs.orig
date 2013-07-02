@@ -191,12 +191,21 @@ namespace AssemblyCSharp
 			center = v;	
 		}
 		
+<<<<<<< HEAD
 		public void addPowerup(Powerup powerup) {
-		// cj: this method is called by the server only, which does not
-		// need to draw anything
-
 			getMeshManipulator().liftObject(1.05f); // Sonst ist das Powerup halb im Boden
 			obj = GameObject.Instantiate(Static.powerupPrefab, getCenterPos(), Quaternion.identity) as GameObject;
+||||||| merged common ancestors
+		public void addPowerup(Powerup powerup, UnityEngine.Object prefab) {
+			obj = GameObject.Instantiate(prefab, getCenterPos(), Quaternion.identity) as GameObject;
+=======
+
+		public void addPowerup(Powerup powerup, UnityEngine.Object prefab) {
+            // cj: this method is called by the server only, which does not
+            // need to draw anything
+
+			//obj = GameObject.Instantiate(prefab, getCenterPos(), Quaternion.identity) as GameObject;
+>>>>>>> e496e7e38831f93594073260da712453628ea719
 			powerupType = powerup.getType();
 			//obj.GetComponent<PowerupTexture>().setType(powerupType);
 

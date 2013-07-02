@@ -19,6 +19,28 @@ namespace AssemblyCSharp
 	//
 	public class Rink
 	{
+        public struct Pos
+        {
+            public int bpos, lpos;      // cell
+            public float xoff, yoff;    // offset in cell
+
+            public Pos(int bpos, int lpos, float xoff, float yoff)
+            {
+                this.bpos = bpos;
+                this.lpos = lpos;
+                this.xoff = xoff;
+                this.yoff = yoff;
+            }
+
+            public static void Serialize(ref Pos rpos, BitStream stream)
+            {
+                stream.Serialize(ref rpos.bpos);
+                stream.Serialize(ref rpos.lpos);
+                stream.Serialize(ref rpos.xoff);
+                stream.Serialize(ref rpos.yoff);
+            }
+        } 
+
 		private bool DEBUG = true;					// Debug-Modus aktivieren/ deaktivieren (s.o.)
 		
 		public Parcel[][] gameArea;					// Gesamtspielfläche LOGIK
@@ -44,8 +66,8 @@ namespace AssemblyCSharp
 			// Mit dem Parameter lässt sich die Poolgröße variieren
 			Static.setRink(this);
 			PowerupPool.createPool(1);
-			
-			Player.setCurrentParcel(gameArea[0][0]);
+
+            Static.player.setCurrentParcel(gameArea[0][0]);
 		}
 		
 		// <summary>
@@ -71,7 +93,8 @@ namespace AssemblyCSharp
 					gameArea[i][j].setIdentity(i,j);	// DEBUG
 				}
 			}
-			
+
+            UnityEngine.Random.seed = 0;
 			for(int i = 0; i < 3*width; i++){
 				gameArea[(int)(UnityEngine.Random.value*height)][(int)(UnityEngine.Random.value*width)].setType(1);	
 			}
@@ -239,6 +262,39 @@ namespace AssemblyCSharp
 		public Parcel[][] getGameArea() {
 			return gameArea;
 		}
+
+        public Parcel GetCell(Pos rpos)
+        {
+            return gameArea[rpos.lpos][rpos.bpos];
+        }
+
+        // returns rpos in world space
+        public Vector3 GetPosition(Pos rpos)
+        {
+            // TODO
+            return gameArea[rpos.lpos][rpos.bpos].getCenterPos();
+        }
+
+        /*
+        public Vector3 GetPosition(Pos rpos)
+        {
+            int xpos = rpos.lpos;
+            int zpos = rpos.bpos;
+
+            float xoff = rpos.xoff;
+            float zoff = rpos.yoff;
+
+            MeshManipulator cellMesh = drawnArea[xpos][zpos];
+
+            //Debug.Log(xoff +" :: " + zoff);
+            Vector3 tl = cellMesh.getTopLeft();
+            Vector3 br = cellMesh.getBottomRight();
+            Vector3 pos = tl + new Vector3((-tl.x+br.x)*zoff, -tl.y+br.y, (-tl.z+br.z)*xoff);
+            //GameObject.Instantiate(Static.bombPrefab,pos,Quaternion.identity);// (Static.bombPrefab, pos , Quaternion.identity) as GameObject;
+
+            return pos;
+        }
+         * */
 	}
 }
 

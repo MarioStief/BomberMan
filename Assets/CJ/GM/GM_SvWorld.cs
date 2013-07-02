@@ -2,18 +2,21 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
+using AssemblyCSharp;
+
 public class GM_SvWorld : GM_World {
 
     private class SvActorEntity : Entity
     {
+        public Player player = null;
         public NET_SV_Movable scr_moveable = null;
+        public InputHandler scr_inputHandler = null;
     }
 
     private class SvBombEntity : Entity
     {
         private const float BOMB_TIMEOUT = 3.0f;
 
-        public GM_GA_Cell cell = null;
         public float spawnTime = 0.0f;
 
         public bool IsDead(float time)
@@ -22,7 +25,11 @@ public class GM_SvWorld : GM_World {
         }
     }
 
+    private class SvPowerupEntity : Entity { /* ... */ }
+
     private GM_GameArea gameArea = null;
+
+    private Rink rink = null;
 
     private NET_Server scr_netServer = null;
 
@@ -41,33 +48,41 @@ public class GM_SvWorld : GM_World {
         int seed = (int)(Random.value * 1000.0f);
         Random.seed = seed;
 
-        GM_GA_Generator gameAreaGenerator = new GM_GA_Generator();
-        gameArea = gameAreaGenerator.Generate();
+        rink = new Rink(N_B, N_L, Vector2.zero);
 
         NET_MSG_GenerateArea genAreaMsg = new NET_MSG_GenerateArea();
         genAreaMsg.seed = seed;
         scr_netServer.Broadcast(genAreaMsg);
 
-        int spawnIdx = 0;
         foreach(NET_Server.Client client in scr_netServer.Clients()) {
-            Vector3 spawnPos = gameArea.CenterOf(gameArea.spawnPoints[spawnIdx++]);
             client.isDead = false;
-            Spawn(ENT_ACTOR, client.pid, spawnPos);
+
+            int lpos = N_L / 2 - 1;
+            int bpos = N_B / 4;
+
+            Spawn(ENT_ACTOR, client.pid, bpos, lpos);
         }
     }
 
-    public Entity Spawn(int type, int pid, Vector3 position)
+    public Entity Spawn(int type, int pid, int bpos, int lpos, Entity.Props props = new Entity.Props())
     {
         Entity entity = null;
+
+        Rink.Pos rpos = new Rink.Pos(bpos, lpos, 0.0f, 0.0f);
 
         if (ENT_ACTOR == type)
         {
             SvActorEntity entActor = new SvActorEntity();
 
-            entActor.obj = (GameObject)GameObject.Instantiate(Resources.Load("Actor"));
+            entActor.obj = new GameObject();
             entActor.obj.tag = "ENT_ACTOR";
 
+            entActor.player = new Player();
             entActor.scr_moveable = entActor.obj.AddComponent<NET_SV_Movable>();
+            // entActor.scr_inputHandler = entActor.obj.AddComponent<InputHandler>();
+            
+            Parcel currCell = Static.rink.gameArea[lpos][bpos];
+            entActor.player.setCurrentParcel(currCell);
 
             entActor.viewID = Network.AllocateViewID();
             NetworkView netView = entActor.obj.AddComponent<NetworkView>();
@@ -75,26 +90,33 @@ public class GM_SvWorld : GM_World {
             netView.observed = entActor.scr_moveable;
             netView.stateSynchronization = NetworkStateSynchronization.Unreliable;
 
+            NET_Server.Client client = scr_netServer.ClientByPID(pid);
+            netView.SetScope(client.netPlayer, false);
+
             entity = entActor;
         }
         if (ENT_BOMB == type)
         {
             SvBombEntity entBomb = new SvBombEntity();
-
-            entBomb.obj = (GameObject)GameObject.Instantiate(Resources.Load("Bomb"));
-
+            entBomb.obj = new GameObject("Bomb (dummy " + (svidCnt + 1) + ")");
             entity = entBomb;
+        }
+        if (ENT_POWERUP == type) 
+        {
+            entity = new SvPowerupEntity();
+            entity.obj = new GameObject("Powerup (dummy " + (svidCnt + 1) + ")");
         }
 
         entity.type = type;
         entity.svid = ++svidCnt;
         entity.pid = pid;
 
+        entity.rpos = rpos;
+
+        entity.props = props;
+
         GM_SvidTag scr_svidTag = entity.obj.AddComponent<GM_SvidTag>();
         scr_svidTag.svid = entity.svid;
-
-        entity.charCtrl = entity.obj.GetComponent<CharacterController>();
-        entity.obj.transform.position = position;
 
         entities.AddLast(entity);
 
@@ -103,7 +125,9 @@ public class GM_SvWorld : GM_World {
         spawnEntityMsg.svid = entity.svid;
         spawnEntityMsg.pid = entity.pid;
         spawnEntityMsg.viewID = entity.viewID;
-        spawnEntityMsg.position = position;
+        spawnEntityMsg.bpos = bpos;
+        spawnEntityMsg.lpos = lpos;
+        spawnEntityMsg.props = props;
         scr_netServer.Broadcast(spawnEntityMsg);
 
         return entity;
@@ -151,6 +175,62 @@ public class GM_SvWorld : GM_World {
         setActiveMsg.svid = svid;
         setActiveMsg.active = active;
         scr_netServer.Broadcast(setActiveMsg);
+    }
+
+    private List<Parcel> GetExplodingCells(SvBombEntity entBomb)
+    {
+        // cnf. Explosion::initiatePS
+
+        List<Parcel> fields = new List<Parcel>();
+
+        Parcel bombCell = Static.rink.GetCell(entBomb.rpos);
+
+        fields.Add(bombCell);
+
+        int[] stop = { 0, 0, 0, 0 };
+
+        for (int i = 1; i <= entBomb.props.flamePower; i++)
+        {
+            for (int j = 0; j < 4; j++)
+            {
+                if (stop[j] == 0)
+                {
+                    int lpos = 0;
+                    int bpos = 0;
+                    switch (j)
+                    {
+                        case 0:
+                            lpos = -i;
+                            break;
+                        case 1:
+                            lpos = i;
+                            break;
+                        case 2:
+                            bpos = -i;
+                            break;
+                        case 3:
+                            bpos = i;
+                            break;
+                    }
+                    Parcel cell = bombCell.getSurroundingCell(lpos, bpos);
+                    switch (cell.getType())
+                    {
+                        case 0:
+                            break;
+                        case 1:
+                            if (!Static.player.getSuperbomb())
+                                stop[j] = 1;
+                            break;
+                        case 2:
+                            stop[j] = 2;
+                            break;
+                    }
+                    fields.Add(cell);
+                }
+            }
+        }
+
+        return fields;
     }
 
     public Entity[] ShootDeathRays(Vector3 orig, Vector3 dir)
@@ -203,23 +283,30 @@ public class GM_SvWorld : GM_World {
             Debug.Log("GM_SvWorld::HandleMessage: received msg of type MSG_PLANT_BOMB");
 
             NET_MSG_PlantBomb plantBombMsg = (NET_MSG_PlantBomb)msg;
-            Entity entity = ByPID(plantBombMsg.pid);
-            GM_GA_Cell cell = gameArea.getCell(entity.obj.transform.position.x, entity.obj.transform.position.z);
+            NET_Server.Client client = scr_netServer.ClientByPID(plantBombMsg.pid);
 
-            entity.charCtrl.Move(new Vector3(0.0f, 1.5f, 0.0f));
-
-            Vector3 position = gameArea.CenterOf(cell);
-            position.y = -0.2f; // accounts for playfield height and bomb size
-
-            SvBombEntity entBomb = (SvBombEntity)Spawn(ENT_BOMB, plantBombMsg.pid, position);
-            entBomb.cell = cell;
-            entBomb.spawnTime = plantBombMsg.time;
+            Rink.Pos rpos = plantBombMsg.rpos;
+            Parcel cell = rink.GetCell(rpos);
+            if (!cell.hasBomb() && client.player.addBomb())
+            {
+                Entity.Props props = new Entity.Props();
+                props.flamePower = client.player.getFlamePower();
+                SvBombEntity entBomb = (SvBombEntity)Spawn(ENT_BOMB, client.pid, rpos.bpos, rpos.lpos, props);
+                entBomb.spawnTime = time;
+            }
         }
+    }
+
+    private struct SpawnArgs
+    {
+        public int type, pid, lpos, bpos;
+        public Entity.Props props;
+        public Parcel cell;
     }
 
     public void Update()
     {
-        accu += Time.deltaTime;
+        time += Time.deltaTime;
 
         // BURRY THE DEAD
 
@@ -231,96 +318,76 @@ public class GM_SvWorld : GM_World {
             entIt = next;
         }
 
-        // UPDATE BOMBS
+        List<SpawnArgs> spawnList = new List<SpawnArgs>();
 
+        // UPDATE BOMBS
         foreach (Entity entity in entities)
         {
             if (ENT_BOMB == entity.type)
             {
                 SvBombEntity entBomb = (SvBombEntity)entity;
-
                 if (entBomb.IsDead(time))
                 {
-                    // destroy adjacent fields
-                    for (int i = -2; i <= 2; ++i)
-                    {
-                        int row = entBomb.cell.getXPos() + i;
-                        int col = entBomb.cell.getZPos();
+                    // keep this consistent with Explosion::Update!
+                    // TODO: 100ms steps
 
-                        if (0 <= row && row < gameArea.getHeight())
-                            DestroyCell(row, col);
-                    }
-                    for (int j = -2; j <= 2; ++j)
+                    List<Parcel> explodingCells = GetExplodingCells(entBomb);
+                    Debug.Log("GM_SvWorld: number of exploding cells = " + explodingCells.Count);
+                    foreach (Parcel cell in explodingCells)
                     {
-                        int row = entBomb.cell.getXPos();
-                        int col = entBomb.cell.getZPos() + j;
-
-                        if (0 <= col && col < gameArea.getWidth())
-                            DestroyCell(row, col);
-                    }
-
-                    // find affected actors
-                    Vector3[] explosionDirs =
-                    {
-                        new Vector3(-1.0f, 0.0f,  0.0f),
-                        new Vector3( 1.0f, 0.0f,  0.0f),
-                        new Vector3( 0.0f, 0.0f, -1.0f),
-                        new Vector3( 0.0f, 0.0f,  1.0f)
-                    };
-                    foreach (Vector3 dir in explosionDirs)
-                    {
-                        Vector3 origin = entBomb.obj.transform.position;
-                        origin.y = 0.0f;
-
-                        Entity[] hitEntities = ShootDeathRays(origin, dir);
-                        foreach (Entity hitEntity in hitEntities)
+                        cell.decreaseHeight_NoManip();
+                        /*
+                        if (Static.player.getSuperbomb())
                         {
-                            if (null != hitEntity)
-                            {
-                                SvActorEntity hitActor = (SvActorEntity)hitEntity;
+                            cell.decreaseHeight();
+                            cell.decreaseHeight();
+                        }
+                        */
 
-                                // kill him already
-                                NET_Server.Client hitClient = scr_netServer.ClientByPID(hitActor.pid);
-                                hitClient.isDead = true;
-                                hitClient.time = 0.0f;
-
-                                SetActive(hitActor.svid, false);
+                        Debug.Log("parcel type = " + cell.getType() + "(" + cell.getBpos() + ", " + cell.getLpos() + ")");
+                        PowerupType puType = PowerupType.NONE;
+                        if (cell.getType() == 1)
+                        {
+                            cell.setType(0);
+                            int random = new System.Random().Next(0, (int)100 / PowerupPool.DROPCHANCE);
+                            if (true || random == 0)
+                            { // Random().Next(0, 4) € {0, 1, 2, 3}
+                                puType = PowerupPool.setPowerup(cell);
                             }
+                        }
+                        if (cell.getType() == 2 && cell.getHeight() == 1f)
+                        {
+                            cell.setType(0);
+                            puType = PowerupPool.setPowerup(cell);
+                        }
+
+                        if (PowerupType.NONE != puType)
+                        {
+                            Debug.Log("GM_SvWorld: spawning powerup (type = " + (int)puType + ")");
+                            Entity.Props props = new Entity.Props();
+                            props.puType = puType;
+
+                            SpawnArgs spawnArgs = new SpawnArgs();
+                            spawnArgs.type = ENT_POWERUP;
+                            spawnArgs.pid = 0;
+                            spawnArgs.bpos = cell.getBpos();
+                            spawnArgs.lpos = cell.getLpos();
+                            spawnArgs.props = props;
+                            spawnArgs.cell = cell;
+                            spawnList.Add(spawnArgs);
                         }
                     }
 
+                    scr_netServer.ClientByPID(entBomb.pid).player.removeBomb();
                     DestroyEntity(entBomb.svid);
                 }
-            }
-        }
+            } // ENT_BOMB == type
+        } // \forall entities
 
-        // MOVE ACTORS
-
-        foreach (NET_Server.Client client in scr_netServer.Clients())
-            client.trans = Vector3.zero;
-
-        while (TIMESTEP <= accu)
+        foreach (SpawnArgs spawnArgs in spawnList)
         {
-            accu -= TIMESTEP;
-            time += TIMESTEP;
-
-            foreach (NET_Server.Client client in scr_netServer.Clients())
-            {
-                SvActorEntity entity = (SvActorEntity)ByPID(client.pid);
-
-                if (null != entity)
-                {
-                    NET_Input.Message inputMsg = null;
-
-                    Vector3 trans = Vector3.zero;
-                    if (null != (inputMsg = client.scr_input.GetInput()))
-                    {
-                        trans = NET_Input.DecodeTranslation(inputMsg.input);
-                        entity.scr_moveable.SetResponseID(inputMsg.reqId);
-                    }
-                    entity.charCtrl.Move(TIMESTEP * (ACTOR_SPEED * trans + GM_World.GRAVITY_VEC));
-                }
-            }
+            Entity entity = Spawn(spawnArgs.type, spawnArgs.pid, spawnArgs.bpos, spawnArgs.lpos, spawnArgs.props);
+            spawnArgs.cell.svid = entity.svid;
         }
 
         foreach (NET_Server.Client client in scr_netServer.Clients())
@@ -329,7 +396,21 @@ public class GM_SvWorld : GM_World {
             if (null != entity)
             {
                 entity.scr_moveable.SetServerTime(time);
-                entity.scr_moveable.position = entity.obj.transform.position;
+
+                NET_SV_ActorState state = client.scr_actorState;
+                NET_ActorState.Message msg = state.GetInput();
+                if (null != msg)
+                {
+                    entity.scr_moveable.rpos = msg.rpos;
+                }
+            }
+
+            // pick up powerups
+            Parcel cell = Static.rink.GetCell(entity.scr_moveable.rpos);
+            if (cell.hasPowerup()) {
+                client.player.powerupCollected(cell.destroyPowerup(false));
+                DestroyEntity(cell.svid);
+                cell.svid = 0;
             }
 
             if (client.isDead)
