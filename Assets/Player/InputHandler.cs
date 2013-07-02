@@ -24,6 +24,8 @@ public class InputHandler : MonoBehaviour {
 	private float oldVerticalAngle;
 	private float horizontalAngle;
 	
+	private static float vertAngle; // statische Kopie von verticalAngle
+	
 	private float verticalHelper;
 	private float horizontalHelper;
 	
@@ -106,6 +108,8 @@ public class InputHandler : MonoBehaviour {
 			
 			float va = verticalAngle;
 			stream.Serialize(ref va);
+			float ha = horizontalAngle;
+			stream.Serialize(ref ha);
 			
 			Quaternion r = transform.rotation;
 			stream.Serialize(ref r);
@@ -117,11 +121,29 @@ public class InputHandler : MonoBehaviour {
 			
 			float fva = 0f;
 			stream.Serialize(ref fva);
-			transform.position = new Vector3(
+			
+			float fha = 0f;
+			stream.Serialize(ref fha);
+			
+			// turn the player to our zero
+			fp = new Vector3(
+				Mathf.Cos(-fha) * fp.x - Mathf.Sin(-fha) * fp.y,
+				Mathf.Sin(-fha) * fp.x + Mathf.Cos(-fha) * fp.y,
+				fp.z
+			);
+			// now turn him up/down
+			fp = new Vector3(
 				fp.x,
 				Mathf.Cos(fva-verticalAngle) * fp.y - Mathf.Sin(fva-verticalAngle) * fp.z,
 				Mathf.Sin(fva-verticalAngle) * fp.y + Mathf.Cos(fva-verticalAngle) * fp.z
 			);
+			// and back
+			transform.position = new Vector3(
+				Mathf.Cos(fha) * fp.x - Mathf.Sin(fha) * fp.y,
+				Mathf.Sin(fha) * fp.x + Mathf.Cos(fha) * fp.y,
+				fp.z
+			);
+			
 			
 			Quaternion fr = Quaternion.Euler(new Vector3(0, 0, 0));
 			stream.Serialize(ref fr);
@@ -187,11 +209,30 @@ public class InputHandler : MonoBehaviour {
 			float vm = Player.getSpeed() * verticalMovement * Time.deltaTime;
 			vm = determineVerticalParcelPosition( verticalMovement, vm);
 			verticalAngle += vm;
-			if (vm != 0) {
+			
+			horizontalMovement = Input.GetAxis("Horizontal") * Player.getSpeed();
+			float m = horizontalMovement*Time.deltaTime*Player.getSpeed()*(-2);
+			m = determineHorizontalParcelPosition( horizontalMovement, m);
+			horizontalAngle += m;
+			
+			if (vertAngle != 0) {
+				// turn the player to our zero
+				Vector3 tmp = new Vector3(
+					Mathf.Cos(-horizontalAngle) * transform.position.x - Mathf.Sin(-horizontalAngle) * transform.position.y,
+					Mathf.Sin(-horizontalAngle) * transform.position.x + Mathf.Cos(-horizontalAngle) * transform.position.y,
+					transform.position.z
+				);
+				// now turn him up/down
+				tmp = new Vector3(
+					tmp.x,
+					Mathf.Cos(-vm) * tmp.y - Mathf.Sin(-vm) * tmp.z,
+					Mathf.Sin(-vm) * tmp.y + Mathf.Cos(-vm) * tmp.z
+				);
+				// and back
 				transform.position = new Vector3(
-					transform.position.x,
-					Mathf.Cos(-vm) * transform.position.y - Mathf.Sin(-vm) * transform.position.z,
-					Mathf.Sin(-vm) * transform.position.y + Mathf.Cos(-vm) * transform.position.z
+					Mathf.Cos(horizontalAngle) * tmp.x - Mathf.Sin(horizontalAngle) * tmp.y,
+					Mathf.Sin(horizontalAngle) * tmp.x + Mathf.Cos(horizontalAngle) * tmp.y,
+					tmp.z
 				);
 			}
 			
@@ -281,6 +322,7 @@ public class InputHandler : MonoBehaviour {
 			
 			Static.sphereHandler.move(m);
 			if ( m == 0) verticalAngle = vAngle;
+			vertAngle = m;
 		}
 		
 		float horizontalMovement;
@@ -324,7 +366,6 @@ public class InputHandler : MonoBehaviour {
 				if (horizontalMovement < 0) {
 					// nach links oben schauen
 					lookDirection = currCell.getSurroundingCell(GAP,GAP).getCenterPos();
-				} else if (hm < 0) {
 					//currCell.getSurroundingCell(GAP,GAP).colorCell(Color.magenta);
 				} else if (horizontalMovement > 0) {
 					// nach rechts oben schauen
@@ -340,7 +381,6 @@ public class InputHandler : MonoBehaviour {
 				if (horizontalMovement < 0) {
 					// nach links unten schauen
 					lookDirection = currCell.getSurroundingCell(-GAP,GAP).getCenterPos();
-				} else if (hm < 0) {
 					//currCell.getSurroundingCell(-GAP,GAP).colorCell(Color.magenta);
 				} else if (horizontalMovement > 0) {
 					// nach rechts unten schauen
@@ -635,7 +675,7 @@ public class InputHandler : MonoBehaviour {
 	}
 	
 	private void moveAlongEquator(float movement){
-	
+		
 		transform.position = new Vector3(Mathf.Cos(movement)* transform.position.x - Mathf.Sin(movement) * transform.position.y,
 										Mathf.Sin(movement) * transform.position.x + Mathf.Cos(movement) * transform.position.y,
 										transform.position.z);

@@ -28,6 +28,19 @@ public class Menu : MonoBehaviour {
 	private NET_Client scr_netClient;
 	private NET_Server scr_netServer;
 	
+	
+	private static bool created = false;
+	public void Awake() {
+	    if (!created) {
+			DontDestroyOnLoad(transform.gameObject);
+			DontDestroyOnLoad(colorPicker.transform.gameObject);
+	        created = true;
+	    } else {
+	        Destroy(transform.gameObject);
+			Destroy(colorPicker.transform.gameObject);
+	    } 
+	}
+	
 	public void Start () {
 		nickname += Mathf.Floor(Random.value*1000);
 		
@@ -424,6 +437,7 @@ public class Menu : MonoBehaviour {
 	void startGame(int seed) {
 		Random.seed = seed;
 		Application.LoadLevel(1);
+		showGUI = false;
 	}
 
 }
