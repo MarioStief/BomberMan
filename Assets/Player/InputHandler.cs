@@ -74,10 +74,6 @@ public class InputHandler : MonoBehaviour {
 
         GameObject obj_gameController = GameObject.FindGameObjectWithTag("GameController");
         scr_netClient = obj_gameController.GetComponent<NET_Client>();
-
-		if (!networkView.isMine) {
-			return;
-		}
 		
 		// set my color
 		renderer.material.color = Menu.getPlayerColor();
