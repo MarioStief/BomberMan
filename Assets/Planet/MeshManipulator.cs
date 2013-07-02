@@ -12,6 +12,7 @@ public class MeshManipulator : MonoBehaviour {
 	public Vector3 []vertexPosition;	// Position der eigenen Punkte in 3-dimensionalem Array im Spherebuilder.
 	
 	float height;
+	float lift = 0.0f;
 	private int boxTexture;
 	
 	public Texture grassTex;
@@ -145,9 +146,14 @@ public class MeshManipulator : MonoBehaviour {
 			);
 		
 		//if ( meshParcel != null) meshParcel.setCenter((height*cubeMesh.vertices[4] + 0.5f*height*(cubeMesh.vertices[9]-cubeMesh.vertices[4]))*(1.01f));
-
-		if ( meshParcel != null) meshParcel.setGameObjectPosition(getCenter());
+		
+		Vector3 center = (lift == 0.0f ? getCenter() : lift * getCenter());
+		if ( meshParcel != null) meshParcel.setGameObjectPosition(center);
 		if ( meshParcel != null) renderer.material.color = meshParcel.getColor();
+	}
+	
+	public void liftObject(float factor) {
+		lift = factor;
 	}
 	
 	// <summary>

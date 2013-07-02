@@ -133,37 +133,37 @@ namespace AssemblyCSharp
 				}
 				parcelPool = shuffleList(parcelPool);
 				if (SUPERBOMB) {
-					parcelPool[0].addPowerup(new Powerup(PowerupType.SUPERBOMB), Static.superPowerupPrefab);
+					parcelPool[0].addPowerup(new Powerup(PowerupType.SUPERBOMB));
 					parcelPool.RemoveAt(0);
 					SUPERBOMB = false;
 				}
 				if (TRIGGERBOMB) {
-					parcelPool[0].addPowerup(new Powerup(PowerupType.TRIGGERBOMB), Static.superPowerupPrefab);
+					parcelPool[0].addPowerup(new Powerup(PowerupType.TRIGGERBOMB));
 					parcelPool.RemoveAt(0);
 					TRIGGERBOMB = false;
 				}
 				if (flamePower == MAXFLAMEPOWER && parcelPool.Count > 0) {
-					parcelPool[0].addPowerup(new Powerup(PowerupType.GOLDEN_FLAME), Static.superPowerupPrefab);
+					parcelPool[0].addPowerup(new Powerup(PowerupType.GOLDEN_FLAME));
 					parcelPool.RemoveAt(0);
 					bombs = 1;
 				}
 				while (bombs > 1 && parcelPool.Count > 0) {
-					parcelPool[0].addPowerup(new Powerup(PowerupType.BOMB_UP), Static.powerupPrefab);
+					parcelPool[0].addPowerup(new Powerup(PowerupType.BOMB_UP));
 					parcelPool.RemoveAt(0);
 					bombs--;
 				}
 				while (flamePower > 1 && parcelPool.Count > 0) {
-					parcelPool[0].addPowerup(new Powerup(PowerupType.FLAME_UP), Static.powerupPrefab);
+					parcelPool[0].addPowerup(new Powerup(PowerupType.FLAME_UP));
 					parcelPool.RemoveAt(0);
 					flamePower--;
 				}
 				while (speed > 0.4f && parcelPool.Count > 0) {
-					parcelPool[0].addPowerup(new Powerup(PowerupType.PLAYER_SPEED_UP), Static.powerupPrefab);
+					parcelPool[0].addPowerup(new Powerup(PowerupType.PLAYER_SPEED_UP));
 					parcelPool.RemoveAt(0);
 					speed -= 0.05f;
 				}
 				while (delay < 0.2f && parcelPool.Count > 0) {
-					parcelPool[0].addPowerup(new Powerup(PowerupType.DELAY_SPEED_UP), Static.powerupPrefab);
+					parcelPool[0].addPowerup(new Powerup(PowerupType.DELAY_SPEED_UP));
 					parcelPool.RemoveAt(0);
 					delay += 0.02f;
 				}

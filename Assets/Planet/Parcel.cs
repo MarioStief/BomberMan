@@ -177,8 +177,9 @@ namespace AssemblyCSharp
 			center = v;	
 		}
 		
-		public void addPowerup(Powerup powerup, UnityEngine.Object prefab) {
-			obj = GameObject.Instantiate(prefab, getCenterPos(), Quaternion.identity) as GameObject;
+		public void addPowerup(Powerup powerup) {
+			getMeshManipulator().liftObject(1.05f); // Sonst ist das Powerup halb im Boden
+			obj = GameObject.Instantiate(Static.powerupPrefab, getCenterPos(), Quaternion.identity) as GameObject;
 			powerupType = powerup.getType();
 			obj.GetComponent<PowerupTexture>().setType(powerupType);
 			powerupExplodingValue = powerup.getValue();
@@ -195,6 +196,7 @@ namespace AssemblyCSharp
 			obj = null;
 			powerupOnCell = false;
 			powerupExplodingValue = 0;
+			getMeshManipulator().liftObject(0.0f);
 			return powerupType;
 		}
 		

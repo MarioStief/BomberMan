@@ -427,14 +427,14 @@ public class InputHandler : MonoBehaviour {
 					Parcel newCell;
 
 					if ( lpos < n_L-2){
-						if ( Static.rink.gameArea[lpos+1][bpos].getType() != 0){
+						if ( Static.rink.gameArea[lpos+1][bpos].getType() != 0 || Static.rink.gameArea[lpos+1][bpos].hasBomb()){
 							return 0.0f;
 						}
 						newCell = Static.rink.gameArea[++lpos][bpos];
 						Player.setXPos( 0);
 
 					} else{
-						if ( Static.rink.gameArea[0][bpos].getType() != 0){
+						if ( Static.rink.gameArea[0][bpos].getType() != 0 || Static.rink.gameArea[0][bpos].hasBomb()){
 							return 0.0f;
 						}
 						lpos = 0;
@@ -461,12 +461,12 @@ public class InputHandler : MonoBehaviour {
 					
 						
 					if ( lpos > 0){
-						if ( Static.rink.gameArea[lpos-1][bpos].getType() != 0){
+						if ( Static.rink.gameArea[lpos-1][bpos].getType() != 0 || Static.rink.gameArea[lpos-1][bpos].hasBomb()){
 							return 0.0f;
 						}
 						newCell = Static.rink.gameArea[--lpos][bpos];
 					} else{
-						if ( Static.rink.gameArea[n_L-2][bpos].getType() != 0){
+						if ( Static.rink.gameArea[n_L-2][bpos].getType() != 0 || Static.rink.gameArea[n_L-2][bpos].hasBomb()){
 							return 0.0f;
 						}
 						lpos = n_L-2;
@@ -491,12 +491,12 @@ public class InputHandler : MonoBehaviour {
 					
 						
 					if ( lpos > 0){
-						if ( Static.rink.gameArea[lpos-1][bpos].getType() != 0){
+						if ( Static.rink.gameArea[lpos-1][bpos].getType() != 0 || Static.rink.gameArea[lpos-1][bpos].hasBomb()){
 							return 0.0f;
 						}
 						newCell = Static.rink.gameArea[--lpos][bpos];
 					} else{
-						if ( Static.rink.gameArea[n_L-2][bpos].getType() != 0){
+						if ( Static.rink.gameArea[n_L-2][bpos].getType() != 0 || Static.rink.gameArea[n_L-2][bpos].hasBomb()){
 							return 0.0f;
 						}
 						lpos = n_L -2;
@@ -523,12 +523,12 @@ public class InputHandler : MonoBehaviour {
 					
 						
 					if ( lpos < n_L-2){
-						if ( Static.rink.gameArea[lpos+1][bpos].getType() != 0){
+						if ( Static.rink.gameArea[lpos+1][bpos].getType() != 0 || Static.rink.gameArea[lpos+1][bpos].hasBomb()){
 							return 0.0f;
 						}
 						newCell = Static.rink.gameArea[++lpos][bpos];
 					} else{
-						if ( Static.rink.gameArea[0][bpos].getType() != 0){
+						if ( Static.rink.gameArea[0][bpos].getType() != 0 || Static.rink.gameArea[0][bpos].hasBomb()){
 							return 0.0f;
 						}
 						lpos = 0;
@@ -560,12 +560,12 @@ public class InputHandler : MonoBehaviour {
 					
 						
 					if ( bpos < n_B-1){
-						if ( Static.rink.gameArea[lpos][bpos+1].getType() != 0){
+						if ( Static.rink.gameArea[lpos][bpos+1].getType() != 0 || Static.rink.gameArea[lpos][bpos+1].hasBomb()){
 							return 0.0f;
 						}
 						newCell = Static.rink.gameArea[lpos][++bpos];
 					} else{
-						if ( Static.rink.gameArea[lpos][0].getType() != 0){
+						if ( Static.rink.gameArea[lpos][0].getType() != 0 || Static.rink.gameArea[lpos][0].hasBomb()){
 							return 0.0f;
 						}
 						bpos = 0;
@@ -594,12 +594,12 @@ public class InputHandler : MonoBehaviour {
 					
 						
 					if ( bpos > 0){
-						if ( Static.rink.gameArea[lpos][bpos-1].getType() != 0){
+						if ( Static.rink.gameArea[lpos][bpos-1].getType() != 0 || Static.rink.gameArea[lpos][bpos-1].hasBomb()){
 							return 0.0f;
 						}
 						newCell = Static.rink.gameArea[lpos][--bpos];
 					} else{
-						if ( Static.rink.gameArea[lpos][n_B-1].getType() != 0){
+						if ( Static.rink.gameArea[lpos][n_B-1].getType() != 0 || Static.rink.gameArea[lpos][n_B-1].hasBomb()){
 							return 0.0f;
 						}
 						bpos = n_B;
@@ -623,7 +623,7 @@ public class InputHandler : MonoBehaviour {
 					
 						
 					if ( bpos > 0){
-						if ( Static.rink.gameArea[lpos][bpos-1].getType() != 0){
+						if ( Static.rink.gameArea[lpos][bpos-1].getType() != 0 || Static.rink.gameArea[lpos][bpos-1].hasBomb()){
 							return 0.0f;
 						}
 						newCell = Static.rink.gameArea[lpos][--bpos];
@@ -654,12 +654,12 @@ public class InputHandler : MonoBehaviour {
 					
 						
 					if ( bpos < n_B-1){
-						if ( Static.rink.gameArea[lpos][bpos+1].getType() != 0){
+						if ( Static.rink.gameArea[lpos][bpos+1].getType() != 0 || Static.rink.gameArea[lpos][bpos+1].hasBomb()){
 							return 0.0f;
 						}
 						newCell = Static.rink.gameArea[lpos][++bpos];
 					} else{
-						if ( Static.rink.gameArea[lpos][0].getType() != 0){
+						if ( Static.rink.gameArea[lpos][0].getType() != 0 || Static.rink.gameArea[lpos][0].hasBomb()){
 							return 0.0f;
 						}
 						bpos = 0;
