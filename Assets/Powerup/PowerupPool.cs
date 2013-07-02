@@ -7,7 +7,7 @@ namespace AssemblyCSharp
 {
 	public static class PowerupPool
 	{
-		public const int DROPCHANCE = 100; // Drop chance in %
+		public const int DROPCHANCE = 25; // Drop chance in %
 		private static bool destroyable = Preferences.getDestroyablePowerups();
 		private static bool negative = Preferences.getNegativePowerups();
 		private static List<Powerup> pool = new List<Powerup>();
@@ -27,13 +27,13 @@ namespace AssemblyCSharp
 		{
 			for (int i = 0; i < size; i++)
 			{
-				for (int j = 0; j < 1; j++)
+				for (int j = 0; j < 10; j++)
 					pool.Add(new Powerup(PowerupType.BOMB_UP));
-				for (int j = 0; j < 1; j++)
+				for (int j = 0; j < 10; j++)
 					pool.Add(new Powerup(PowerupType.FLAME_UP));
-				for (int j = 0; j < 1; j++)
+				for (int j = 0; j < 10; j++)
 					pool.Add(new Powerup(PowerupType.PLAYER_SPEED_UP));
-				for (int j = 0; j < 1; j++)
+				for (int j = 0; j < 10; j++)
 					pool.Add(new Powerup(PowerupType.DELAY_SPEED_UP));
 				for (int j = 0; j < 1; j++)
 					pool.Add(new Powerup(PowerupType.GOLDEN_FLAME));
@@ -42,13 +42,13 @@ namespace AssemblyCSharp
 				for (int j = 0; j < 1; j++)
 					pool.Add(new Powerup(PowerupType.TRIGGERBOMB));
 				if (negative) {
-					for (int j = 0; j < 1; j++)
+					for (int j = 0; j < 2; j++)
 						pool.Add(new Powerup(PowerupType.BOMB_DOWN)); // 2
-					for (int j = 0; j < 1; j++)
+					for (int j = 0; j < 2; j++)
 						pool.Add(new Powerup(PowerupType.FLAME_DOWN));
-					for (int j = 0; j < 1; j++)
+					for (int j = 0; j < 2; j++)
 						pool.Add(new Powerup(PowerupType.PLAYER_SPEED_DOWN));
-					for (int j = 0; j < 1; j++)
+					for (int j = 0; j < 2; j++)
 						pool.Add(new Powerup(PowerupType.DELAY_SPEED_DOWN));
 				}
 			}
