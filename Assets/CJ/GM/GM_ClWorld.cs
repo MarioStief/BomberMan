@@ -148,7 +148,15 @@ public class GM_ClWorld : GM_World {
             if (ENT_BOMB == entity.type)
             {
                 Parcel cell = Static.rink.GetCell(entity.rpos);
-                Explosion.createExplosionOnCell(cell, entity.props.flamePower, 0.2f, false);
+				int type = 0;
+				if (Static.player.getSuperbomb())
+					type = 1;
+				if (Static.player.getTriggerbomb())
+					type = 2;
+				if (Static.player.getSuperbomb() && Static.player.getTriggerbomb())
+					type = 3;
+
+                Explosion.createExplosionOnCell(cell, entity.props.flamePower, 0.2f, type, false);
             }
 
             GameObject.Destroy(entity.obj);
