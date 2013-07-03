@@ -129,7 +129,7 @@ public class Explosion : MonoBehaviour
 						//explosion.GetComponent<Detonator>().size = 10f;
 						Detonator detonator = explosion.GetComponent<Detonator>();
 						explosionField.getCell().decreaseHeight();
-                        if (Static.player.getSuperbomb())
+                        if (type == 1 || type == 3) // superbomb
                         {
 							explosionField.getCell().decreaseHeight();
 							explosionField.getCell().decreaseHeight();
@@ -267,7 +267,7 @@ public class Explosion : MonoBehaviour
 						//cell.colorCell(Color.red);
 						break;
 					case 1:
-                        if (!Static.player.getSuperbomb())
+                        if (!(type == 1 || type == 3)) // superbomb
 							stop[j] = 1;
 						//cell.colorCell(Color.red);
 						break;
