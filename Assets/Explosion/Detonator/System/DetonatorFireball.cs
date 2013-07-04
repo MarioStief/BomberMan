@@ -33,7 +33,7 @@ public class DetonatorFireball : DetonatorComponent
 		FillMaterials(false);
 		BuildFireballA();
 		BuildFireballB();
-		//BuildFireShadow();
+		BuildFireShadow();
 	}
 	
 	//if materials are empty fill them with defaults
@@ -201,7 +201,7 @@ public class DetonatorFireball : DetonatorComponent
 		{
 			UpdateFireballA();
 			UpdateFireballB();
-			//UpdateFireShadow();
+			UpdateFireShadow();
 			if (drawFireballA)	_fireballAEmitter.Explode();
 			if (drawFireballB) _fireballBEmitter.Explode();
 			//if (drawFireShadow)	_fireShadowEmitter.Explode();
