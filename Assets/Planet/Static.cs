@@ -24,11 +24,23 @@ namespace AssemblyCSharp
 		
 		public static UnityEngine.Object bombIconPrefab;
 		public static UnityEngine.Object playerSpeedIconPrefab;
-		public static UnityEngine.Object flameIconPrefab;
 		public static UnityEngine.Object delaySpeedIconPrefab;
+		
+		// dynamically filled prefabs:
+		public static UnityEngine.Object flameIconPrefab;
 		public static UnityEngine.Object superBombIconPrefab;
 		public static UnityEngine.Object extraIconPrefab;
 		
+		/*
+		 * if needed: the static ones:
+		 * public static UnityEngine.Object emptyIconPrefab;
+		 * public static UnityEngine.Object triggerBombIconPrefab;
+		 * public static UnityEngine.Object goldenFlameIconPrefab;
+		 * public static UnityEngine.Object normalFlameIconPrefab;
+		 * public static UnityEngine.Object superBombActiveIconPrefab;
+		 * public static UnityEngine.Object superBombIconInactivePrefab;
+		 */
+
 		static Static() {
 			
 			bombPrefab = Resources.Load("Prefabs/bombPrefab");
@@ -42,12 +54,23 @@ namespace AssemblyCSharp
 			
 			alphaBlended = Shader.Find("Particles/Alpha Blended");
 			
-			bombIconPrefab = Resources.Load("Textures/Menu/bomb.png");
-			playerSpeedIconPrefab = Resources.Load("Textures/Menu/playerSpeed.png");
-			flameIconPrefab = Resources.Load("Textures/Menu/flame.png");
 			delaySpeedIconPrefab = Resources.Load("Textures/Menu/delaySpeed.png");
 			superBombIconPrefab = Resources.Load("Textures/Menu/superBombInactive.png");
 			extraIconPrefab = Resources.Load("Textures/Menu/empty.png");
+			
+			//again: dynamic:
+			bombIconPrefab = Resources.Load("Textures/Menu/bomb.png");
+			playerSpeedIconPrefab = Resources.Load("Textures/Menu/playerSpeed.png");
+			flameIconPrefab = Resources.Load("Textures/Menu/flame.png");
+
+			/* static:
+			emptyIconPrefab = Resources.Load("Textures/Menu/empty.png");
+			triggerBombIconPrefab = Resources.Load("Textures/Menu/triggerBomb.png");
+			goldenFlameIconPrefab = Resources.Load("Textures/Menu/goldenFlame.png");
+			normalFlameIconPrefab = Resources.Load("Textures/Menu/flame.png");
+			superBombActiveIconPrefab = Resources.Load("Textures/Menu/superBombActive.png");
+			superBombIconInactivePrefab = Resources.Load("Textures/Menu/superBombInactive.png");
+			*/
 		}
 		
 		public static void setSphereBuilder(SphereBuilder s) {
