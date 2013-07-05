@@ -4,10 +4,14 @@ MonoImporter:
   serializedVersion: 2
   defaultReferences:
   - cubeMesh: {instanceID: 0}
-  - grassTex: {fileID: 2800000, guid: 4890804b757da2642a5889dea230b2ec, type: 3}
-  - rockTex: {fileID: 2800000, guid: d21c505b5e9d66b47af97f71688297b1, type: 3}
-  - boxTex: {fileID: 2800000, guid: 7012598236c375948b61f55c94ed2cb2, type: 3}
-  - rockBump: {fileID: 2800000, guid: 739bc64d995ae0c44969f49f4a59222d, type: 3}
+  - grassTex: {fileID: 2800000, guid: 61310650dd87d4d7e81eb992bd8d2b54, type: 3}
+  - rockTex: {fileID: 2800000, guid: e08e13bcf6d68486eb494a6a44f0a940, type: 3}
+  - boxTex1: {fileID: 2800000, guid: 4a0949083f61d4b2cb0025f124d5db6e, type: 3}
+  - boxTex2: {fileID: 2800000, guid: 07488fffe14b34b04a39ce4401d6894d, type: 3}
+  - grassBump: {fileID: 2800000, guid: 408f1aa73000c41fdb6f1058f8c29392, type: 3}
+  - rockBump: {fileID: 2800000, guid: df82a336caef54abf874315fff4e7246, type: 3}
+  - boxBump1: {fileID: 2800000, guid: 45c7ccfd43377448d90e238156228461, type: 3}
+  - boxBump2: {fileID: 2800000, guid: 16d1f1657bb3a43c497f710b5b6f6f7d, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
