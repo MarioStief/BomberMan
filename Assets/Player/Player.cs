@@ -29,8 +29,8 @@ namespace AssemblyCSharp
 		
 		private bool dead = false;
 		
-		private static UnityEngine.Object[] prefabs;
-		private static int[] stats;
+		private static UnityEngine.Object[] icons;
+		private static String[] iconText;
 		
 		private static List<Parcel> triggerBombs = new List<Parcel>();
 		
@@ -57,27 +57,33 @@ namespace AssemblyCSharp
 			 * NOTE: icons are 32x32 and transparent
 			 */
 
-			prefabs[0] = Static.bombIconPrefab;
-			prefabs[1] = Static.playerSpeedIconPrefab;
-			prefabs[2] = Static.flameIconPrefab;
-			prefabs[3] = Static.delaySpeedIconPrefab;
-			prefabs[4] = Static.superBombIconPrefab;
-			prefabs[5] = Static.extraIconPrefab;
+			icons[0] = Static.bombIconPrefab;
+			icons[1] = Static.playerSpeedIconPrefab;
+			icons[2] = Static.flameIconPrefab;
+			icons[3] = Static.delaySpeedIconPrefab;
+			icons[4] = Static.superBombIconPrefab;
+			icons[5] = Static.extraIconPrefab;
 			
 			int extra = TRIGGERBOMB ? 1 : 0;
-			int[] stats = {bombs, (int) speed*1000, flamePower, (int) delay*1000, SUPERBOMB ? 1 : 0, extra};
+			//String[] stats = {bombs.ToString(), ((int) speed*1000).ToString(), flamePower.ToString(), ((int) delay*1000).ToString(), SUPERBOMB ? 1 : 0, extra};
+			String[] iconText = {
+				bombs.ToString(),
+				((int) speed*1000).ToString() + " ms",
+				flamePower.ToString(),
+				((int) delay*1000).ToString() + " ms"
+			};
 			
 			// UPDATE MENU BAR
 			// SomeStrangeMenu.updateStats(stats);
 			// SomeStrangeMenu.updatePrefabs(prefabs);
 		}
 		
-		public int[] getIntStats() {
-			return stats;
+		public String[] getIconText() {
+			return iconText;
 		}
 
-		public UnityEngine.Object[] getIconPrefabs() {
-			return prefabs;
+		public UnityEngine.Object[] getIcons() {
+			return icons;
 		}
 
 		public static void addTriggerBomb(Parcel cell) {
