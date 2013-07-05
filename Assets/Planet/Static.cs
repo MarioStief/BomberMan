@@ -14,28 +14,70 @@ namespace AssemblyCSharp
 		public static UnityEngine.Object bombPrefab;
 		public static UnityEngine.Object powerupPrefab;
 		public static UnityEngine.Object explosionPrefab;
+		
 		public static UnityEngine.Object boxCube1Prefab;
 		public static UnityEngine.Object boxCube2Prefab;
 		public static UnityEngine.Object stoneCube1Prefab;
 		public static UnityEngine.Object stoneCube2Prefab;
+		
 		public static Shader alphaBlended;
+		
+		public static UnityEngine.Object bombIconPrefab;
+		public static UnityEngine.Object playerSpeedIconPrefab;
+		public static UnityEngine.Object flameIconPrefab;
+		public static UnityEngine.Object delaySpeedIconPrefab;
+		public static UnityEngine.Object superBombIconPrefab;
+		public static UnityEngine.Object extraIconPrefab;
 		
 		static Static() {
 			
 			bombPrefab = Resources.Load("Prefabs/bombPrefab");
 			powerupPrefab = Resources.Load("Prefabs/powerupPrefab");
 			explosionPrefab = Resources.Load("Prefabs/explosionPrefab");
+			
 			boxCube1Prefab = Resources.Load("Prefabs/boxCube1Prefab");
 			boxCube2Prefab = Resources.Load("Prefabs/boxCube2Prefab");
 			stoneCube1Prefab = Resources.Load("Prefabs/stoneCube1Prefab");
 			stoneCube2Prefab = Resources.Load("Prefabs/stoneCube2Prefab");
+			
 			alphaBlended = Shader.Find("Particles/Alpha Blended");
+			
+			bombIconPrefab = Resources.Load("Textures/Menu/bomb.png");
+			playerSpeedIconPrefab = Resources.Load("Textures/Menu/playerSpeed.png");
+			flameIconPrefab = Resources.Load("Textures/Menu/flame.png");
+			delaySpeedIconPrefab = Resources.Load("Textures/Menu/delaySpeed.png");
+			superBombIconPrefab = Resources.Load("Textures/Menu/superBombInactive.png");
+			extraIconPrefab = Resources.Load("Textures/Menu/empty.png");
 		}
 		
 		public static void setSphereBuilder(SphereBuilder s) {
 			sphereHandler = s;
 		}
 		
+		public static void setExtra(int type) {
+			switch (type) {
+			case 0:
+				extraIconPrefab = Resources.Load("Textures/Menu/empty.png");
+				break;
+			case 1:
+				extraIconPrefab = Resources.Load("Textures/Menu/triggerBomb.png");
+				break;
+			}
+		}
+		
+		public static void setGoldenFlame(bool goldenFlame) {
+			if (goldenFlame)
+				flameIconPrefab = Resources.Load("Textures/Menu/goldenFlame.png");
+			else
+				flameIconPrefab = Resources.Load("Textures/Menu/flame.png");
+		}
+		
+		public static void setSuperbomb(bool superbomb) {
+			if (superbomb)
+				superBombIconPrefab = Resources.Load("Textures/Menu/superBombActive.png");
+			else
+				superBombIconPrefab = Resources.Load("Textures/Menu/superBombInactive.png");
+		}
 		
 		public static void setRink(Rink r) {
 			rink = r;
