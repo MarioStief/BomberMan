@@ -19,8 +19,8 @@ public class Explosion : MonoBehaviour
 	private bool self = false;
 	private bool bombDestroyed = false;
 	private bool superbomb;
-	private bool triggerBomb;
-	private bool contactMine;
+	private bool triggerBomb = false;
+	private bool contactMine = false;
 	
 	private bool waitingForBombExplosion = true;
 	
