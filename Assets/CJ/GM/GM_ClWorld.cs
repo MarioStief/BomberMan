@@ -32,6 +32,8 @@ public class GM_ClWorld : GM_World {
         GameObject obj_gameController = (GameObject)GameObject.FindGameObjectWithTag("GameController");
         scr_netClient = obj_gameController.GetComponent<NET_Client>();
         scr_localInput = scr_netClient.GetLocalInput();
+
+        obj_gameController.GetComponent<Cameras>().SetCamera(Cameras.CAM_TYPE.GAME);
     }
 
     public void ToggleGhosts()
