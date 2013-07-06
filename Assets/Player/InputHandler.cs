@@ -260,7 +260,7 @@ public class InputHandler : MonoBehaviour {
 
 	void Update () {
 
-        UpdateFoe();
+        // UpdateFoe();
 		
 		if (!Static.player.isDead()) {
 			
