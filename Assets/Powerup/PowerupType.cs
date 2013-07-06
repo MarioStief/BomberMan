@@ -16,6 +16,7 @@ namespace AssemblyCSharp
 		DELAY_SPEED_DOWN    = 8,
 		GOLDEN_FLAME        = 9,
 		SUPERBOMB           = 10,
-        TRIGGERBOMB         = 11
+        TRIGGERBOMB         = 11,
+		CONTACTMINE         = 12
 	}
 }

@@ -6,6 +6,7 @@ namespace AssemblyCSharp
 		
 		public Material powerdown;
 		public Material powerup;
+		public Material extraPowerup;
 		public Material superPowerup;
 
 		public Texture bomb;
@@ -15,6 +16,7 @@ namespace AssemblyCSharp
 		public Texture goldenFlame;
 		public Texture superBomb;
 		public Texture triggerBomb;
+		public Texture contactMine;
 		
 		public void setType (PowerupType type) {
 			Material boxMaterial = null;
@@ -43,15 +45,18 @@ namespace AssemblyCSharp
 			} else if (type == PowerupType.DELAY_SPEED_DOWN) {
 				boxMaterial = powerdown;
 				powerupTexture = delaySpeed;
+			} else if (type == PowerupType.TRIGGERBOMB) {
+				boxMaterial = extraPowerup;
+				powerupTexture = triggerBomb;
+			} else if (type == PowerupType.CONTACTMINE) {
+				boxMaterial = extraPowerup;
+				powerupTexture = contactMine;
 			} else if (type == PowerupType.GOLDEN_FLAME) {
 				boxMaterial = superPowerup;
 				powerupTexture = goldenFlame;
 			} else if (type == PowerupType.SUPERBOMB) {
 				boxMaterial = superPowerup;
 				powerupTexture = superBomb;
-			} else if (type == PowerupType.TRIGGERBOMB) {
-				boxMaterial = superPowerup;
-				powerupTexture = triggerBomb;
 			}
 			Material[] boxMaterials = new Material[2];
 			boxMaterials[0] = boxMaterial;

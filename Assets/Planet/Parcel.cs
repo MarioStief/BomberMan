@@ -34,8 +34,10 @@ namespace AssemblyCSharp
 		
 		GameObject obj;					// Object auf der Parzelle, das gezeichnet werden soll.
 		
-		private bool bombOnCell; 		// Beschränkung von einer Bombe pro Feld überhaupt notwendig?
+		private bool bombOnCell;
+		private bool contactMineOnCell;
 		private bool powerupOnCell;
+		
 		private Explosion explosion;
 		private bool exploding;
 		private int powerupExplodingValue;
@@ -44,7 +46,7 @@ namespace AssemblyCSharp
 		
 		public Parcel (){
 			height = 1.0f;
-			}
+		}
 		
 		public Parcel (int type)
 		{
@@ -227,8 +229,16 @@ namespace AssemblyCSharp
 			this.bombOnCell = bombOnCell;
 		}
 		
+		public void setContactMine(bool contactMine) {
+			this.contactMineOnCell = contactMine;
+		}
+		
 		public bool hasBomb() {
 			return bombOnCell;
+		}
+		
+		public bool hasContactMine() {
+			return contactMineOnCell;
 		}
 		
 		public void setExplosion(Explosion explosion) {

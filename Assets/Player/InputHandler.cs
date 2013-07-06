@@ -236,6 +236,10 @@ public class InputHandler : MonoBehaviour {
 			// -----------------------------------------------------------
 			moveCharacter();
 			currCell = Static.rink.gameArea[lpos][bpos];
+			if (currCell.hasContactMine()) {
+				currCell.getExplosion().startExplosion();
+			}
+				
             /*
 			if (currCell.isExploding()) {
                 player.setDead(true);

@@ -150,15 +150,13 @@ public class GM_ClWorld : GM_World {
             if (ENT_BOMB == entity.type)
             {
                 Parcel cell = Static.rink.GetCell(entity.rpos);
-				int type = 0;
-				if (Static.player.getSuperbomb())
-					type = 1;
+				int extra = 0;
 				if (Static.player.getTriggerbomb())
-					type = 2;
-				if (Static.player.getSuperbomb() && Static.player.getTriggerbomb())
-					type = 3;
+					extra = 1;
+				if (Static.player.getContactMine())
+					extra = 2;
 
-                Explosion.createExplosionOnCell(cell, entity.props.flamePower, 0.2f, type, false);
+                Explosion.createExplosionOnCell(cell, entity.props.flamePower, 0.2f, Static.player.getSuperbomb(), extra, false);
             }
 
             GameObject.Destroy(entity.obj);

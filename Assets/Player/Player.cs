@@ -19,6 +19,7 @@ namespace AssemblyCSharp
 		private const int MAXHP = 100;
 		private static bool SUPERBOMB = false;
 		private static bool TRIGGERBOMB = false;
+		private static bool CONTACTMINE = false;
 		
 		private int bombs = 1;
 		private int bombsActive = 0;
@@ -139,6 +140,10 @@ namespace AssemblyCSharp
 				TRIGGERBOMB = true;
 				Static.setExtra(1);
 				updateMenuStats();
+			} else if (type == PowerupType.CONTACTMINE) {
+				CONTACTMINE = true;
+				Static.setExtra(2);
+				updateMenuStats();
 			}
 			Debug.Log("bombs: " + bombs + ", flamePower: " + flamePower + ", speed: " + speed*1000 + " ms, delay: " + delay*1000 + " ms");
 		}
@@ -212,6 +217,13 @@ namespace AssemblyCSharp
 					parcelPool[0].addPowerup(new Powerup(PowerupType.TRIGGERBOMB));
 					parcelPool.RemoveAt(0);
 					TRIGGERBOMB = false;
+					Static.setExtra(0);
+					updateMenuStats();
+				}
+				if (CONTACTMINE) {
+					parcelPool[0].addPowerup(new Powerup(PowerupType.CONTACTMINE));
+					parcelPool.RemoveAt(0);
+					CONTACTMINE = false;
 					Static.setExtra(0);
 					updateMenuStats();
 				}
@@ -310,6 +322,10 @@ namespace AssemblyCSharp
 
 		public bool getTriggerbomb() {
 			return TRIGGERBOMB;
+		}
+
+		public bool getContactMine() {
+			return CONTACTMINE;
 		}
 
 		public float getDelay() {

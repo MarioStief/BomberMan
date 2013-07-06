@@ -33,11 +33,13 @@ namespace AssemblyCSharp
 					value = 3; 
 			else if (type == PowerupType.FLAME_UP)
 					value = 3; 
+			else if (type == PowerupType.TRIGGERBOMB)
+					value = 5;
+			else if (type == PowerupType.CONTACTMINE)
+					value = 5;
 			else if (type == PowerupType.GOLDEN_FLAME)
 					value = 10;
 			else if (type == PowerupType.SUPERBOMB)
-					value = 10;
-			else if (type == PowerupType.TRIGGERBOMB)
 					value = 10;
 			return value;
 		}
