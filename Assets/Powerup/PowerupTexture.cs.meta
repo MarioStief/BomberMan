@@ -2,7 +2,19 @@ fileFormatVersion: 2
 guid: 8559eb3b5574e44ddb2502eaca0c56a3
 MonoImporter:
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - powerdown: {fileID: 2100000, guid: 18d08c729903c49f799be204b711d81a, type: 2}
+  - powerup: {fileID: 2100000, guid: cf4ed8d0a215a44309933d0208c00ee9, type: 2}
+  - extraPowerup: {fileID: 2100000, guid: 86e9ffc603d1644fd8bfc4389b04f18e, type: 2}
+  - superPowerup: {fileID: 2100000, guid: afcd22bed44a542d38f85f7eb57819a0, type: 2}
+  - bomb: {fileID: 2800000, guid: 073e40f1e86e64f9ab6d2c34cfc48997, type: 3}
+  - flame: {fileID: 2800000, guid: e2ead11f1b968487b8248d130b8bf24e, type: 3}
+  - playerSpeed: {fileID: 2800000, guid: 0342013c3a42e4bd6b9a795d151fb99e, type: 3}
+  - delaySpeed: {fileID: 2800000, guid: 06d938ffe71604dbfa853222a435c087, type: 3}
+  - goldenFlame: {fileID: 2800000, guid: 837b1f200dc43447f8d3448481fac54c, type: 3}
+  - superBomb: {fileID: 2800000, guid: ccc8e56fcc05f429c92ea6e81b4f3c7a, type: 3}
+  - triggerBomb: {fileID: 2800000, guid: 5b4675f73392847578aa94fcd2ece1e8, type: 3}
+  - contactMine: {fileID: 2800000, guid: 55b3a34cf5f744e3cbf2de4133c438ab, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
