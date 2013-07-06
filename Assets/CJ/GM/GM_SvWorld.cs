@@ -401,17 +401,18 @@ public class GM_SvWorld : GM_World {
                 NET_ActorState.Message msg = state.GetInput();
                 if (null != msg)
                 {
-                    entity.scr_moveable.rpos = msg.rpos;
+                    entity.scr_moveable.actorState = state.GetInput();
                 }
             }
 
             // pick up powerups
-            Parcel cell = Static.rink.GetCell(entity.scr_moveable.rpos);
-            if (cell.hasPowerup()) {
-                client.player.powerupCollected(cell.destroyPowerup(false));
-                DestroyEntity(cell.svid);
-                cell.svid = 0;
-            }
+            // TODO
+            //Parcel cell = Static.rink.GetCell(entity.scr_moveable.rpos);
+            //if (cell.hasPowerup()) {
+            //    client.player.powerupCollected(cell.destroyPowerup(false));
+            //    DestroyEntity(cell.svid);
+            //    cell.svid = 0;
+            //}
 
             if (client.isDead)
             {

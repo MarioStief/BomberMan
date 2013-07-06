@@ -4,14 +4,8 @@ using AssemblyCSharp;
 
 public class NET_SV_Movable : MonoBehaviour {
 
-    public Rink.Pos rpos = new Rink.Pos();
-    public int resId = 0; // for owning player only
+    public NET_ActorState.Message actorState = null;
     public float time = 0.0f;
-
-    public void SetResponseID(int resId)
-    {
-        this.resId = resId;
-    }
 
     public void SetServerTime(float time)
     {
@@ -20,12 +14,13 @@ public class NET_SV_Movable : MonoBehaviour {
 
     public void OnSerializeNetworkView(BitStream stream, NetworkMessageInfo info)
     {
-        stream.Serialize(ref resId);
-        stream.Serialize(ref time);
-        stream.Serialize(ref rpos.bpos);
-        stream.Serialize(ref rpos.lpos);
-        stream.Serialize(ref rpos.xoff);
-        stream.Serialize(ref rpos.yoff);
+        if (null != actorState)
+        {
+            stream.Serialize(ref time);
+            NET_ActorState.Message.Serialize(stream, actorState);
+        }
+        
+        
     }
 	
 }

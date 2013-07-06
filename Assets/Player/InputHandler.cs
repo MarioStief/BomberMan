@@ -67,6 +67,9 @@ public class InputHandler : MonoBehaviour {
         this.bpos = rpos.bpos;
         this.lpos = rpos.lpos;
     }
+
+    public float GetVerticalAngle() { return verticalAngle; }
+    public float GetHorizontalAngle() { return horizontalAngle; }
 	
 	// Use this for initialization
 	void Start () {
@@ -109,62 +112,30 @@ public class InputHandler : MonoBehaviour {
 		transform.LookAt(currCell.up.getCenterPos());
 	}
 	
-	void OnSerializeNetworkView(BitStream stream, NetworkMessageInfo info) {
-		if (stream.isWriting)
-		{
-			// calculate my position on sphere
-			/*Vector3 p = new Vector3(
-				transform.position.x,
-				Mathf.Cos(verticalAngle) * transform.position.y - Mathf.Sin(verticalAngle) * transform.position.z,
-				Mathf.Sin(verticalAngle) * transform.position.y + Mathf.Cos(verticalAngle) * transform.position.z
-			);*/
-			Vector3 p = transform.position;
-			stream.Serialize(ref p);
+	public Vector3 ToLocalWorld(NET_ActorState.Message otherState)
+    {
+		Vector3 fp = otherState.position;
+        float fva = otherState.vertAng;
+        float fha = otherState.horzAng;
 			
-			float va = verticalAngle;
-			stream.Serialize(ref va);
-			float ha = horizontalAngle;
-			stream.Serialize(ref ha);
-			
-			Quaternion r = transform.rotation;
-			stream.Serialize(ref r);
-		}
-		else
-		{
-			Vector3 fp = Vector3.zero;
-			stream.Serialize(ref fp);
-			
-			float fva = 0f;
-			stream.Serialize(ref fva);
-			
-			float fha = 0f;
-			stream.Serialize(ref fha);
-			
-			// turn the player to our zero
-			fp = new Vector3(
-				Mathf.Cos(-fha) * fp.x - Mathf.Sin(-fha) * fp.y,
-				Mathf.Sin(-fha) * fp.x + Mathf.Cos(-fha) * fp.y,
-				fp.z
-			);
-			// now turn him up/down
-			fp = new Vector3(
-				fp.x,
-				Mathf.Cos(fva-verticalAngle) * fp.y - Mathf.Sin(fva-verticalAngle) * fp.z,
-				Mathf.Sin(fva-verticalAngle) * fp.y + Mathf.Cos(fva-verticalAngle) * fp.z
-			);
-			// and back
-			transform.position = new Vector3(
-				Mathf.Cos(fha) * fp.x - Mathf.Sin(fha) * fp.y,
-				Mathf.Sin(fha) * fp.x + Mathf.Cos(fha) * fp.y,
-				fp.z
-			);
-			
-			
-			Quaternion fr = Quaternion.Euler(new Vector3(0, 0, 0));
-			stream.Serialize(ref fr);
-			transform.rotation = fr;
-		}
-	
+		// turn the player to our zero
+		fp = new Vector3(
+			Mathf.Cos(-fha) * fp.x - Mathf.Sin(-fha) * fp.y,
+			Mathf.Sin(-fha) * fp.x + Mathf.Cos(-fha) * fp.y,
+			fp.z
+		);
+		// now turn him up/down
+		fp = new Vector3(
+			fp.x,
+			Mathf.Cos(fva-verticalAngle) * fp.y - Mathf.Sin(fva-verticalAngle) * fp.z,
+			Mathf.Sin(fva-verticalAngle) * fp.y + Mathf.Cos(fva-verticalAngle) * fp.z
+		);
+		// and back
+		return new Vector3(
+			Mathf.Cos(fha) * fp.x - Mathf.Sin(fha) * fp.y,
+			Mathf.Sin(fha) * fp.x + Mathf.Cos(fha) * fp.y,
+			fp.z
+		);	
 	}
 	
 	IEnumerator deadPlayer() {
@@ -215,46 +186,42 @@ public class InputHandler : MonoBehaviour {
 		}
 	}
 
-    void UpdateFoe()
+    public Vector3 UpdateFoe(NET_ActorState.Message actorState)
     {
-        // Gegner drehen mit dem Planeten..!
-        if (!networkView.isMine)
+        float verticalMovement = Input.GetAxis("Vertical");
+        float vm = Static.player.getSpeed() * verticalMovement * Time.deltaTime;
+        vm = determineVerticalParcelPosition(verticalMovement, vm);
+        // verticalAngle += vm;
+        vm = verticalAngle + actorState.vertAng;
+
+        horizontalMovement = Input.GetAxis("Horizontal") * Static.player.getSpeed();
+        float m = horizontalMovement * Time.deltaTime * Static.player.getSpeed() * (-2);
+        m = determineHorizontalParcelPosition(horizontalMovement, m);
+        //horizontalAngle += m;
+
+        if (vertAngle != 0)
         {
-
-            float verticalMovement = Input.GetAxis("Vertical");
-            float vm = Static.player.getSpeed() * verticalMovement * Time.deltaTime;
-            vm = determineVerticalParcelPosition(verticalMovement, vm);
-            verticalAngle += vm;
-
-            horizontalMovement = Input.GetAxis("Horizontal") * Static.player.getSpeed();
-            float m = horizontalMovement * Time.deltaTime * Static.player.getSpeed() * (-2);
-            m = determineHorizontalParcelPosition(horizontalMovement, m);
-            horizontalAngle += m;
-
-            if (vertAngle != 0)
-            {
-                // turn the player to our zero
-                Vector3 tmp = new Vector3(
-                    Mathf.Cos(-horizontalAngle) * transform.position.x - Mathf.Sin(-horizontalAngle) * transform.position.y,
-                    Mathf.Sin(-horizontalAngle) * transform.position.x + Mathf.Cos(-horizontalAngle) * transform.position.y,
-                    transform.position.z
-                );
-                // now turn him up/down
-                tmp = new Vector3(
-                    tmp.x,
-                    Mathf.Cos(-vm) * tmp.y - Mathf.Sin(-vm) * tmp.z,
-                    Mathf.Sin(-vm) * tmp.y + Mathf.Cos(-vm) * tmp.z
-                );
-                // and back
-                transform.position = new Vector3(
-                    Mathf.Cos(horizontalAngle) * tmp.x - Mathf.Sin(horizontalAngle) * tmp.y,
-                    Mathf.Sin(horizontalAngle) * tmp.x + Mathf.Cos(horizontalAngle) * tmp.y,
-                    tmp.z
-                );
-            }
-
-            return;
+            // turn the player to our zero
+            Vector3 tmp = new Vector3(
+                Mathf.Cos(-horizontalAngle) * actorState.position.x - Mathf.Sin(-horizontalAngle) * actorState.position.y,
+                Mathf.Sin(-horizontalAngle) * actorState.position.x + Mathf.Cos(-horizontalAngle) * actorState.position.y,
+                actorState.position.z
+            );
+            // now turn him up/down
+            tmp = new Vector3(
+                tmp.x,
+                Mathf.Cos(-vm) * tmp.y - Mathf.Sin(-vm) * tmp.z,
+                Mathf.Sin(-vm) * tmp.y + Mathf.Cos(-vm) * tmp.z
+            );
+            // and back
+            return new Vector3(
+                Mathf.Cos(horizontalAngle) * tmp.x - Mathf.Sin(horizontalAngle) * tmp.y,
+                Mathf.Sin(horizontalAngle) * tmp.x + Mathf.Cos(horizontalAngle) * tmp.y,
+                tmp.z
+            );
         }
+
+        return actorState.position;
     }
 	
 

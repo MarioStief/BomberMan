@@ -6,17 +6,14 @@ public abstract class NET_CL_Entity : MonoBehaviour
 {
     public struct State
     {
-        public int reqId;
+        // uses actorState.reqID
+        public int reqId; // REMOVEME
         public float time;
-        public Rink.Pos rpos;
+        public NET_ActorState.Message actorState;
     }
 
-    // position in xz-plane
-    public virtual void SetPosition(Rink.Pos rpos) { }
     public abstract void SetPosition(Vector3 position);
     public abstract Vector3 GetPosition();
-
-    // raw server responses
-    public abstract Vector3 GetServerPosition();
-
+    public abstract float GetVerticalAngle();
+    public abstract float GetHorizontalAngle();
 }

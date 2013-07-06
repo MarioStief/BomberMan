@@ -8,25 +8,39 @@ public class NET_CL_Moveable : NET_CL_Entity {
     public static float IP_LAG = 0.1f;
 
     private List<State> buffer = new List<State>();
-    private int minReqID = 0;
+    private int maxReqID = 0; // most recently received package
     private float time = 0.0f;
 
-    private Vector3 position;
-    private Vector3 serverPosition = Vector3.zero;
+    private NET_ActorState.Message state = new NET_ActorState.Message();
+    private NET_ActorState.Message serverState = new NET_ActorState.Message();
+
+    private static NET_ActorState.Message Lerp(NET_ActorState.Message lhp, NET_ActorState.Message rhp, float t)
+    {
+        NET_ActorState.Message state = new NET_ActorState.Message();
+        state.position = Vector3.Lerp(lhp.position, rhp.position, t);
+        state.vertAng = (1.0f - t) * lhp.vertAng + t * rhp.vertAng;
+        state.horzAng = (1.0f - t) * lhp.horzAng + t * rhp.horzAng;
+        return state;
+    }
 
     public override void SetPosition(Vector3 position)
     {
-        this.position = position;
+        state.position = position;
     }
 
     public override Vector3 GetPosition()
     {
-        return position;
+        return state.position;
     }
 
-    public override Vector3 GetServerPosition()
+    public override float GetVerticalAngle()
     {
-        return serverPosition;
+        return state.vertAng;
+    }
+
+    public override float GetHorizontalAngle()
+    {
+        return state.horzAng;
     }
 
     private static float Ease(float t) 
@@ -47,11 +61,7 @@ public class NET_CL_Moveable : NET_CL_Entity {
             if (i + 1 < buffer.Count)
             {
                 float t = (dtime - buffer[i].time) / (buffer[i + 1].time - buffer[i].time);
-
-                Vector3 p0 = Static.rink.GetPosition(buffer[i].rpos);
-                Vector3 p1 = Static.rink.GetPosition(buffer[i + 1].rpos);
-
-                position = Vector3.Lerp(p0, p1, t);
+                state = Lerp(buffer[i].actorState, buffer[i + 1].actorState, t);
             }
             if(0 < i) buffer.RemoveRange(0, i - 1);
         }
@@ -69,20 +79,21 @@ public class NET_CL_Moveable : NET_CL_Entity {
     {
         State state = new State();
 
-        stream.Serialize(ref state.reqId);
         stream.Serialize(ref state.time);
 
-        state.rpos = new Rink.Pos();
-        stream.Serialize(ref state.rpos.bpos);
-        stream.Serialize(ref state.rpos.lpos);
-        stream.Serialize(ref state.rpos.xoff);
-        stream.Serialize(ref state.rpos.yoff);
+        state.actorState = new NET_ActorState.Message();
+        NET_ActorState.Message.Serialize(stream, state.actorState);
 
         buffer.Add(state);
         buffer.Sort(new CompareTime());
 
-        serverPosition = Static.rink.GetPosition(state.rpos);
-        time = state.time; // accept server time
+        serverState = state.actorState;
+
+        if (maxReqID < state.actorState.reqID)
+        {
+            maxReqID = state.actorState.reqID;
+            time = state.time; // accept server time
+        }
     }
 	
 }

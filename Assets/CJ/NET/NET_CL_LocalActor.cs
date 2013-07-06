@@ -26,7 +26,17 @@ public class NET_CL_LocalActor : NET_CL_Entity {
         return position;
     }
 
-    public override Vector3 GetServerPosition()
+    public override float GetVerticalAngle()
+    {
+        return 0.0f;
+    }
+
+    public override float GetHorizontalAngle()
+    {
+        return 0.0f;
+    }
+
+    public Vector3 GetServerPosition()
     {
         return serverPosition;
     }

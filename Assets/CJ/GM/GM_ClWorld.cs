@@ -12,7 +12,7 @@ public class GM_ClWorld : GM_World {
 
     private class ClEntity : Entity
     {
-        public NET_CL_Entity scr_clEntity = null;       // remote actors
+        public NET_CL_Entity scr_clEntity = null;   // remote actors
         public InputHandler scr_inputHandler = null;    // local actor
 
         public GameObject obj_ghost = null;
@@ -129,13 +129,13 @@ public class GM_ClWorld : GM_World {
                 entity.obj = (GameObject)GameObject.Instantiate(Resources.Load("Prefabs/bombPrefab"));
 
                 entity.scr_clEntity = entity.obj.AddComponent<NET_CL_Static>();
-                entity.scr_clEntity.SetPosition(rpos);
+                // entity.scr_clMoveable.SetPosition(rpos);
             }
             if (ENT_POWERUP == spawnEntityMsg.type)
             {
                 entity.obj = (GameObject)GameObject.Instantiate(PowerupPrefabFromType(spawnEntityMsg.props.puType));
                 entity.scr_clEntity = entity.obj.AddComponent<NET_CL_Static>();
-                entity.scr_clEntity.SetPosition(rpos);
+                // entity.scr_clMoveable.SetPosition(rpos);
             }
 
             entities.AddLast(entity);
@@ -223,19 +223,24 @@ public class GM_ClWorld : GM_World {
             {
                 if (entity.scr_clEntity)
                 {
-                    entity.obj.transform.position = entity.scr_clEntity.GetPosition();
-
-                    if (entity.obj_ghost)
-                    {
-                        entity.obj_ghost.transform.position = entity.scr_clEntity.GetServerPosition();
-                    }
+                    entity.obj.transform.position = localActor.scr_inputHandler.ToLocalWorld(new NET_ActorState.Message(
+                        entity.scr_clEntity.GetPosition(),
+                        entity.scr_clEntity.GetVerticalAngle(),
+                        entity.scr_clEntity.GetHorizontalAngle()));
+                    //entity.obj.transform.position = localActor.scr_inputHandler.UpdateFoe(new NET_ActorState.Message(
+                    //    entity.obj.transform.position,
+                    //    entity.scr_clEntity.GetVerticalAngle(),
+                    //    entity.scr_clEntity.GetHorizontalAngle()));
                 }
             }
 
             entIt = next;
         }
 
-        scr_netClient.GetLocalState().AddState(localPlayer.GetPosition());
+        scr_netClient.GetLocalState().AddState(
+            localActor.obj.transform.position, 
+            localActor.scr_inputHandler.GetVerticalAngle(), 
+            localActor.scr_inputHandler.GetHorizontalAngle());
     }
 	
 }

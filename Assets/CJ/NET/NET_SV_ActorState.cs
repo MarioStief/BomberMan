@@ -5,6 +5,7 @@ using AssemblyCSharp;
 
 public class NET_SV_ActorState : MonoBehaviour {
 
+    int maxReqID = 0; // most recently received package
     NET_ActorState.Message msg = null;
 
     public NET_ActorState.Message GetInput()
@@ -14,8 +15,13 @@ public class NET_SV_ActorState : MonoBehaviour {
 
     public void OnSerializeNetworkView(BitStream stream, NetworkMessageInfo info)
     {
-        msg = new NET_ActorState.Message();
-        Rink.Pos.Serialize(ref msg.rpos, stream);
+        NET_ActorState.Message msg = new NET_ActorState.Message();
+        NET_ActorState.Message.Serialize(stream, msg);
+        if (maxReqID < msg.reqID)
+        {
+            maxReqID = msg.reqID;
+            this.msg = msg;
+        }
     }
 
 }

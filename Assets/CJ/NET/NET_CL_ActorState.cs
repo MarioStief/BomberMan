@@ -7,17 +7,20 @@ public class NET_CL_ActorState : MonoBehaviour {
 
     private NET_ActorState.Message msg = null;
 
-    public void AddState(Rink.Pos rpos) 
+    public void AddState(Vector3 position, float vertAng, float horzAng) 
     {
         msg = new NET_ActorState.Message();
-        msg.rpos = rpos;
+        msg.position = position;
+        msg.vertAng = vertAng;
+        msg.horzAng = horzAng;
+        msg.AssignID();
     }
 
     public void OnSerializeNetworkView(BitStream stream, NetworkMessageInfo info)
     {
         if (null != msg)
         {
-            Rink.Pos.Serialize(ref msg.rpos, stream);
+            NET_ActorState.Message.Serialize(stream, msg);
             msg = null;
         }
     }
