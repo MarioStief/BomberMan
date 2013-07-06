@@ -15,24 +15,42 @@ public class MeshManipulator : MonoBehaviour {
 	float lift = 0.0f;
 	private int boxTexture;
 	
-	public Texture grassTex;
-	public Texture rockTex;
-	public Texture boxTex1;
-	public Texture boxTex2;
-	public Texture grassBump;
-	public Texture rockBump;
-	public Texture boxBump1;
-	public Texture boxBump2;
+	public static Texture grassTex;
+    public static Texture rockTex;
+    public static Texture boxTex1;
+    public static Texture boxTex2;
+    public static Texture grassBump;
+    public static Texture rockBump;
+    public static Texture boxBump1;
+    public static Texture boxBump2;
+    public static bool s_resourcesLoaded = false;
+
+    private static void LoadResources() 
+    {
+        if (!s_resourcesLoaded)
+        {
+            // NOTE: unity gets confused when shaders and textures share names
+            // in the same directory
+            grassTex = (Texture)Resources.Load("Textures/Boxes/grassCube");
+            rockTex = (Texture)Resources.Load("Textures/Boxes/stoneCube2");
+            boxTex1 = (Texture)Resources.Load("Textures/Boxes/boxCube1");
+            boxTex2 = (Texture)Resources.Load("Textures/Boxes/boxCube2");
+            grassBump = (Texture)Resources.Load("Textures/Boxes/grassCubeNormal");
+            rockBump = (Texture)Resources.Load("Textures/Boxes/stoneCube2Normal");
+            boxBump1 = (Texture)Resources.Load("Textures/Boxes/boxCubeNormal");
+            boxBump2 = (Texture)Resources.Load("Textures/Boxes/boxCube2Normal");
+            s_resourcesLoaded = true;
+        }
+    }
 	
 	// Use this for initialization
 	void Awake () {
+        LoadResources();
 				
 		sphere = Static.sphereHandler;
 		cubeMesh = GetComponent<MeshFilter>().mesh;
 		vertexPosition = new Vector3[8];
 		boxTexture = new System.Random().Next(0, 2);
-		
-		//grassTex = Resources.Load("Textures\\grassPlane2.jpg") as Texture;
 	}
 	
 	public void setParcel(Parcel p){
