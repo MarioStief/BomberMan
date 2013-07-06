@@ -89,7 +89,11 @@ public class Explosion : MonoBehaviour
 			cell.setGameObject(bomb);
 		}
 		cell.setExplosion(this);
-		cell.setBomb(true);
+		if (extra == 2) {
+			cell.setContactMine(true);
+		} else {
+			cell.setBomb(true);
+		} 
 
 	}
 	
@@ -104,7 +108,7 @@ public class Explosion : MonoBehaviour
 	void Update() {
 		float elapsedTime = Time.time - createTime;
 		if (waitingForBombExplosion) {
-			if (true /* cj start immediately */ || (elapsedTime > EXPLOSIONTIMER && !triggerBomb)) {
+			if (true /* cj start immediately */ || (elapsedTime > EXPLOSIONTIMER && extra == 0)) {
 				waitingForBombExplosion = false;
 				startExplosion();
 			}
@@ -125,6 +129,7 @@ public class Explosion : MonoBehaviour
 				if (!bombDestroyed) {
 					// Zerstöre Bombe
 					cell.setBomb(false);
+					cell.setContactMine(false);
 					if (createBomb)
 						cell.destroyGameObject();
 					if (self)
