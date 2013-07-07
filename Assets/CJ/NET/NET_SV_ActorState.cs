@@ -5,23 +5,35 @@ using AssemblyCSharp;
 
 public class NET_SV_ActorState : MonoBehaviour {
 
-    int maxReqID = 0; // most recently received package
-    NET_ActorState.Message msg = null;
+    List<NET_ActorState.Message> buffer = new List<NET_ActorState.Message>();
 
-    public NET_ActorState.Message GetInput()
+    public List<NET_ActorState.Message> GetInput()
     {
-        return msg;
+        List<NET_ActorState.Message> ret = new List<NET_ActorState.Message>(buffer);
+        buffer.Clear();
+        return ret;
+    }
+
+    private class CompareTime : IComparer<NET_ActorState.Message>
+    {
+        public int Compare(NET_ActorState.Message lhp, NET_ActorState.Message rhp)
+        {
+            return System.Math.Sign(lhp.time - rhp.time);
+        }
     }
 
     public void OnSerializeNetworkView(BitStream stream, NetworkMessageInfo info)
     {
-        NET_ActorState.Message msg = new NET_ActorState.Message();
-        NET_ActorState.Message.Serialize(stream, msg);
-        if (maxReqID < msg.reqID)
+        int numMsgs = -1;
+        stream.Serialize(ref numMsgs);
+        Common.Assert(0 < numMsgs, "NET_SV_ActorState: 0 < numMsgs");
+        for (int i = 0; i < numMsgs; ++i)
         {
-            maxReqID = msg.reqID;
-            this.msg = msg;
+            NET_ActorState.Message msg = new NET_ActorState.Message();
+            NET_ActorState.Message.Serialize(stream, msg);
+            buffer.Add(msg);
         }
+        buffer.Sort(new CompareTime());
     }
 
 }

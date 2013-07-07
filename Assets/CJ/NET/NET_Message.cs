@@ -4,6 +4,7 @@ using AssemblyCSharp;
 
 public abstract class NET_Message
 {
+    public const int MSG_TIME = 1;
     public const int MSG_STARTGAME  = 10;
     public const int MSG_SPAWN_ENTITY = 20;
     public const int MSG_DESTROY_ENTITY = 21;
@@ -15,6 +16,7 @@ public abstract class NET_Message
     public static string IDToString(int msgID)
     {
         switch(msgID) {
+            case MSG_TIME: return "MSG_TIME";
             case MSG_STARTGAME: return "MSG_STARTGAME";
             case MSG_SPAWN_ENTITY: return "MSG_SPAWNENTITY";
             case MSG_DESTROY_ENTITY: return "MSG_DESTROY_ENTITY";
@@ -44,6 +46,11 @@ public abstract class NET_Message
         return msgID;
     }
 
+    public int GetReqID()
+    {
+        return req;
+    }
+
     public void Serialize(BitStream stream)
     {
         stream.Serialize(ref req);
@@ -56,6 +63,7 @@ public abstract class NET_Message
     {
         switch (msgID)
         {
+            case MSG_TIME: return new NET_MSG_Time();
             case MSG_STARTGAME: return new NET_MSG_StartGame();
             case MSG_SPAWN_ENTITY: return new NET_MSG_SpawnEntity();
             case MSG_DESTROY_ENTITY: return new NET_MSG_DestroyEntity();
@@ -66,6 +74,20 @@ public abstract class NET_Message
         }
 
         return null;
+    }
+}
+
+public class NET_MSG_Time : NET_Message
+{
+    public float time = 0.0f;
+
+    public NET_MSG_Time() : base(MSG_TIME)
+    {
+    }
+
+    protected override void DoSerialize(BitStream stream)
+    {
+        stream.Serialize(ref time);
     }
 }
 

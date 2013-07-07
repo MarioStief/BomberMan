@@ -1,26 +1,29 @@
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using AssemblyCSharp;
 
 public class NET_SV_Movable : MonoBehaviour {
 
-    public NET_ActorState.Message actorState = null;
-    public float time = 0.0f;
+    public List<NET_ActorState.Message> buffer = new List<NET_ActorState.Message>();
 
-    public void SetServerTime(float time)
+    public void AddStates(List<NET_ActorState.Message> states)
     {
-        this.time = time;
+        buffer.AddRange(states);
     }
 
     public void OnSerializeNetworkView(BitStream stream, NetworkMessageInfo info)
     {
-        if (null != actorState)
+        int numMsgs = buffer.Count;
+        if (0 < numMsgs)
         {
-            stream.Serialize(ref time);
-            NET_ActorState.Message.Serialize(stream, actorState);
+            stream.Serialize(ref numMsgs);
+            foreach (NET_ActorState.Message msg in buffer)
+            {
+                NET_ActorState.Message.Serialize(stream, msg);
+            }
+            buffer.Clear();
         }
-        
-        
     }
 	
 }

@@ -34,7 +34,10 @@ public class NET_InMessageQueue : MonoBehaviour
                 msg.Serialize(stream);
                 msgs.Enqueue(msg);
 
-                Debug.Log("NET_InMessageQueue: recv msg, type=" + NET_Message.IDToString(msg.GetMsgID()));
+                if (NET_Message.MSG_TIME != msg.GetMsgID() /* don't clutter console with frequently sent time msgs */)
+                {
+                    Debug.Log("NET_InMessageQueue: recv msg, type=" + NET_Message.IDToString(msg.GetMsgID()));
+                }
             }
         }
     }

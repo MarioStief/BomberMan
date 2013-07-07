@@ -5,11 +5,9 @@ using AssemblyCSharp;
 
 public class NET_CL_Moveable : NET_CL_Entity {
 
-    public static float IP_LAG = 0.1f;
+    public static float IP_LAG = 0.2f; // 200ms
 
-    private List<State> buffer = new List<State>();
-    private int maxReqID = 0; // most recently received package
-    private float time = 0.0f;
+    private List<NET_ActorState.Message> buffer = new List<NET_ActorState.Message>();
 
     private NET_ActorState.Message state = new NET_ActorState.Message();
     private NET_ActorState.Message serverState = new NET_ActorState.Message();
@@ -50,9 +48,7 @@ public class NET_CL_Moveable : NET_CL_Entity {
 
     public void Update()
     {
-        time += Time.deltaTime;
-
-        float dtime = time - IP_LAG;
+        float dtime = NET_Client.GetTime() - IP_LAG;
 
         int i = buffer.Count - 1;
         for (; 0 <= i && buffer[i].time > dtime; --i) ;
@@ -61,15 +57,15 @@ public class NET_CL_Moveable : NET_CL_Entity {
             if (i + 1 < buffer.Count)
             {
                 float t = (dtime - buffer[i].time) / (buffer[i + 1].time - buffer[i].time);
-                state = Lerp(buffer[i].actorState, buffer[i + 1].actorState, t);
+                state = Lerp(buffer[i], buffer[i + 1], t);
             }
             if(0 < i) buffer.RemoveRange(0, i - 1);
         }
     }
 
-    private class CompareTime : IComparer<State>
+    private class CompareTime : IComparer<NET_ActorState.Message>
     {
-        public int Compare(State lhp, State rhp)
+        public int Compare(NET_ActorState.Message lhp, NET_ActorState.Message rhp)
         {
             return System.Math.Sign(lhp.time - rhp.time);
         }
@@ -77,23 +73,16 @@ public class NET_CL_Moveable : NET_CL_Entity {
 
     public void OnSerializeNetworkView(BitStream stream, NetworkMessageInfo info)
     {
-        State state = new State();
-
-        stream.Serialize(ref state.time);
-
-        state.actorState = new NET_ActorState.Message();
-        NET_ActorState.Message.Serialize(stream, state.actorState);
-
-        buffer.Add(state);
-        buffer.Sort(new CompareTime());
-
-        serverState = state.actorState;
-
-        if (maxReqID < state.actorState.reqID)
+        int numMsgs = -1;
+        stream.Serialize(ref numMsgs);
+        Common.Assert(0 < numMsgs, "NET_CL_Moveable: 0 < numMsgs");
+        for (int i = 0; i < numMsgs; ++i)
         {
-            maxReqID = state.actorState.reqID;
-            time = state.time; // accept server time
+            NET_ActorState.Message msg = new NET_ActorState.Message();
+            NET_ActorState.Message.Serialize(stream, msg);
+            buffer.Add(msg);
         }
+        buffer.Sort(new CompareTime());
     }
 	
 }

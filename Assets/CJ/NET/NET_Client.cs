@@ -4,6 +4,13 @@ using System.Collections.Generic;
 
 public class NET_Client : MonoBehaviour {
 
+    private static float time = 0.0f;
+    private int maxTimeReq = 0; // last received time message
+
+    // use this as a clients local time. it's
+    // synchronized with the server time
+    public static float GetTime() { return time; }
+
     public GameObject pre_clInput = null; // set this in editor
 
     private GameObject obj_gameController = null;
@@ -165,9 +172,23 @@ public class NET_Client : MonoBehaviour {
             NET_Message msg = broadcastInQueue.Pop();
             msg.resend = false;
 
+            if (NET_Message.MSG_TIME == msg.GetMsgID())
+            {
+                NET_MSG_Time timeMsg = (NET_MSG_Time)msg;
+                if (maxTimeReq < timeMsg.GetReqID())
+                {
+                    maxTimeReq = timeMsg.GetReqID();
+                    time = timeMsg.time;
+                }
+                // no need to propagate time msgs at this point
+                continue;
+            }
+
             scr_theGame.HandleMessage(msg);
 
             if (msg.resend) resendMsgs.AddLast(msg);
         }
+
+        time += Time.deltaTime;
     }
 }

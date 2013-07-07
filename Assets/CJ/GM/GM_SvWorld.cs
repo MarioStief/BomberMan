@@ -395,14 +395,7 @@ public class GM_SvWorld : GM_World {
             SvActorEntity entity = (SvActorEntity)ByPID(client.pid);
             if (null != entity)
             {
-                entity.scr_moveable.SetServerTime(time);
-
-                NET_SV_ActorState state = client.scr_actorState;
-                NET_ActorState.Message msg = state.GetInput();
-                if (null != msg)
-                {
-                    entity.scr_moveable.actorState = state.GetInput();
-                }
+                entity.scr_moveable.AddStates(client.scr_actorState.GetInput());
             }
 
             // pick up powerups
@@ -436,5 +429,10 @@ public class GM_SvWorld : GM_World {
                 entity.scr_svEntity.position.y);
         }
         */
-    }
+
+        NET_MSG_Time timeMsg = new NET_MSG_Time();
+        timeMsg.time = Time.time;
+        scr_netServer.Broadcast(timeMsg);
+
+    } // Update
 }
