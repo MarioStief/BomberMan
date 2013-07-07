@@ -12,10 +12,7 @@ public class GM_ClWorld : GM_World {
 
     private class ClEntity : Entity
     {
-        public NET_CL_Entity scr_clEntity = null;   // remote actors
-        public InputHandler scr_inputHandler = null;    // local actor
-
-        public GameObject obj_ghost = null;
+        public NET_CL_Entity scr_clEntity = null; // is always null for local actor
     }
 
     private int clid = 0;
@@ -26,6 +23,7 @@ public class GM_ClWorld : GM_World {
 
     private Player localPlayer = new Player();
     private ClEntity localActor = null;
+    private InputHandler localInputHandler = null;
 
     public void Genesis()
     {
@@ -36,10 +34,9 @@ public class GM_ClWorld : GM_World {
         obj_gameController.GetComponent<Cameras>().SetCamera(Cameras.CAM_TYPE.GAME);
     }
 
+    // REMOVEME
     public void ToggleGhosts()
     {
-        foreach(ClEntity entity in entities) 
-            entity.obj_ghost.renderer.enabled = !entity.obj_ghost.renderer.enabled;
     }
 
     private Object PowerupPrefabFromType(PowerupType puType)
@@ -83,10 +80,51 @@ public class GM_ClWorld : GM_World {
 
             Rink.Pos rpos = new Rink.Pos(spawnEntityMsg.bpos, spawnEntityMsg.lpos, 0, 0);
 
-            ClEntity entity = null;
+            ClEntity entity = new ClEntity();
             NetworkView netView = null;
 
-            entity = new ClEntity();
+            if (ENT_ACTOR == spawnEntityMsg.type)
+            {
+                entity.obj = (GameObject)GameObject.Instantiate(Resources.Load("Actor"));
+
+                if (spawnEntityMsg.pid == scr_netClient.GetLocalPID()) // spawn local actor
+                {
+                    localInputHandler = entity.obj.AddComponent<InputHandler>();
+                    localInputHandler.SetPlayer(localPlayer);
+                    localInputHandler.SetPosition(rpos);
+                    entity.obj.transform.position = Static.rink.GetPosition(rpos);
+
+                    localActor = entity;
+                    entity.obj.tag = "Player";
+                }
+                else // spawn remote actor
+                {
+                    NET_CL_Moveable scr_clMoveable = entity.obj.AddComponent<NET_CL_Moveable>();
+                    scr_clMoveable.SetPosition(Static.rink.GetPosition(rpos));
+                    entity.scr_clEntity = scr_clMoveable;
+                }
+
+                netView = entity.obj.AddComponent<NetworkView>();
+                netView.viewID = spawnEntityMsg.viewID;
+                netView.observed = entity.scr_clEntity;
+                netView.stateSynchronization = NetworkStateSynchronization.Unreliable;
+            }
+            if (ENT_BOMB == spawnEntityMsg.type)
+            {
+                entity.obj = (GameObject)GameObject.Instantiate(Resources.Load("Prefabs/bombPrefab"));
+                NET_CL_Static scr_clStatic = entity.obj.AddComponent<NET_CL_Static>();
+                scr_clStatic.SetPosition(rpos);
+                entity.scr_clEntity = scr_clStatic;
+            }
+            if (ENT_POWERUP == spawnEntityMsg.type)
+            {
+                entity.obj = (GameObject)GameObject.Instantiate(PowerupPrefabFromType(spawnEntityMsg.props.puType));
+                entity.scr_clEntity = entity.obj.AddComponent<NET_CL_Static>();
+                NET_CL_Static scr_clStatic = entity.obj.AddComponent<NET_CL_Static>();
+                scr_clStatic.SetPosition(rpos);
+                entity.scr_clEntity = scr_clStatic;
+            }
+
             entity.type = spawnEntityMsg.type;
             entity.svid = spawnEntityMsg.svid;
             entity.clid = ++clid;
@@ -96,47 +134,6 @@ public class GM_ClWorld : GM_World {
             entity.rpos = rpos;
 
             entity.props = spawnEntityMsg.props;
-
-            if (ENT_ACTOR == spawnEntityMsg.type)
-            {
-                entity.obj = (GameObject)GameObject.Instantiate(Resources.Load("Actor"));
-                entity.obj_ghost = (GameObject)GameObject.Instantiate(Resources.Load("GhostActor"));
-                entity.obj_ghost.GetComponent<MeshRenderer>().enabled = false;
-
-                if (spawnEntityMsg.pid == scr_netClient.GetLocalPID())
-                {
-                    entity.scr_inputHandler = entity.obj.AddComponent<InputHandler>();
-                    entity.scr_inputHandler.SetPlayer(localPlayer);
-                    entity.scr_inputHandler.SetPosition(rpos);
-                    entity.obj.transform.position = Static.rink.GetPosition(rpos);
-
-                    localActor = entity;
-                    entity.obj.tag = "Player";
-                }
-                else
-                {
-                    entity.scr_clEntity = entity.obj.AddComponent<NET_CL_Moveable>();
-                    entity.scr_clEntity.SetPosition(Static.rink.GetPosition(rpos));
-                }
-
-                netView = entity.obj.AddComponent<NetworkView>();
-                netView.viewID = entity.viewID;
-                netView.observed = entity.scr_clEntity;
-                netView.stateSynchronization = NetworkStateSynchronization.Unreliable;
-            }
-            if (ENT_BOMB == spawnEntityMsg.type)
-            {
-                entity.obj = (GameObject)GameObject.Instantiate(Resources.Load("Prefabs/bombPrefab"));
-
-                entity.scr_clEntity = entity.obj.AddComponent<NET_CL_Static>();
-                // entity.scr_clMoveable.SetPosition(rpos);
-            }
-            if (ENT_POWERUP == spawnEntityMsg.type)
-            {
-                entity.obj = (GameObject)GameObject.Instantiate(PowerupPrefabFromType(spawnEntityMsg.props.puType));
-                entity.scr_clEntity = entity.obj.AddComponent<NET_CL_Static>();
-                // entity.scr_clMoveable.SetPosition(rpos);
-            }
 
             entities.AddLast(entity);
         }
@@ -219,17 +216,8 @@ public class GM_ClWorld : GM_World {
             if (entity.isDead) entities.Remove(entIt);
             else
             {
-                if (entity.scr_clEntity)
-                {
-                    entity.obj.transform.position = localActor.scr_inputHandler.ToLocalWorld(new NET_ActorState.Message(
-                        entity.scr_clEntity.GetPosition(),
-                        entity.scr_clEntity.GetVerticalAngle(),
-                        entity.scr_clEntity.GetHorizontalAngle()));
-                    //entity.obj.transform.position = localActor.scr_inputHandler.UpdateFoe(new NET_ActorState.Message(
-                    //    entity.obj.transform.position,
-                    //    entity.scr_clEntity.GetVerticalAngle(),
-                    //    entity.scr_clEntity.GetHorizontalAngle()));
-                }
+                if (null != entity.scr_clEntity) 
+                    entity.obj.transform.position = entity.scr_clEntity.GetPosition(localInputHandler);
             }
 
             entIt = next;
@@ -237,8 +225,8 @@ public class GM_ClWorld : GM_World {
 
         scr_netClient.GetLocalState().AddState(
             localActor.obj.transform.position, 
-            localActor.scr_inputHandler.GetVerticalAngle(), 
-            localActor.scr_inputHandler.GetHorizontalAngle());
+            localInputHandler.GetVerticalAngle(), 
+            localInputHandler.GetHorizontalAngle());
     }
 	
 }

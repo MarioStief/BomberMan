@@ -2,26 +2,18 @@ using UnityEngine;
 using System.Collections;
 using AssemblyCSharp;
 
-// TODO
 public class NET_CL_Static : NET_CL_Entity {
 
-    public override void SetPosition(Vector3 position)
+    Rink.Pos rpos = new Rink.Pos();
+
+    public void SetPosition(Rink.Pos rpos)
     {
+        this.rpos = rpos;
     }
 
-    public override Vector3 GetPosition()
+    public override Vector3 GetPosition(InputHandler inputHandler)
     {
-        return Vector3.zero;
-    }
-
-    public override float GetVerticalAngle()
-    {
-        return 0.0f;
-    }
-
-    public override float GetHorizontalAngle()
-    {
-        return 0.0f;
+        return Static.rink.GetPosition(rpos);
     }
 	
 }

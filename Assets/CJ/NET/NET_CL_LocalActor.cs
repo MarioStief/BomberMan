@@ -16,24 +16,14 @@ public class NET_CL_LocalActor : NET_CL_Entity {
     private float time = 0.0f;
     private float accu = 0.0f;
 
-    public override void SetPosition(Vector3 position)
+    public void SetPosition(Vector3 position)
     {
         this.position = position;
     }
 
-    public override Vector3 GetPosition()
+    public override Vector3 GetPosition(InputHandler inputHandler)
     {
         return position;
-    }
-
-    public override float GetVerticalAngle()
-    {
-        return 0.0f;
-    }
-
-    public override float GetHorizontalAngle()
-    {
-        return 0.0f;
     }
 
     public Vector3 GetServerPosition()

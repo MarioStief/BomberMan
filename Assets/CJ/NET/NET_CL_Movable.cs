@@ -21,24 +21,14 @@ public class NET_CL_Moveable : NET_CL_Entity {
         return state;
     }
 
-    public override void SetPosition(Vector3 position)
+    public void SetPosition(Vector3 position)
     {
         state.position = position;
     }
 
-    public override Vector3 GetPosition()
+    public override Vector3 GetPosition(InputHandler inputHandler)
     {
-        return state.position;
-    }
-
-    public override float GetVerticalAngle()
-    {
-        return state.vertAng;
-    }
-
-    public override float GetHorizontalAngle()
-    {
-        return state.horzAng;
+        return inputHandler.ToLocalWorld(state);
     }
 
     private static float Ease(float t) 
