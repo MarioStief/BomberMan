@@ -194,16 +194,17 @@ namespace AssemblyCSharp
 		}
 		
 		public void addPowerup(Powerup powerup) {
-		// cj: this method is called by the server only, which does not
-		// need to draw anything
-
+            /*
+            cj
+            this method gets called by the server only. do not attempt to change the
+            mesh manipulator, since the server doesn't have any
+            
 			getMeshManipulator().liftObject(1.05f); // Sonst ist das Powerup halb im Boden
 			obj = GameObject.Instantiate(Static.powerupPrefab, getCenterPos(), Quaternion.identity) as GameObject;
-			powerupType = powerup.getType();
-			//obj.GetComponent<PowerupTexture>().setType(powerupType);
-
-			powerupExplodingValue = powerup.getValue();
-			powerupOnCell = true;
+             */
+            powerupType = powerup.getType();
+            powerupExplodingValue = powerup.getValue();
+            powerupOnCell = true;
 		}
 
 		public PowerupType destroyPowerup(bool shatter) {
