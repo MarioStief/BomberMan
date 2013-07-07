@@ -22,7 +22,9 @@ public class NET_ActorState {
         public static void Serialize(BitStream stream, Message msg)
         {
             stream.Serialize(ref msg.time);
-            stream.Serialize(ref msg.position);
+            stream.Serialize(ref msg.position.x);
+            stream.Serialize(ref msg.position.y);
+            // position.z is unused and always 0
             stream.Serialize(ref msg.vertAng);
             stream.Serialize(ref msg.horzAng);
         }
