@@ -58,7 +58,7 @@ namespace AssemblyCSharp
 			 * NOTE: icons are 32x32 and transparent
 			 */
 
-            icons = new UnityEngine.Object[5];
+            icons = new UnityEngine.Object[6];
 			icons[0] = Static.bombIconPrefab;
 			icons[1] = Static.playerSpeedIconPrefab;
 			icons[2] = Static.flameIconPrefab;
