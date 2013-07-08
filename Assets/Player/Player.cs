@@ -9,7 +9,7 @@ namespace AssemblyCSharp
 		private Parcel currentCell;	// current Parcel
 		private float xpos, zpos;	// Player's position in the current Parcel
 		
-		private float verticalHelper		= 0.0f;
+		private float verticalHelper = 0.0f;
 		private float horizontalHelper 	= 0.0f;
 		
 		private const float MAXSPEED = 0.8f;
