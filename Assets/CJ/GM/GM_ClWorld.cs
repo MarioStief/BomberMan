@@ -39,39 +39,6 @@ public class GM_ClWorld : GM_World {
     {
     }
 
-    private Object PowerupPrefabFromType(PowerupType puType)
-    {
-        Object powerup = null;
-        /*
-        if (puType == PowerupType.BOMB_UP)
-            powerup = Static.bombUpPowerupPrefab;
-        else if (puType == PowerupType.BOMB_DOWN)
-            powerup = Static.bombDownPowerupPrefab;
-        else if (puType == PowerupType.FLAME_UP)
-            powerup = Static.flameUpPowerupPrefab;
-        else if (puType == PowerupType.FLAME_DOWN)
-            powerup = Static.flameDownPowerupPrefab;
-        else if (puType == PowerupType.PLAYER_SPEED_UP)
-            powerup = Static.playerSpeedUpPowerupPrefab;
-        else if (puType == PowerupType.PLAYER_SPEED_DOWN)
-            powerup = Static.playerSpeedDownPowerupPrefab;
-        else if (puType == PowerupType.DELAY_SPEED_UP)
-            powerup = Static.playerSpeedUpPowerupPrefab;
-        else if (puType == PowerupType.DELAY_SPEED_DOWN)
-            powerup = Static.playerSpeedDownPowerupPrefab;
-        else if (puType == PowerupType.GOLDEN_FLAME)
-            powerup = Static.goldenFlamePowerupPrefab;
-        else if (puType == PowerupType.SUPERBOMB)
-            powerup = Static.superbombPowerupPrefab;
-        if (null == powerup) Debug.Log("GM_ClWorld: warning, invalid powerup mesh!");
-         */
-
-        // cj: okay, use the same mesh for testing purposes...
-        powerup = Static.powerupPrefab;
-
-        return powerup;
-    }
-
     public void HandleMessage(NET_Message msg)
     {
         if (NET_Message.MSG_SPAWN_ENTITY == msg.GetMsgID())
@@ -115,14 +82,17 @@ public class GM_ClWorld : GM_World {
                 NET_CL_Static scr_clStatic = entity.obj.AddComponent<NET_CL_Static>();
                 scr_clStatic.SetPosition(rpos);
                 entity.scr_clEntity = scr_clStatic;
+                // cell.setObject(entity.obj) would orphan a powerup on this cell.
+                // so don't do this right now
             }
             if (ENT_POWERUP == spawnEntityMsg.type)
             {
-                entity.obj = (GameObject)GameObject.Instantiate(PowerupPrefabFromType(spawnEntityMsg.props.puType));
-                entity.scr_clEntity = entity.obj.AddComponent<NET_CL_Static>();
-                NET_CL_Static scr_clStatic = entity.obj.AddComponent<NET_CL_Static>();
-                scr_clStatic.SetPosition(rpos);
-                entity.scr_clEntity = scr_clStatic;
+                entity.obj = (GameObject)GameObject.Instantiate(Resources.Load("Prefabs/powerupPrefab"));
+                PowerupTexture scr_powerupTex = entity.obj.GetComponent<PowerupTexture>();
+                scr_powerupTex.setType(spawnEntityMsg.props.puType);
+                Parcel cell = Static.rink.GetCell(rpos);
+                cell.setGameObject(entity.obj);
+                cell.getMeshManipulator().liftObject(1.05f); // ms: Sonst ist das Powerup halb im Boden
             }
 
             entity.type = spawnEntityMsg.type;
