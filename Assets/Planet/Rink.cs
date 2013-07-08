@@ -275,6 +275,19 @@ namespace AssemblyCSharp
             return gameArea[rpos.lpos][rpos.bpos].getCenterPos();
         }
 
+        public static Pos GetRinkPosition(NET_ActorState.Message state)
+        {
+            float dv = Mathf.PI / (GM_World.N_L - 1);
+            float dh = Mathf.PI / GM_World.N_B;
+            int sh = ((1 + (int)(state.horzAng / dh)) % (2 * GM_World.N_B)) / 2;
+            sh = (sh + GM_World.N_B / 4) % GM_World.N_B;
+            float vertAng = state.vertAng;
+            while (-0.5f * Mathf.PI > vertAng) vertAng += Mathf.PI;
+            int sv = (int)((0.5f * Mathf.PI + vertAng) / dv);
+            sv = sv % (GM_World.N_L - 1);
+            return new Pos(sh, sv, 0.0f, 0.0f);
+        }
+
         /*
         public Vector3 GetPosition(Pos rpos)
         {
