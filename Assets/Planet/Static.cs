@@ -55,14 +55,14 @@ namespace AssemblyCSharp
 			
 			alphaBlended = Shader.Find("Particles/Alpha Blended");
 			
-			delaySpeedIconPrefab = Resources.Load("Textures/Menu/delaySpeed.png");
-			superBombIconPrefab = Resources.Load("Textures/Menu/superBombInactive.png");
-			extraIconPrefab = Resources.Load("Textures/Menu/empty.png");
+			delaySpeedIconPrefab = Resources.Load("Textures/Menu/delaySpeed");
+			superBombIconPrefab = Resources.Load("Textures/Menu/superBombInactive");
+			extraIconPrefab = Resources.Load("Textures/Menu/empty");
 			
 			//again: dynamic:
-			bombIconPrefab = Resources.Load("Textures/Menu/bomb.png");
-			playerSpeedIconPrefab = Resources.Load("Textures/Menu/playerSpeed.png");
-			flameIconPrefab = Resources.Load("Textures/Menu/flame.png");
+			bombIconPrefab = Resources.Load("Textures/Menu/bomb");
+			playerSpeedIconPrefab = Resources.Load("Textures/Menu/playerSpeed");
+			flameIconPrefab = Resources.Load("Textures/Menu/flame");
 
 			/* static:
 			emptyIconPrefab = Resources.Load("Textures/Menu/empty.png");
