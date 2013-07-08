@@ -377,6 +377,21 @@ public class GM_SvWorld : GM_World {
                             spawnArgs.cell = cell;
                             spawnList.Add(spawnArgs);
                         }
+
+                        // kill players
+                        foreach (NET_Server.Client client in scr_netServer.Clients())
+                        {
+                            SvActorEntity entActor = (SvActorEntity)ByPID(client.pid);
+                            Parcel clientCell = Static.rink.GetCell(Rink.GetRinkPosition(entActor.scr_moveable.GetLastState()));
+                            if (Parcel.SameCell(clientCell, cell /* exploding cell */))
+                            {
+                                client.isDead = true;
+                                client.time = 0.0f;
+                                SetActive(ByPID(client.pid).svid, false);
+
+                                Debug.Log("GM_SvWorld: killing player with pid = " + client.pid);
+                            }
+                        }
                     }
 
                     scr_netServer.ClientByPID(entBomb.pid).player.removeBomb();

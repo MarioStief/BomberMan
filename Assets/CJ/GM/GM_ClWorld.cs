@@ -153,13 +153,13 @@ public class GM_ClWorld : GM_World {
                 entity.lastPosition = entity.obj.transform.position;
                 entity.obj.transform.position = TO_HELL;
 
-                if (entity.svid == localActor.svid) scr_actorCam.SetIdle();
+                if (entity.svid == localActor.svid) localInputHandler.SetActive(false);
             }
             else
             {
                 entity.obj.transform.position = entity.lastPosition;
 
-                if (entity.svid == localActor.svid) scr_actorCam.Init(localActor.obj);
+                if (entity.svid == localActor.svid) localInputHandler.SetActive(true);
             }
         }
 
@@ -193,10 +193,13 @@ public class GM_ClWorld : GM_World {
             entIt = next;
         }
 
-        scr_netClient.GetLocalState().AddState(
-            localActor.obj.transform.position, 
-            localInputHandler.GetVerticalAngle(), 
-            localInputHandler.GetHorizontalAngle());
+        if (localActor.isActive)
+        {
+            scr_netClient.GetLocalState().AddState(
+                localActor.obj.transform.position,
+                localInputHandler.GetVerticalAngle(),
+                localInputHandler.GetHorizontalAngle());
+        }
     }
 	
 }

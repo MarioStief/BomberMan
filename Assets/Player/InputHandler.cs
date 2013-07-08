@@ -42,6 +42,7 @@ public class InputHandler : MonoBehaviour {
     private Player player = null;
 
     private NET_Client scr_netClient = null;
+    private bool isActive = true;
 	
 	float verticalMovement;
 	float horizontalMovement;
@@ -66,6 +67,11 @@ public class InputHandler : MonoBehaviour {
     {
         this.bpos = rpos.bpos;
         this.lpos = rpos.lpos;
+    }
+
+    public void SetActive(bool active)
+    {
+        isActive = active;
     }
 
     public float GetVerticalAngle() { return verticalAngle; }
@@ -226,6 +232,8 @@ public class InputHandler : MonoBehaviour {
 	
 
 	void Update () {
+
+        if (!isActive) return;
 
         // UpdateFoe();
 		

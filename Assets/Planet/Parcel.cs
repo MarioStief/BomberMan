@@ -311,6 +311,11 @@ namespace AssemblyCSharp
 		public Vector3 getCenterPos() {
 			return Static.rink.drawnArea[lpos][bpos].getCenter();
 		}
+
+        public static bool SameCell(Parcel lhp, Parcel rhp) 
+        {
+            return lhp.bpos == rhp.bpos && lhp.lpos == rhp.lpos;    
+        }
 		
 		/*
 		public Vector3 getNormal() {
