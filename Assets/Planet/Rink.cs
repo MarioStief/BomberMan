@@ -279,7 +279,9 @@ namespace AssemblyCSharp
         {
             float dv = Mathf.PI / (GM_World.N_L - 1);
             float dh = Mathf.PI / GM_World.N_B;
-            int sh = ((1 + (int)(state.horzAng / dh)) % (2 * GM_World.N_B)) / 2;
+            float horzAng = state.horzAng;
+            while (0 > horzAng) horzAng += 2.0f * Mathf.PI;
+            int sh = ((1 + (int)(horzAng / dh)) % (2 * GM_World.N_B)) / 2;
             sh = (sh + GM_World.N_B / 4) % GM_World.N_B;
             float vertAng = state.vertAng;
             while (-0.5f * Mathf.PI > vertAng) vertAng += Mathf.PI;
