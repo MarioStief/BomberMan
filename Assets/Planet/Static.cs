@@ -20,7 +20,7 @@ namespace AssemblyCSharp
 		public static UnityEngine.Object stoneCube1Prefab;
 		public static UnityEngine.Object stoneCube2Prefab;
 		
-		public static Shader alphaBlended;
+		public static Shader transparentDiffuseShader;
 		
 		public static UnityEngine.Object bombIconPrefab;
 		public static UnityEngine.Object playerSpeedIconPrefab;
@@ -53,7 +53,7 @@ namespace AssemblyCSharp
 			stoneCube1Prefab = Resources.Load("Prefabs/stoneCube1Prefab");
 			stoneCube2Prefab = Resources.Load("Prefabs/stoneCube2Prefab");
 			
-			alphaBlended = Shader.Find("Particles/Alpha Blended");
+			transparentDiffuseShader = Shader.Find("Transparent/Diffuse");
 			
 			delaySpeedIconPrefab = Resources.Load("Textures/Menu/delaySpeed");
 			superBombIconPrefab = Resources.Load("Textures/Menu/superBombInactive");
