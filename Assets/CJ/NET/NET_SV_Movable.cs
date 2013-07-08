@@ -12,6 +12,12 @@ public class NET_SV_Movable : MonoBehaviour {
         buffer.AddRange(states);
     }
 
+    public NET_ActorState.Message GetLastState()
+    {
+        if (0 < buffer.Count) return buffer[buffer.Count - 1];
+        else return new NET_ActorState.Message(Vector3.zero, 0.0f, 0.0f); // TODO
+    }
+
     public void OnSerializeNetworkView(BitStream stream, NetworkMessageInfo info)
     {
         int numMsgs = buffer.Count;

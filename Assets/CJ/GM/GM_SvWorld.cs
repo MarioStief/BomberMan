@@ -396,16 +396,16 @@ public class GM_SvWorld : GM_World {
             if (null != entity)
             {
                 entity.scr_moveable.AddStates(client.scr_actorState.GetInput());
-            }
 
-            // pick up powerups
-            // TODO
-            //Parcel cell = Static.rink.GetCell(entity.scr_moveable.rpos);
-            //if (cell.hasPowerup()) {
-            //    client.player.powerupCollected(cell.destroyPowerup(false));
-            //    DestroyEntity(cell.svid);
-            //    cell.svid = 0;
-            //}
+                // pick up powerups
+                Parcel cell = Static.rink.GetCell(Rink.GetRinkPosition(entity.scr_moveable.GetLastState()));
+                if (cell.hasPowerup()) {
+                    client.player.powerupCollected(cell.destroyPowerup(false));
+                    // TODO: broadcast states
+                    DestroyEntity(cell.svid);
+                    cell.svid = 0;
+                }
+            }
 
             if (client.isDead)
             {

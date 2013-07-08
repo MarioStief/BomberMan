@@ -222,7 +222,7 @@ namespace AssemblyCSharp
 			obj = null;
 			powerupOnCell = false;
 			powerupExplodingValue = 0;
-			getMeshManipulator().liftObject(0.0f);
+			// getMeshManipulator().liftObject(0.0f); ignore this, too
 			return powerupType;
 		}
 		
