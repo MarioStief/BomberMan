@@ -291,6 +291,7 @@ public class GM_SvWorld : GM_World {
             {
                 Entity.Props props = new Entity.Props();
                 props.flamePower = client.player.getFlamePower();
+                props.isSuperbomb = client.player.getSuperbomb();
                 SvBombEntity entBomb = (SvBombEntity)Spawn(ENT_BOMB, client.pid, rpos.bpos, rpos.lpos, props);
                 entBomb.spawnTime = time;
             }

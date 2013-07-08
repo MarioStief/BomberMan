@@ -42,6 +42,7 @@ public class GM_World {
         {
             // ENT_BOMB
             public int flamePower;
+            public bool isSuperbomb; // set if owning player has superbomb powerup
 
             // ENT_POWERUP
             public PowerupType puType;

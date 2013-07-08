@@ -125,7 +125,11 @@ public class NET_MSG_SpawnEntity : NET_Message
         stream.Serialize(ref bpos);
         stream.Serialize(ref lpos);
 
-        if (GM_World.ENT_BOMB == type) stream.Serialize(ref props.flamePower);
+        if (GM_World.ENT_BOMB == type)
+        {
+            stream.Serialize(ref props.flamePower);
+            stream.Serialize(ref props.isSuperbomb);
+        }
         if (GM_World.ENT_POWERUP == type)
         {
             int t = (int)props.puType;

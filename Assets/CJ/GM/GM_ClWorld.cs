@@ -123,7 +123,7 @@ public class GM_ClWorld : GM_World {
 				if (Static.player.getContactMine())
 					extra = 2;
 
-                Explosion.createExplosionOnCell(cell, entity.props.flamePower, 0.2f, Static.player.getSuperbomb(), extra, false);
+                Explosion.createExplosionOnCell(cell, entity.props.flamePower, 0.2f, entity.props.isSuperbomb, extra, false);
             }
 
             GameObject.Destroy(entity.obj);
