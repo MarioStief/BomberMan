@@ -50,6 +50,8 @@ public class Menu : MonoBehaviour {
 		nickname = PlayerPrefs.GetString("Player Name", nickname);
 		serverName = PlayerPrefs.GetString("Server Name", serverName);
 		maxPlayers = PlayerPrefs.GetInt("Server MaxPlayers", maxPlayers);
+
+        GameObject.FindGameObjectWithTag("GameController").GetComponent<Cameras>().SetCamera(Cameras.CAM_TYPE.MENU);
 	}
 
 	public void Update () {
