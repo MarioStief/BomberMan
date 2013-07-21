@@ -257,7 +257,7 @@ public class InputHandler : MonoBehaviour {
             */
 			
 			// Leertaste -> Bombe legen
-			if ( Input.GetKeyDown(KeyCode.Space)){
+			if (Input.GetButtonDown("Fire1") ||  Input.GetKeyDown(KeyCode.Space)){
                 NET_MSG_PlantBomb plantBombMsg = new NET_MSG_PlantBomb();
                 plantBombMsg.pid = scr_netClient.GetLocalPID();
                 plantBombMsg.time = 0.0f; // ignored
