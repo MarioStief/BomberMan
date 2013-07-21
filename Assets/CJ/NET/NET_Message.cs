@@ -141,7 +141,14 @@ public class NET_MSG_SpawnEntity : NET_Message
 
 public class NET_MSG_DestroyEntity : NET_Message
 {
+    public enum Reason
+    {
+        EXPLODING = 0,
+        PICKEDUP
+    }
+
     public int svid;
+    public Reason reason;
 
     public NET_MSG_DestroyEntity() : base(MSG_DESTROY_ENTITY)
     {
@@ -149,7 +156,10 @@ public class NET_MSG_DestroyEntity : NET_Message
 
     protected override void DoSerialize(BitStream stream)
     {
+        int r = (int)reason;
         stream.Serialize(ref svid);
+        stream.Serialize(ref r);
+        reason = (Reason)r;
     }
 }
 

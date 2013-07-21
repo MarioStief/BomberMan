@@ -133,7 +133,7 @@ public class GM_SvWorld : GM_World {
         return entity;
     }
 
-    public void DestroyEntity(int svid)
+    public void DestroyEntity(int svid, NET_MSG_DestroyEntity.Reason reason)
     {
         Entity entity = BySVID(svid);
         GameObject.Destroy(entity.obj);
@@ -142,6 +142,7 @@ public class GM_SvWorld : GM_World {
 
         NET_MSG_DestroyEntity destroyEntityMsg = new NET_MSG_DestroyEntity();
         destroyEntityMsg.svid = entity.svid;
+        destroyEntityMsg.reason = reason;
         scr_netServer.Broadcast(destroyEntityMsg);
     }
 
@@ -319,6 +320,8 @@ public class GM_SvWorld : GM_World {
             entIt = next;
         }
 
+        // iteration over entities is not robust, so we keep a list
+        // of entities we spawn after iteration.
         List<SpawnArgs> spawnList = new List<SpawnArgs>();
 
         // UPDATE BOMBS
@@ -344,6 +347,14 @@ public class GM_SvWorld : GM_World {
                             cell.decreaseHeight();
                         }
                         */
+
+                        // if there is a powerup on an exploding field then destroy it
+                        if (Preferences.getDestroyablePowerups() && cell.hasPowerup())
+                        {
+                            DestroyEntity(cell.svid, NET_MSG_DestroyEntity.Reason.EXPLODING);
+                            cell.destroyPowerup();
+                            cell.svid = 0;
+                        }
 
                         Debug.Log("parcel type = " + cell.getType() + "(" + cell.getBpos() + ", " + cell.getLpos() + ")");
                         PowerupType puType = PowerupType.NONE;
@@ -395,7 +406,7 @@ public class GM_SvWorld : GM_World {
                     }
 
                     scr_netServer.ClientByPID(entBomb.pid).player.removeBomb();
-                    DestroyEntity(entBomb.svid);
+                    DestroyEntity(entBomb.svid, NET_MSG_DestroyEntity.Reason.EXPLODING);
                 }
             } // ENT_BOMB == type
         } // \forall entities
@@ -416,9 +427,9 @@ public class GM_SvWorld : GM_World {
                 // pick up powerups
                 Parcel cell = Static.rink.GetCell(Rink.GetRinkPosition(entity.scr_moveable.GetLastState()));
                 if (cell.hasPowerup()) {
-                    client.player.powerupCollected(cell.destroyPowerup(false));
+                    client.player.powerupCollected(cell.destroyPowerup());
                     // TODO: broadcast states
-                    DestroyEntity(cell.svid);
+                    DestroyEntity(cell.svid, NET_MSG_DestroyEntity.Reason.PICKEDUP);
                     cell.svid = 0;
                 }
             }

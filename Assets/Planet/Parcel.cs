@@ -207,22 +207,11 @@ namespace AssemblyCSharp
             powerupOnCell = true;
 		}
 
-		public PowerupType destroyPowerup(bool shatter) {
-            // cj: again, ignore shatter in server code
-
-            /*
-			if (shatter) { // if shatter
-			//if (shatter && Preferences.getExplodingPowerups() == false) { // if shatter
-				SplitMeshIntoTriangles.createMeshExplosion(obj, getCenterPos(), Preferences.getExplosionDetail()); // Zerbersten lassen
-			} else {
-				GameObject.Destroy(obj);
-			}
-            */
-
+		public PowerupType destroyPowerup() {
 			obj = null;
 			powerupOnCell = false;
 			powerupExplodingValue = 0;
-			// getMeshManipulator().liftObject(0.0f); ignore this, too
+			// getMeshManipulator().liftObject(0.0f); ignore this in server code, too
 			return powerupType;
 		}
 		

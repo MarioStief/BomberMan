@@ -113,6 +113,7 @@ public class GM_ClWorld : GM_World {
             NET_MSG_DestroyEntity destroyEntityMsg = (NET_MSG_DestroyEntity)msg;
 
             Entity entity = BySVID(destroyEntityMsg.svid);
+            bool destroyObj = true;
 
             if (ENT_BOMB == entity.type)
             {
@@ -126,7 +127,13 @@ public class GM_ClWorld : GM_World {
                 Explosion.createExplosionOnCell(cell, entity.props.flamePower, 0.2f, entity.props.isSuperbomb, extra, false);
             }
 
-            GameObject.Destroy(entity.obj);
+            if (/* Preferences.getExplodingPowerups() == true && see issue #10 */ ENT_POWERUP == entity.type && destroyEntityMsg.reason == NET_MSG_DestroyEntity.Reason.EXPLODING)
+            {
+                SplitMeshIntoTriangles.createMeshExplosion(entity.obj, Static.rink.GetPosition(entity.rpos), Preferences.getExplosionDetail());
+                destroyObj = false;
+            }
+
+            if(destroyObj) GameObject.Destroy(entity.obj);
             entity.isDead = true;
         }
 
