@@ -116,6 +116,10 @@ namespace AssemblyCSharp
 			return bombs;
 		}
 
+		public int getActiveBombs() {
+			return bombsActive;
+		}
+
 		public float getSpeed() {
 			return speed;
 		}

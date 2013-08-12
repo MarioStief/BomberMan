@@ -261,9 +261,17 @@ public class InputHandler : MonoBehaviour {
 			// Leertaste -> Bombe legen
 			if ( Input.GetKeyDown(KeyCode.Space)){
 				if ( !currCell.hasBomb()) {
-					
+
 					if (Static.player.addBomb()) {
-						Explosion.createExplosionOnCell(currCell, Static.player.getFlamePower(), Static.player.getDelay(), true, true);
+						int type = 0;
+						if (Static.player.getSuperbomb())
+							type = 1;
+						if (Static.player.getTriggerbomb())
+							type = 2;
+						if (Static.player.getSuperbomb() && Static.player.getTriggerbomb())
+							type = 3;
+
+						Explosion.createExplosionOnCell(currCell, Static.player.getFlamePower(), Static.player.getDelay(), type, true, true);
 						// Um eine Bombe eines anderen Spielers auf einer Zelle zu spawnen:
 						// Explosion.createExplosionOnCell(Parcel, flamePower, true);
 						// Powerup-ToDos: flameMight, flameSpeed
