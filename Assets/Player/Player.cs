@@ -29,9 +29,35 @@ namespace AssemblyCSharp
 		
 		private bool dead = false;
 		
-		public Player() { }
-
 		private List<Parcel> triggerBombs = new List<Parcel>();
+		
+		public int[] getAttributes() {
+			
+			/* returns integer array of player attributes
+			 * 
+			 * bombs = maximum Bombs, the player pocesses
+			 *         related icon: Static.bombIconPrefab
+			 * speed = player movement speed in ms
+			 * 	       related icon: Static.playerSpeedIconPrefab
+			 * flamepower = the size of the explosion
+			 *         related icon: Static.flameIconPrefab
+			 *         icon changes automatically if flame power reaches max and backwards
+			 * delay = the shorter the delay the faster the explosion spreads in ms
+			 *         related icon: Static.delaySpeedIconPrefab
+			 * superbomb = 1 for true, 0 for false
+			 *         related icon: Static.superBombIconPrefab
+			 *         icon automatically when superbomb is collected and backwards
+			 * extras = collected extra which uses the SHIFT key
+			 *         related icon: Static.extraIconPrefab
+			 *         icon is empty transparent at start and adapts
+			 * 
+			 * NOTE: icons are 32x32 and transparent
+			 */
+			
+			int extra = TRIGGERBOMB ? 1 : 0;
+			int[] stats = {bombs, (int) speed*1000, flamePower, (int) delay*1000, SUPERBOMB ? 1 : 0, extra};
+			return stats;
+		}
 		
 		public void addTriggerBomb(Parcel cell) {
 			triggerBombs.Add(cell);
@@ -51,7 +77,11 @@ namespace AssemblyCSharp
 			} else if (type == PowerupType.FLAME_UP) {
 				if (flamePower < MAXFLAMEPOWER)
 					flamePower++;
+				else
+					Static.setGoldenFlame(true);
 			} else if (type == PowerupType.FLAME_DOWN) {
+				if (flamePower == MAXFLAMEPOWER)
+					Static.setGoldenFlame(false);
 				if (flamePower > 1)
 					flamePower--;
 			} else if (type == PowerupType.PLAYER_SPEED_UP) {
@@ -67,11 +97,14 @@ namespace AssemblyCSharp
 				if (delay < MAXDELAY)
 					speed += 0.02f;
 			} else if (type == PowerupType.GOLDEN_FLAME) {
-					flamePower = MAXFLAMEPOWER;
+				flamePower = MAXFLAMEPOWER;
+				Static.setGoldenFlame(true);
 			} else if (type == PowerupType.SUPERBOMB) {
-					SUPERBOMB = true;
+				SUPERBOMB = true;
+				Static.setSuperbomb(true);
 			} else if (type == PowerupType.TRIGGERBOMB) {
-					TRIGGERBOMB = true;
+				TRIGGERBOMB = true;
+				Static.setExtra(1);
 			}
 			Debug.Log("bombs: " + bombs + ", flamePower: " + flamePower + ", speed: " + speed*1000 + " ms, delay: " + delay*1000 + " ms");
 		}
@@ -116,10 +149,6 @@ namespace AssemblyCSharp
 			return bombs;
 		}
 
-		public int getActiveBombs() {
-			return bombsActive;
-		}
-
 		public float getSpeed() {
 			return speed;
 		}
@@ -142,16 +171,19 @@ namespace AssemblyCSharp
 					parcelPool[0].addPowerup(new Powerup(PowerupType.SUPERBOMB));
 					parcelPool.RemoveAt(0);
 					SUPERBOMB = false;
+					Static.setSuperbomb(false);
 				}
 				if (TRIGGERBOMB) {
 					parcelPool[0].addPowerup(new Powerup(PowerupType.TRIGGERBOMB));
 					parcelPool.RemoveAt(0);
 					TRIGGERBOMB = false;
+					Static.setExtra(0);
 				}
 				if (flamePower == MAXFLAMEPOWER && parcelPool.Count > 0) {
 					parcelPool[0].addPowerup(new Powerup(PowerupType.GOLDEN_FLAME));
 					parcelPool.RemoveAt(0);
 					bombs = 1;
+					Static.setGoldenFlame(false);
 				}
 				while (bombs > 1 && parcelPool.Count > 0) {
 					parcelPool[0].addPowerup(new Powerup(PowerupType.BOMB_UP));
