@@ -9,9 +9,6 @@ namespace AssemblyCSharp
 		private Parcel currentCell;	// current Parcel
 		private float xpos, zpos;	// Player's position in the current Parcel
 		
-		private float verticalHelper = 0.0f;
-		private float horizontalHelper 	= 0.0f;
-		
 		private const float MAXSPEED = 0.8f;
 		private const float MINDELAY = 0.04f;
 		private const float MAXDELAY = 0.28f;
@@ -65,7 +62,7 @@ namespace AssemblyCSharp
 			icons[4] = Static.superBombIconPrefab;
 			icons[5] = Static.extraIconPrefab;
 			
-			int extra = TRIGGERBOMB ? 1 : 0;
+			//int extra = TRIGGERBOMB ? 1 : 0;
 			//String[] stats = {bombs.ToString(), ((int) speed*1000).ToString(), flamePower.ToString(), ((int) delay*1000).ToString(), SUPERBOMB ? 1 : 0, extra};
 			String[] iconText = {
 				bombs.ToString(),

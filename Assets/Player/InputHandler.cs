@@ -33,7 +33,6 @@ public class InputHandler : MonoBehaviour {
 	private int hDirection;
 	
 	private GameObject camera;
-	private Quaternion cameraRotation;
 	
 	private Parcel currCell;
 	
@@ -88,8 +87,6 @@ public class InputHandler : MonoBehaviour {
 		
 		verticalHelper = 0.0f;
 		horizontalHelper = 0.0f;
-		
-		cameraRotation = camera.transform.rotation;
 		
 		transform.LookAt(currCell.up.getCenterPos());
 	}
