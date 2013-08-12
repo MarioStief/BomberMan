@@ -64,7 +64,7 @@ public class Explosion : MonoBehaviour
 	void Start() {
 		timer = 0.0f;
 		createTime = Time.time;
-		triggerBomb = Player.getTriggerbomb();
+		triggerBomb = Static.player.getTriggerbomb();
 		
 		instantiatePSystems();
 
@@ -114,7 +114,7 @@ public class Explosion : MonoBehaviour
 					if (createBomb)
 						cell.destroyGameObject();
 					if (self)
-						Player.removeBomb();
+						Static.player.removeBomb();
 					bombDestroyed = true;
 				}
 				foreach (ExplosionField explosionField in explosionChain) {
@@ -126,7 +126,8 @@ public class Explosion : MonoBehaviour
 						//explosion.GetComponent<Detonator>().size = 10f;
 						Detonator detonator = explosion.GetComponent<Detonator>();
 						explosionField.getCell().decreaseHeight();
-						if (Player.getSuperbomb()) {
+                        if (Static.player.getSuperbomb())
+                        {
 							explosionField.getCell().decreaseHeight();
 							explosionField.getCell().decreaseHeight();
 						}
@@ -157,11 +158,11 @@ public class Explosion : MonoBehaviour
 						if (flamePower == Player.MAXFLAMEPOWER) {
 							detonator.color = Color.yellow;
 						}
-						if (Player.getSuperbomb()) {
+						if (Static.player.getSuperbomb()) {
 							detonator.color = Color.blue;
 							detonator.addShockWave();
 						}
-						if (flamePower == Player.MAXFLAMEPOWER && Player.getSuperbomb()) {
+						if (flamePower == Player.MAXFLAMEPOWER && Static.player.getSuperbomb()) {
 							detonator.color = Color.cyan;
 							detonator.addShockWave();
 						}
@@ -223,6 +224,12 @@ public class Explosion : MonoBehaviour
 						if (explosionField.getCell().hasBomb()) {
 							explosionField.getCell().getExplosion().startExplosion();
 						}
+
+                        if (explosionField.getCell().getType() == 1 || (explosionField.getCell().getType() == 2 && explosionField.getCell().getHeight() == 1f))
+                        {
+                            explosionField.getCell().setType(0);
+                            explodingCell.getMeshManipulator().updateCoordinates();
+                        }   
 						
 						stillRunning = true;
 
@@ -281,7 +288,7 @@ public class Explosion : MonoBehaviour
 						//cell.colorCell(Color.red);
 						break;
 					case 1:
-						if (!Player.getSuperbomb())
+                        if (!Static.player.getSuperbomb())
 							stop[j] = 1;
 						//cell.colorCell(Color.red);
 						break;

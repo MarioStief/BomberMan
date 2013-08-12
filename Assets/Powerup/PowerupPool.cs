@@ -43,7 +43,7 @@ namespace AssemblyCSharp
 					pool.Add(new Powerup(PowerupType.TRIGGERBOMB));
 				if (negative) {
 					for (int j = 0; j < 2; j++)
-						pool.Add(new Powerup(PowerupType.BOMB_DOWN)); // 2
+						pool.Add(new Powerup(PowerupType.BOMB_DOWN));
 					for (int j = 0; j < 2; j++)
 						pool.Add(new Powerup(PowerupType.FLAME_DOWN));
 					for (int j = 0; j < 2; j++)
@@ -74,7 +74,7 @@ namespace AssemblyCSharp
 			return randomList;
 		}
 		
-		public static void setPowerup(Parcel cell)
+		public static PowerupType setPowerup(Parcel cell)
 		{
 			Vector3 cellCenter = Vector3.zero; //cell.getCenterPoint();
 			
@@ -119,6 +119,8 @@ namespace AssemblyCSharp
 					
 			cell.addPowerup(new Powerup(type), powerup);
 			*/
+
+		return type;
 		}
 		
 		private static void poolContent()

@@ -45,7 +45,7 @@ namespace AssemblyCSharp
 			Static.setRink(this);
 			PowerupPool.createPool(1);
 			
-			Player.setCurrentParcel(gameArea[0][0]);
+			Static.player.setCurrentParcel(gameArea[0][0]);
 		}
 		
 		// <summary>
