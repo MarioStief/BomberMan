@@ -4,59 +4,48 @@ namespace AssemblyCSharp
 {
 	public class PowerupTexture  : MonoBehaviour {
 		
-		public Material powerdown;
-		public Material powerup;
-		public Material superPowerup;
-
-		public Texture bomb;
-		public Texture flame;
-		public Texture playerSpeed;
-		public Texture delaySpeed;
-		public Texture goldenFlame;
-		public Texture superBomb;
-		public Texture triggerBomb;
+		public Material bombUp;
+		public Material bombDown;
+		public Material flameUp;
+		public Material flameDown;
+		public Material playerSpeedUp;
+		public Material playerSpeedDown;
+		public Material delaySpeedUp;
+		public Material delaySpeedDown;
+		public Material triggerBomb;
+		public Material contactMine;
+		public Material goldenFlame;
+		public Material superBomb;
 		
 		public void setType (PowerupType type) {
-			Material boxMaterial = null;
-			Texture powerupTexture = null;
+			Material material = null;
 			if	(type == PowerupType.BOMB_UP) {
-				boxMaterial = powerup;
-				powerupTexture = bomb;
+				material = bombUp;
 			} else if (type == PowerupType.BOMB_DOWN) {
-				boxMaterial = powerdown;
-				powerupTexture = bomb;
+				material = bombDown;
 			} else if (type == PowerupType.FLAME_UP) {
-				boxMaterial = powerup;
-				powerupTexture = flame;
+				material = flameUp;
 			} else if (type == PowerupType.FLAME_DOWN) {
-				boxMaterial = powerdown;
-				powerupTexture = flame;
+				material = flameDown;
 			} else if (type == PowerupType.PLAYER_SPEED_UP) {
-				boxMaterial = powerup;
-				powerupTexture = playerSpeed;
+				material = playerSpeedUp;
 			} else if (type == PowerupType.PLAYER_SPEED_DOWN) {
-				boxMaterial = powerdown;
-				powerupTexture = playerSpeed;
+				material = playerSpeedDown;
 			} else if (type == PowerupType.DELAY_SPEED_UP) {
-				boxMaterial = powerup;
-				powerupTexture = delaySpeed;
+				material = delaySpeedUp;
 			} else if (type == PowerupType.DELAY_SPEED_DOWN) {
-				boxMaterial = powerdown;
-				powerupTexture = delaySpeed;
-			} else if (type == PowerupType.GOLDEN_FLAME) {
-				boxMaterial = superPowerup;
-				powerupTexture = goldenFlame;
-			} else if (type == PowerupType.SUPERBOMB) {
-				boxMaterial = superPowerup;
-				powerupTexture = superBomb;
+				material = delaySpeedDown;
 			} else if (type == PowerupType.TRIGGERBOMB) {
-				boxMaterial = superPowerup;
-				powerupTexture = triggerBomb;
+				material = triggerBomb;
+			} else if (type == PowerupType.CONTACTMINE) {
+				material = contactMine;
+			} else if (type == PowerupType.GOLDEN_FLAME) {
+				material = goldenFlame;
+			} else if (type == PowerupType.SUPERBOMB) {
+				material = superBomb;
 			}
-			Material[] boxMaterials = new Material[2];
-			boxMaterials[0] = boxMaterial;
-			boxMaterials[1] = new Material(Static.alphaBlended);
-			boxMaterials[1].mainTexture = powerupTexture;
+			Material[] boxMaterials = new Material[1];
+			boxMaterials[0] = material;
 			renderer.materials = boxMaterials;
 		}
 	

@@ -246,6 +246,11 @@ public class InputHandler : MonoBehaviour {
 			// -----------------------------------------------------------
 			moveCharacter();
 			currCell = Static.rink.gameArea[lpos][bpos];
+
+			if (currCell.hasContactMine()) {
+				currCell.getExplosion().startExplosion();
+			}
+				
 			if (currCell.isExploding()) {
 				Static.player.setDead(true);
 				renderer.material.color = Color.black;
@@ -263,15 +268,13 @@ public class InputHandler : MonoBehaviour {
 				if ( !currCell.hasBomb()) {
 
 					if (Static.player.addBomb()) {
-						int type = 0;
-						if (Static.player.getSuperbomb())
-							type = 1;
+						int extra = 0;
 						if (Static.player.getTriggerbomb())
-							type = 2;
-						if (Static.player.getSuperbomb() && Static.player.getTriggerbomb())
-							type = 3;
+							extra = 1;
+						if (Static.player.getContactMine())
+							extra = 2;
 
-						Explosion.createExplosionOnCell(currCell, Static.player.getFlamePower(), Static.player.getDelay(), type, true, true);
+						Explosion.createExplosionOnCell(currCell, Static.player.getFlamePower(), Static.player.getDelay(), Static.player.getSuperbomb(), extra, true, true);
 						// Um eine Bombe eines anderen Spielers auf einer Zelle zu spawnen:
 						// Explosion.createExplosionOnCell(Parcel, flamePower, true);
 						// Powerup-ToDos: flameMight, flameSpeed

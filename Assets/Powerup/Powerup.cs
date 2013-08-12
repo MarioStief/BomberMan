@@ -22,22 +22,24 @@ namespace AssemblyCSharp
 		public int getValue() {
 			int value = 0;
 			if	(type == PowerupType.BOMB_DOWN)
-					value = 1; 
+					value = 1;
 			else if (type == PowerupType.FLAME_DOWN)
-					value = 1; 
+					value = 1;
 			else if (type == PowerupType.PLAYER_SPEED_DOWN)
-					value = 1; 
+					value = 1;
 			else if (type == PowerupType.PLAYER_SPEED_UP)
 					value = 3; 
 			else if	(type == PowerupType.BOMB_UP)
-					value = 3; 
+					value = 3;
 			else if (type == PowerupType.FLAME_UP)
-					value = 3; 
+					value = 3;
+			else if (type == PowerupType.TRIGGERBOMB)
+					value = 5;
+			else if (type == PowerupType.CONTACTMINE)
+					value = 5;
 			else if (type == PowerupType.GOLDEN_FLAME)
 					value = 10;
 			else if (type == PowerupType.SUPERBOMB)
-					value = 10;
-			else if (type == PowerupType.TRIGGERBOMB)
 					value = 10;
 			return value;
 		}

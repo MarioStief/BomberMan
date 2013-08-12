@@ -20,7 +20,7 @@ namespace AssemblyCSharp
 		public static UnityEngine.Object stoneCube1Prefab;
 		public static UnityEngine.Object stoneCube2Prefab;
 		
-		public static Shader alphaBlended;
+		public static Shader transparentDiffuseShader;
 		
 		public static UnityEngine.Object bombIconPrefab;
 		public static UnityEngine.Object playerSpeedIconPrefab;
@@ -35,6 +35,7 @@ namespace AssemblyCSharp
 		 * if needed: the static ones:
 		 * public static UnityEngine.Object emptyIconPrefab;
 		 * public static UnityEngine.Object triggerBombIconPrefab;
+		 * public static UnityEngine.Object contactMineIconPrefab;
 		 * public static UnityEngine.Object goldenFlameIconPrefab;
 		 * public static UnityEngine.Object normalFlameIconPrefab;
 		 * public static UnityEngine.Object superBombActiveIconPrefab;
@@ -52,20 +53,21 @@ namespace AssemblyCSharp
 			stoneCube1Prefab = Resources.Load("Prefabs/stoneCube1Prefab");
 			stoneCube2Prefab = Resources.Load("Prefabs/stoneCube2Prefab");
 			
-			alphaBlended = Shader.Find("Particles/Alpha Blended");
+			transparentDiffuseShader = Shader.Find("Transparent/Diffuse");
 			
-			delaySpeedIconPrefab = Resources.Load("Textures/Menu/delaySpeed.png");
-			superBombIconPrefab = Resources.Load("Textures/Menu/superBombInactive.png");
-			extraIconPrefab = Resources.Load("Textures/Menu/empty.png");
+			delaySpeedIconPrefab = Resources.Load("Textures/Menu/delaySpeed");
+			superBombIconPrefab = Resources.Load("Textures/Menu/superBombInactive");
+			extraIconPrefab = Resources.Load("Textures/Menu/empty");
 			
 			//again: dynamic:
-			bombIconPrefab = Resources.Load("Textures/Menu/bomb.png");
-			playerSpeedIconPrefab = Resources.Load("Textures/Menu/playerSpeed.png");
-			flameIconPrefab = Resources.Load("Textures/Menu/flame.png");
+			bombIconPrefab = Resources.Load("Textures/Menu/bomb");
+			playerSpeedIconPrefab = Resources.Load("Textures/Menu/playerSpeed");
+			flameIconPrefab = Resources.Load("Textures/Menu/flame");
 
 			/* static:
 			emptyIconPrefab = Resources.Load("Textures/Menu/empty.png");
 			triggerBombIconPrefab = Resources.Load("Textures/Menu/triggerBomb.png");
+			contactMineIconPrefab = Resources.Load("Textures/Menu/contactMine.png");
 			goldenFlameIconPrefab = Resources.Load("Textures/Menu/goldenFlame.png");
 			normalFlameIconPrefab = Resources.Load("Textures/Menu/flame.png");
 			superBombActiveIconPrefab = Resources.Load("Textures/Menu/superBombActive.png");
@@ -84,6 +86,9 @@ namespace AssemblyCSharp
 				break;
 			case 1:
 				extraIconPrefab = Resources.Load("Textures/Menu/triggerBomb.png");
+				break;
+			case 2:
+				extraIconPrefab = Resources.Load("Textures/Menu/contactMine.png");
 				break;
 			}
 		}

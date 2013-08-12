@@ -14,11 +14,13 @@ public class Explosion : MonoBehaviour
 	private int []reach = {0, 0, 0, 0, 0};
 	private int flamePower;
 	private float delay;
-	private int type;
+	private int extra;
 	private bool createBomb;
 	private bool self = false;
 	private bool bombDestroyed = false;
-	private bool triggerBomb;
+	private bool superbomb;
+	private bool triggerBomb = false;
+	private bool contactMine = false;
 	
 	private bool waitingForBombExplosion = true;
 	
@@ -40,13 +42,14 @@ public class Explosion : MonoBehaviour
 	}
 	
 	// Factory-Klasse, um einen Konstruktor auf einem Monobehaviour-Objekt zu emulieren, der die Explosion auf einer Zelle startet
-	public static Explosion createExplosionOnCell(Parcel cell, int flamePower, float delay, int type, bool createBomb, bool self) {
+	public static Explosion createExplosionOnCell(Parcel cell, int flamePower, float delay, bool superbomb, int extra, bool createBomb, bool self) {
 		Explosion thisObj = GUIObject.AddComponent<Explosion>();
 		//calls Start() on the object and initializes it.
 		thisObj.cell = cell;
 		thisObj.flamePower = flamePower;
 		thisObj.delay = delay;
-		thisObj.type = type;
+		thisObj.superbomb = superbomb;
+		thisObj.extra = extra;
 		thisObj.createBomb = createBomb;
 		thisObj.transform.position = cell.getCenterPos();
 		thisObj.self = self;
@@ -54,12 +57,13 @@ public class Explosion : MonoBehaviour
 	}
 
 	// Factory-Klasse, um einen Konstruktor auf einem Monobehaviour-Objekt zu emulieren, der die Explosion auf einer Zelle startet
-	public static Explosion createExplosionOnCell(Parcel cell, int flamePower, float delay, int type, bool createBomb) {
+	public static Explosion createExplosionOnCell(Parcel cell, int flamePower, float delay, bool superbomb, int extra, bool createBomb) {
 		Explosion thisObj = GUIObject.AddComponent<Explosion>();
 		//calls Start() on the object and initializes it.
 		thisObj.cell = cell;
 		thisObj.flamePower = flamePower;
-		thisObj.type = type;
+		thisObj.superbomb = superbomb;
+		thisObj.extra = extra;
 		thisObj.createBomb = createBomb;
 		return thisObj;
 	}
@@ -67,7 +71,14 @@ public class Explosion : MonoBehaviour
 	void Start() {
 		timer = 0.0f;
 		createTime = Time.time;
-		triggerBomb = (((type == 2) || (type == 3)) ? true : false);
+		switch (extra) {
+		case 1:
+			triggerBomb = true;
+			break;
+		case 2:
+			contactMine = true;
+			break;
+		}
 		
 		instantiatePSystems();
 
@@ -78,7 +89,11 @@ public class Explosion : MonoBehaviour
 			cell.setGameObject(bomb);
 		}
 		cell.setExplosion(this);
-		cell.setBomb(true);
+		if (extra == 2) {
+			cell.setContactMine(true);
+		} else {
+			cell.setBomb(true);
+		} 
 
 	}
 	
@@ -93,7 +108,7 @@ public class Explosion : MonoBehaviour
 	void Update() {
 		float elapsedTime = Time.time - createTime;
 		if (waitingForBombExplosion) {
-			if (elapsedTime > EXPLOSIONTIMER && !triggerBomb) {
+			if (elapsedTime > EXPLOSIONTIMER && extra == 0) {
 				waitingForBombExplosion = false;
 				startExplosion();
 			}
@@ -114,6 +129,7 @@ public class Explosion : MonoBehaviour
 				if (!bombDestroyed) {
 					// Zerstöre Bombe
 					cell.setBomb(false);
+					cell.setContactMine(false);
 					if (createBomb)
 						cell.destroyGameObject();
 					if (self)
@@ -129,7 +145,7 @@ public class Explosion : MonoBehaviour
 						//explosion.GetComponent<Detonator>().size = 10f;
 						Detonator detonator = explosion.GetComponent<Detonator>();
 						explosionField.getCell().decreaseHeight();
-                        if (type == 1 || type == 3) // superbomb
+                        if (superbomb) // superbomb
                         {
 							explosionField.getCell().decreaseHeight();
 							explosionField.getCell().decreaseHeight();
@@ -158,20 +174,18 @@ public class Explosion : MonoBehaviour
 						//Debug.Log ("Explosion Volume: " + (100/(2*distance)) + " %");
 						
 						// Besonders hervorheben
-						switch (type) {
-						case 0: // normal bomb
-							if (flamePower == Player.MAXFLAMEPOWER)
-								detonator.color = Color.yellow;
-							break;
-						case 1: // superbomb
-						case 3: // superbomb
+						if (superbomb) {
 							if (flamePower == Player.MAXFLAMEPOWER)
 								detonator.color = Color.cyan;
 							else
 								detonator.color = Color.blue;
 							detonator.addShockWave();
-							break;
+						} else {
+							// normal bomb
+							if (flamePower == Player.MAXFLAMEPOWER)
+								detonator.color = Color.yellow;
 						}
+						
 						detonator.Explode();
 						explosionField.getCell().setExploding(true);
 						//explosionField.getCell().colorCell(Color.black);
@@ -183,9 +197,12 @@ public class Explosion : MonoBehaviour
 									float flameDelay = 0.2f;
 									int flameReach = explosionField.getCell().getPowerupValue();
 										flameDelay = 0.15f;
-									if (flameReach == 10)
+									bool superPowerup = false;
+									if (flameReach == 10) {
 										flameDelay = 0.1f;
-									Explosion ex = Explosion.createExplosionOnCell(explosionField.getCell(), flameReach, flameDelay, 1, false);
+										superPowerup = true;
+									}
+									Explosion ex = Explosion.createExplosionOnCell(explosionField.getCell(), flameReach, flameDelay, superPowerup, 0, false);
 									ex.startExplosion();
 								}
 								explosionField.getCell().destroyPowerup(true);
@@ -293,7 +310,7 @@ public class Explosion : MonoBehaviour
 						//cell.colorCell(Color.red);
 						break;
 					case 1:
-                        if (!(type == 1 || type == 3)) // superbomb
+                        if (!superbomb)
 							stop[j] = 1;
 						//cell.colorCell(Color.red);
 						break;
