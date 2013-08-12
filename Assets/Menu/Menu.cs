@@ -50,6 +50,9 @@ public class Menu : MonoBehaviour {
 		nickname = PlayerPrefs.GetString("Player Name", nickname);
 		serverName = PlayerPrefs.GetString("Server Name", serverName);
 		maxPlayers = PlayerPrefs.GetInt("Server MaxPlayers", maxPlayers);
+		playerColor.r = PlayerPrefs.GetFloat("PlayerRed", 0);
+		playerColor.g = PlayerPrefs.GetFloat("PlayerGreen", 0);
+		playerColor.b = PlayerPrefs.GetFloat("PlayerBlue", 1);
 	}
 
 	public void Update () {
@@ -167,7 +170,10 @@ public class Menu : MonoBehaviour {
 				if (GUI.Button(new Rect(width,100+25*i,75,20), "Connect")) {
 					if (nickname.Length > 0) {
 						PlayerPrefs.SetString("Player Name", nickname);
-							
+						PlayerPrefs.SetFloat("PlayerRed", playerColor.r);
+						PlayerPrefs.SetFloat("PlayerGreen", playerColor.g);
+						PlayerPrefs.SetFloat("PlayerBlue", playerColor.b);
+						
 						// instantiate CJs Client
 						scr_netClient.StartClient(nickname, null, 0);
 						
@@ -255,6 +261,9 @@ public class Menu : MonoBehaviour {
 				PlayerPrefs.SetInt("Server MaxPlayers", maxPlayers);
 				PlayerPrefs.SetString("Server Name", serverName);
 				PlayerPrefs.SetString("Player Name", nickname);
+				PlayerPrefs.SetFloat("PlayerRed", playerColor.r);
+				PlayerPrefs.SetFloat("PlayerGreen", playerColor.g);
+				PlayerPrefs.SetFloat("PlayerBlue", playerColor.b);
 				
 				showGUI = false;
 				
