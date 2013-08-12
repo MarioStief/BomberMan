@@ -30,8 +30,8 @@ namespace AssemblyCSharp
 		
 		private bool dead = false;
 		
-		private UnityEngine.Object[] icons;
-		private String[] iconText;
+		private UnityEngine.Object[] icons = new UnityEngine.Object[6];
+		private String[] iconText = new String[4];
 		
 		private List<Parcel> triggerBombs = new List<Parcel>();
 		

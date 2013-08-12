@@ -82,29 +82,29 @@ namespace AssemblyCSharp
 		public static void setExtra(int type) {
 			switch (type) {
 			case 0:
-				extraIconPrefab = Resources.Load("Textures/Menu/empty.png");
+				extraIconPrefab = Resources.Load("Textures/Menu/empty");
 				break;
 			case 1:
-				extraIconPrefab = Resources.Load("Textures/Menu/triggerBomb.png");
+				extraIconPrefab = Resources.Load("Textures/Menu/triggerBomb");
 				break;
 			case 2:
-				extraIconPrefab = Resources.Load("Textures/Menu/contactMine.png");
+				extraIconPrefab = Resources.Load("Textures/Menu/contactMine");
 				break;
 			}
 		}
 		
 		public static void setGoldenFlame(bool goldenFlame) {
 			if (goldenFlame)
-				flameIconPrefab = Resources.Load("Textures/Menu/goldenFlame.png");
+				flameIconPrefab = Resources.Load("Textures/Menu/goldenFlame");
 			else
-				flameIconPrefab = Resources.Load("Textures/Menu/flame.png");
+				flameIconPrefab = Resources.Load("Textures/Menu/flame");
 		}
 		
 		public static void setSuperbomb(bool superbomb) {
 			if (superbomb)
-				superBombIconPrefab = Resources.Load("Textures/Menu/superBombActive.png");
+				superBombIconPrefab = Resources.Load("Textures/Menu/superBombActive");
 			else
-				superBombIconPrefab = Resources.Load("Textures/Menu/superBombInactive.png");
+				superBombIconPrefab = Resources.Load("Textures/Menu/superBombInactive");
 		}
 		
 		public static void setRink(Rink r) {
