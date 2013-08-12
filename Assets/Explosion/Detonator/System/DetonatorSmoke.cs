@@ -6,7 +6,7 @@ using System.Collections;
 public class DetonatorSmoke : DetonatorComponent
 {
 	private const float _baseSize = 1f;
-	private const float _baseDuration = 1f;
+	private const float _baseDuration = 2f;
 	private Color _baseColor = new Color(.5f, .5f, .5f, .5f);
 	private const float _baseDamping = 0.1300004f;
 	
@@ -152,8 +152,6 @@ public class DetonatorSmoke : DetonatorComponent
     override public void Explode()
     {
 		if (detailThreshold > detail) return;
-		
-		on = false; // Disabled wegen deutlicher Rectangle-Bildung (Mario)
 		
 		if (on)
 		{
