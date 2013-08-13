@@ -14,7 +14,7 @@ public class Explosion : MonoBehaviour
 	private int []reach = {0, 0, 0, 0, 0};
 	private int flamePower;
 	private float delay;
-	private int extra;
+	private int extra = 0;
 	private bool createBomb;
 	private bool self = false;
 	private bool bombDestroyed = false;
@@ -132,8 +132,9 @@ public class Explosion : MonoBehaviour
 					cell.setContactMine(false);
 					if (createBomb)
 						cell.destroyGameObject();
-					if (self)
+					if (self && extra == 0) {
 						Static.player.removeBomb();
+					}
 					bombDestroyed = true;
 				}
 				foreach (ExplosionField explosionField in explosionChain) {
@@ -243,8 +244,16 @@ public class Explosion : MonoBehaviour
 						explodingCell.getMeshManipulator().updateCoordinates();
 
 						// Bomben jagen sich gegenseitig hoch:
-						if (explosionField.getCell().hasBomb()) {
-							explosionField.getCell().getExplosion().startExplosion();
+						if (explodingCell.hasBomb()) {
+							explodingCell.getExplosion().startExplosion();
+							if (explodingCell.getExplosion().isTriggerBomb()) { // remove triggerBomb from list
+								List<Parcel> triggerBombs = new List<Parcel>(Static.player.getTriggerBombs());
+								foreach (Parcel cell in triggerBombs) {
+									if (explodingCell == cell) {
+										Static.player.removeTriggerBomb(cell);
+									}
+								}
+							}
 						}
 
                         if (explosionField.getCell().getType() == 1 || (explosionField.getCell().getType() == 2 && explosionField.getCell().getHeight() == 1f))
@@ -325,6 +334,10 @@ public class Explosion : MonoBehaviour
 			}
 		}
 		//Debug.Log ("#ExplosionFields: " + explosionChain.Count);
+	}
+							
+	public bool isTriggerBomb() {
+		return triggerBomb;
 	}
 }
 

@@ -15,11 +15,16 @@ namespace AssemblyCSharp
 		public const int MAXFLAMEPOWER = 10;
 		private const int MAXHP = 100;
 		private bool SUPERBOMB = false;
-		private bool TRIGGERBOMB = false;
-		private bool CONTACTMINE = false;
 		
 		private int bombs = 1;
 		private int bombsActive = 0;
+
+		private int triggerbombs = 0;
+		private int triggerbombsActive = 0;
+
+		private int contactmines = 0;
+		private int contactminesActive = 0;
+
 		private int flamePower = 1;
 		private float speed = 0.4f;
 		private float delay = 0.2f;
@@ -30,7 +35,7 @@ namespace AssemblyCSharp
 		private UnityEngine.Object[] icons = new UnityEngine.Object[6];
 		private String[] iconText = new String[4];
 		
-		private List<Parcel> triggerBombs = new List<Parcel>();
+		private List<Parcel> triggerbombList = new List<Parcel>();
 		
 		public void updateMenuStats() {
 			
@@ -85,11 +90,7 @@ namespace AssemblyCSharp
 		}
 
 		public void addTriggerBomb(Parcel cell) {
-			triggerBombs.Add(cell);
-		}
-		
-		public List<Parcel> getTriggerBombs() {
-			return triggerBombs;
+			triggerbombList.Add(cell);
 		}
 		
 		public void powerupCollected(PowerupType type)
@@ -134,24 +135,55 @@ namespace AssemblyCSharp
 				Static.setSuperbomb(true);
 				updateMenuStats();
 			} else if (type == PowerupType.TRIGGERBOMB) {
-				TRIGGERBOMB = true;
-				Static.setExtra(1);
+				if (triggerbombs < 3) {
+					triggerbombs++;
+					contactmines = 0;
+					Static.setExtra(1);
+				}
 				updateMenuStats();
 			} else if (type == PowerupType.CONTACTMINE) {
-				CONTACTMINE = true;
-				Static.setExtra(2);
+				if (contactmines < 3) {
+					contactmines++;
+					triggerbombs = 0;
+					Static.setExtra(2);
+				}
 				updateMenuStats();
 			}
 			Debug.Log("bombs: " + bombs + ", flamePower: " + flamePower + ", speed: " + speed*1000 + " ms, delay: " + delay*1000 + " ms");
 		}
 		
-		public bool addBomb() {
-			if (bombsActive < bombs) {
+		public void addBomb() {
+			if (triggerbombs > triggerbombsActive) {
+				triggerbombsActive++;
+				addTriggerBomb(currentCell);
+				Explosion.createExplosionOnCell(currentCell, Static.player.getFlamePower(), Static.player.getDelay(), Static.player.getSuperbomb(), 1, true, true);
+			} else if (bombsActive < bombs) {
 				bombsActive++;
-				return true;
-			} else {
-				return false;
+				Explosion.createExplosionOnCell(currentCell, Static.player.getFlamePower(), Static.player.getDelay(), Static.player.getSuperbomb(), 0, true, true);
 			}
+		}
+		
+		public void addContactMine() {
+			if (contactmines > contactminesActive) {
+				contactminesActive++;
+				currentCell.setContactMine(true);
+			}
+		}
+		
+		public void releaseTriggerBombs() {
+			foreach (Parcel cell in triggerbombList) {
+				cell.getExplosion().startExplosion();
+				removeTriggerBomb(cell);
+			}
+		}
+		
+		public void removeTriggerBomb(Parcel cell) {
+			triggerbombsActive--;
+			triggerbombList.Remove(cell);
+		}
+		
+		public List<Parcel> getTriggerBombs() {
+			return triggerbombList;
 		}
 		
 		public void setXPos(float x){
@@ -210,25 +242,25 @@ namespace AssemblyCSharp
 					Static.setSuperbomb(false);
 					updateMenuStats();
 				}
-				if (TRIGGERBOMB) {
-					parcelPool[0].addPowerup(new Powerup(PowerupType.TRIGGERBOMB));
-					parcelPool.RemoveAt(0);
-					TRIGGERBOMB = false;
-					Static.setExtra(0);
-					updateMenuStats();
-				}
-				if (CONTACTMINE) {
-					parcelPool[0].addPowerup(new Powerup(PowerupType.CONTACTMINE));
-					parcelPool.RemoveAt(0);
-					CONTACTMINE = false;
-					Static.setExtra(0);
-					updateMenuStats();
-				}
 				if (flamePower == MAXFLAMEPOWER && parcelPool.Count > 0) {
 					parcelPool[0].addPowerup(new Powerup(PowerupType.GOLDEN_FLAME));
 					parcelPool.RemoveAt(0);
 					bombs = 1;
 					Static.setGoldenFlame(false);
+					updateMenuStats();
+				}
+				while (triggerbombs > 0) {
+					parcelPool[0].addPowerup(new Powerup(PowerupType.TRIGGERBOMB));
+					parcelPool.RemoveAt(0);
+					triggerbombs--;
+					Static.setExtra(0);
+					updateMenuStats();
+				}
+				while (contactmines > 0) {
+					parcelPool[0].addPowerup(new Powerup(PowerupType.CONTACTMINE));
+					parcelPool.RemoveAt(0);
+					contactmines--;
+					Static.setExtra(0);
 					updateMenuStats();
 				}
 				while (bombs > 1 && parcelPool.Count > 0) {
@@ -317,12 +349,12 @@ namespace AssemblyCSharp
 			return SUPERBOMB;
 		}
 
-		public bool getTriggerbomb() {
-			return TRIGGERBOMB;
+		public bool hasTriggerbomb() {
+			return (triggerbombs > 0);
 		}
 
-		public bool getContactMine() {
-			return CONTACTMINE;
+		public bool hasContactMine() {
+			return (contactmines > 0);
 		}
 
 		public float getDelay() {

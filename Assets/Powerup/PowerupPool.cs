@@ -41,6 +41,8 @@ namespace AssemblyCSharp
 					pool.Add(new Powerup(PowerupType.SUPERBOMB));
 				for (int j = 0; j < 1; j++)
 					pool.Add(new Powerup(PowerupType.TRIGGERBOMB));
+				for (int j = 0; j < 1; j++)
+					pool.Add(new Powerup(PowerupType.CONTACTMINE));
 				if (negative) {
 					for (int j = 0; j < 2; j++)
 						pool.Add(new Powerup(PowerupType.BOMB_DOWN));
