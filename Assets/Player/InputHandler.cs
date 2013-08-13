@@ -243,7 +243,8 @@ public class InputHandler : MonoBehaviour {
 			// -----------------------------------------------------------
 			moveCharacter();
 			currCell = Static.rink.gameArea[lpos][bpos];
-
+			//currCell.colorCell(Color.cyan);
+			
 			if (currCell.hasContactMine()) {
 				currCell.getExplosion().startExplosion();
 			}
@@ -262,13 +263,14 @@ public class InputHandler : MonoBehaviour {
 			
 			// Leertaste -> Bombe legen
 			if ( Input.GetKeyDown(KeyCode.Space)){
-				if ( !currCell.hasBomb()) {
+				if (!currCell.hasBomb() && !currCell.hasContactMine()) {
 					Static.player.addBomb();
 				}
 			}
 			
 			if ((Input.GetKeyDown(KeyCode.LeftShift)) || (Input.GetKeyDown(KeyCode.RightShift))) {
-				Static.player.addContactMine();
+				if (!currCell.hasBomb() && !currCell.hasContactMine())
+					Static.player.addContactMine();
 				Static.player.releaseTriggerBombs();
 			}
 

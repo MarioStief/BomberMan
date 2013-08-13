@@ -166,8 +166,12 @@ namespace AssemblyCSharp
 		public void addContactMine() {
 			if (contactmines > contactminesActive) {
 				contactminesActive++;
-				currentCell.setContactMine(true);
+				Explosion.createExplosionOnCell(currentCell, Static.player.getFlamePower(), Static.player.getDelay(), Static.player.getSuperbomb(), 2, true, true);
 			}
+		}
+		
+		public void removeContactMine() {
+			contactminesActive--;
 		}
 		
 		public void releaseTriggerBombs() {

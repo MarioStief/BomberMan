@@ -8,7 +8,7 @@ public class anim : MonoBehaviour {
 	public bool triggerBomb = false;
 	
 	void Start() {
-		// Aufblinken beim Bomblegen verbeiden
+		// Aufblinken beim Bombenlegen verbeiden
 		if (triggerBomb) {
 			transform.renderer.material.SetColor("_Color", Color.blue);
 		} else {

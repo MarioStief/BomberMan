@@ -21,6 +21,8 @@ public class Explosion : MonoBehaviour
 	private bool superbomb;
 	private bool triggerBomb = false;
 	private bool contactMine = false;
+	private	bool contactMineActive = false;
+
 	
 	private bool waitingForBombExplosion = true;
 	
@@ -62,9 +64,11 @@ public class Explosion : MonoBehaviour
 		//calls Start() on the object and initializes it.
 		thisObj.cell = cell;
 		thisObj.flamePower = flamePower;
+		thisObj.delay = delay;
 		thisObj.superbomb = superbomb;
 		thisObj.extra = extra;
 		thisObj.createBomb = createBomb;
+		thisObj.transform.position = cell.getCenterPos();
 		return thisObj;
 	}
 
@@ -83,26 +87,33 @@ public class Explosion : MonoBehaviour
 		instantiatePSystems();
 
 		if (createBomb) {
-			GameObject bomb = GameObject.Instantiate(Static.bombPrefab, transform.position, Quaternion.identity) as GameObject;
-			EXPLOSIONTIMER = bomb.GetComponent<anim>().timer;
-			bomb.GetComponent<anim>().triggerBomb = triggerBomb;
+			GameObject bomb;
+			if (contactMine) {
+				bomb = GameObject.Instantiate(Static.contactMinePrefab, transform.position, Quaternion.identity) as GameObject;
+				EXPLOSIONTIMER = 0.5f;
+			} else {
+				bomb = GameObject.Instantiate(Static.bombPrefab, transform.position, Quaternion.identity) as GameObject;
+				EXPLOSIONTIMER = bomb.GetComponent<anim>().timer;
+				bomb.GetComponent<anim>().triggerBomb = triggerBomb;
+			}
 			cell.setGameObject(bomb);
 		}
 		cell.setExplosion(this);
-		if (extra == 2) {
-			cell.setContactMine(true);
-		} else {
-			cell.setBomb(true);
-		} 
-
+		cell.setBomb(true);
 	}
 	
-	public void startExplosion(){
-		
-		waitingForBombExplosion = false;
-		createTime = Time.time;
-
-		// ALTERNATIV: dropPowerup() hierher, und dann langsam einfaden
+	public void startExplosion() {
+		if (waitingForBombExplosion) {
+			waitingForBombExplosion = false;
+			createTime = Time.time;
+			
+			if (contactMine) {
+				AudioSource audioSource = gameObject.AddComponent<AudioSource>();
+				audioSource.clip = Resources.Load("Sounds/beep") as AudioClip;
+				audioSource.Play();
+				createTime += 0.5f;
+			}
+		}
 	}
 	
 	void Update() {
@@ -110,10 +121,15 @@ public class Explosion : MonoBehaviour
 		if (waitingForBombExplosion) {
 			if (elapsedTime > EXPLOSIONTIMER && extra == 0) {
 				waitingForBombExplosion = false;
-				startExplosion();
+				createTime = Time.time;
+			} else if (elapsedTime > 3.0f && extra == 2 && !contactMineActive) {
+				cell.setBomb(false);
+				cell.setContactMine(true); // 3 s um in Deckung zu gehen ;)
+				contactMineActive = true;
+				//Debug.Log("Kontaktmine scharf");
 			}
 		} else {
-			if (elapsedTime > 1.0f) {					// ist eine halbe Sekunde nichts passiert: GameObjekt zerstören
+			if (elapsedTime > 1.0f) { // ist eine Sekunde nichts passiert: GameObjekt zerstören
 				Destroy (this);
 			}
 
@@ -125,11 +141,15 @@ public class Explosion : MonoBehaviour
 			}
 
 			// Explosionskette startet
-			if (elapsedTime > delay) {					// alle 100 ms
+			if (elapsedTime > delay) {
+
 				if (!bombDestroyed) {
 					// Zerstöre Bombe
+					if (contactMine) {
+						cell.setContactMine(false);
+						Static.player.removeContactMine();
+					}
 					cell.setBomb(false);
-					cell.setContactMine(false);
 					if (createBomb)
 						cell.destroyGameObject();
 					if (self && extra == 0) {
@@ -244,7 +264,7 @@ public class Explosion : MonoBehaviour
 						explodingCell.getMeshManipulator().updateCoordinates();
 
 						// Bomben jagen sich gegenseitig hoch:
-						if (explodingCell.hasBomb()) {
+						if (explodingCell.hasBomb() || explodingCell.hasContactMine()) {
 							explodingCell.getExplosion().startExplosion();
 							if (explodingCell.getExplosion().isTriggerBomb()) { // remove triggerBomb from list
 								List<Parcel> triggerBombs = new List<Parcel>(Static.player.getTriggerBombs());
@@ -286,11 +306,6 @@ public class Explosion : MonoBehaviour
 		}
 
 		int[] stop = {0, 0, 0, 0};
-		
-		bool SURROUNDING_DEBUG = false;
-
-		if (SURROUNDING_DEBUG)
-			Debug.Log("I am here: " + this.cell.getCoordinates());
 			
 		for (int i = 1; i <= flamePower; i++) {
 			for (int j = 0; j < 4; j++) {
@@ -312,8 +327,6 @@ public class Explosion : MonoBehaviour
 						break;
 					}
 					Parcel cell = this.cell.getSurroundingCell(lpos, bpos);
-					if (SURROUNDING_DEBUG)
-						Debug.Log("Surrounding Cell: " + cell.getCoordinates() + ", Height: " + cell.getHeight());
 					switch (cell.getType()) {
 					case 0:
 						//cell.colorCell(Color.red);

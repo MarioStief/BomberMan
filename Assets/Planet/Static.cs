@@ -12,6 +12,7 @@ namespace AssemblyCSharp
         public static Player player = new Player();
 		
 		public static UnityEngine.Object bombPrefab;
+		public static UnityEngine.Object contactMinePrefab;
 		public static UnityEngine.Object powerupPrefab;
 		public static UnityEngine.Object explosionPrefab;
 		
@@ -45,6 +46,7 @@ namespace AssemblyCSharp
 		static Static() {
 			
 			bombPrefab = Resources.Load("Prefabs/bombPrefab");
+			contactMinePrefab = Resources.Load("Prefabs/contactMinePrefab");
 			powerupPrefab = Resources.Load("Prefabs/powerupPrefab");
 			explosionPrefab = Resources.Load("Prefabs/explosionPrefab");
 			

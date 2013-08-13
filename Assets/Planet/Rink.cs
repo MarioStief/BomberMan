@@ -106,7 +106,7 @@ namespace AssemblyCSharp
 					drawnArea[i][j].updateCoordinates();	
 				}
 			}
-//			highLightRinkPosition(true);
+			//highLightRinkPosition(true);
 		}
 		
 		// <summary>
@@ -187,25 +187,26 @@ namespace AssemblyCSharp
 		// mark == true: Färbt ausgehend von RinkPosition das mittlere Kugelfeld rot und gibt dess Parzellen-Nr. aus.
 		// mark == false: Färbt momentanen Würfel weiß.
 		// </summary>
-		//public void highLightRinkPosition(bool mark){
+		/*
+		public void highLightRinkPosition(bool mark){
 			
-		//	if (DEBUG == false) return;
+			if (DEBUG == false) return;
 			
-		//	int x = (int)rinkPosition.x;
-		//	int y = (int)rinkPosition.y;
-			
-		//	if (mark){
-		//		if (oldX != x || oldY != y) { // Temporär, um das Überfluten der Console zu vermeiden
-		//			oldX = x;
-		//			oldY = y;
-		//			Debug.Log("RedCube-Position: " + ((x+gameArea.Length/2)%(gameArea.Length)) + ", " + ((y+gameArea[0].Length/4)%(gameArea[0].Length/2)));
-		//		}
-		//		drawnArea[((x+gameArea.Length/2)%(gameArea.Length))][((y+gameArea[0].Length/4)%(gameArea[0].Length/2))].renderer.material.color = Color.red;	
-		//	} else{
-		//		drawnArea[((x+gameArea.Length/2)%(gameArea.Length))][((y+gameArea[0].Length/4)%(gameArea[0].Length/2))].renderer.material.color = Color.white;	
-		//	}
+			int x = (int)rinkPosition.x;
+			int y = (int)rinkPosition.y;
 		
-		//}
+			if (mark){
+				if (oldX != x || oldY != y) { // Temporär, um das Überfluten der Console zu vermeiden
+					oldX = x;
+					oldY = y;
+					Debug.Log("RedCube-Position: " + ((x+gameArea.Length/2)%(gameArea.Length)) + ", " + ((y+gameArea[0].Length/4)%(gameArea[0].Length/2)));
+				}
+				drawnArea[((x+gameArea.Length/2)%(gameArea.Length))][((y+gameArea[0].Length/4)%(gameArea[0].Length/2))].renderer.material.color = Color.red;	
+			} else{
+				drawnArea[((x+gameArea.Length/2)%(gameArea.Length))][((y+gameArea[0].Length/4)%(gameArea[0].Length/2))].renderer.material.color = Color.white;	
+			}
+		}
+		*/
 		
 		//public String printCellCoordinates(Parcel cell) {
 		//	for (int i = 0; i < gameArea.Length; i++) {
