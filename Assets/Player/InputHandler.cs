@@ -200,7 +200,7 @@ public class InputHandler : MonoBehaviour {
 	void Update () {
 		
 		// Gegner drehen mit dem Planeten..!
-		if (!networkView.isMine) {
+		if (!networkView.isMine && Static.rink != null) {
 			
 			float verticalMovement = Input.GetAxis("Vertical");
 			float vm = Static.player.getSpeed() * verticalMovement * Time.deltaTime;
@@ -236,7 +236,7 @@ public class InputHandler : MonoBehaviour {
 			return;
 		}
 		
-		if (!Static.player.isDead()) {
+		if (Static.rink != null && !Static.player.isDead()) {
 			
 			// -----------------------------------------------------------
 			// Bewegung und Bestimmung einer möglichen neuen currentParcel
@@ -360,7 +360,7 @@ public class InputHandler : MonoBehaviour {
 			//rink.renderAll();	// 4Debug !!! Achtung: Muss im fertigen Spiel raus. Zieht locker 20 FPS!
 		}
 		
-			Vector3 lookDirection = currCell.up.getCenterPos();
+			Vector3 lookDirection = Vector3.zero;
 
 			// Spielerrotation
 			int GAP = 2;
@@ -399,14 +399,15 @@ public class InputHandler : MonoBehaviour {
 					// nur nach links schauen
 					lookDirection = currCell.getSurroundingCell(0,GAP).getCenterPos();
 					//currCell.getSurroundingCell(0,GAP).colorCell(Color.magenta);
-				} else {
+				} else if (horizontalMovement > 0) {
 					// nur nach rechts schauen
 					lookDirection = currCell.getSurroundingCell(0,-GAP).getCenterPos();
 					//currCell.getSurroundingCell(0,-GAP).colorCell(Color.magenta);
 				}
 			}
 		
-			transform.LookAt(lookDirection);
+			if (lookDirection != Vector3.zero)
+				transform.LookAt(lookDirection);
 		
 	}
 	

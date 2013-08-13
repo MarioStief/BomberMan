@@ -157,8 +157,7 @@ public class Explosion : MonoBehaviour
 			}
 		} else {
 			if (elapsedTime > 1.0f) { // ist eine Sekunde nichts passiert: GameObjekt zerstören
-				Destroy (bomb);
-				Destroy (gameObject);
+				Destroy (this);
 			}
 
 			if (elapsedTime > 0.3f) {					// nach 300 ms ohne Aktualisierung:
