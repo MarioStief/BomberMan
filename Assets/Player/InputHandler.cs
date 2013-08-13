@@ -264,13 +264,24 @@ public class InputHandler : MonoBehaviour {
 			// Leertaste -> Bombe legen
 			if ( Input.GetKeyDown(KeyCode.Space)){
 				if (!currCell.hasBomb() && !currCell.hasContactMine()) {
-					Static.player.addBomb();
+					//Static.player.addBomb();
+					
+					int extra = Static.player.addBomb();
+					if (extra > -1) {
+						GameObject ex = Network.Instantiate(Resources.Load("Prefabs/Bombe"), currCell.getCenterPos(), Quaternion.identity, 0) as GameObject;
+						ex.networkView.RPC("createExplosionOnCell", RPCMode.All, currCell.getLpos(), currCell.getBpos(), 
+					    	               Static.player.getFlamePower(), Static.player.getDelay(), Static.player.getSuperbomb(), extra, true, true);
+					}
 				}
 			}
 			
 			if ((Input.GetKeyDown(KeyCode.LeftShift)) || (Input.GetKeyDown(KeyCode.RightShift))) {
-				if (!currCell.hasBomb() && !currCell.hasContactMine())
-					Static.player.addContactMine();
+				if (!currCell.hasBomb() && !currCell.hasContactMine()) {
+					//Static.player.addContactMine();
+					GameObject ex = Network.Instantiate(Resources.Load("Prefabs/Bombe"), currCell.getCenterPos(), Quaternion.identity, 0) as GameObject;
+					ex.networkView.RPC("createExplosionOnCell", RPCMode.All, currCell.getLpos(), currCell.getBpos(), 
+					                   Static.player.getFlamePower(), Static.player.getDelay(), Static.player.getSuperbomb(), 2, true, true);
+				}
 				Static.player.releaseTriggerBombs();
 			}
 

@@ -152,6 +152,20 @@ namespace AssemblyCSharp
 			Debug.Log("bombs: " + bombs + ", flamePower: " + flamePower + ", speed: " + speed*1000 + " ms, delay: " + delay*1000 + " ms");
 		}
 		
+		// return "extra"
+		public int addBomb() {
+			if (triggerbombs > triggerbombsActive) {
+				triggerbombsActive++;
+				addTriggerBomb(currentCell);
+				return 1;
+			} else if (bombsActive < bombs) {
+				bombsActive++;
+				return 0;
+			}
+			return -1;
+		}
+		
+		/*
 		public void addBomb() {
 			if (triggerbombs > triggerbombsActive) {
 				triggerbombsActive++;
@@ -162,13 +176,14 @@ namespace AssemblyCSharp
 				Explosion.createExplosionOnCell(currentCell, Static.player.getFlamePower(), Static.player.getDelay(), Static.player.getSuperbomb(), 0, true, true);
 			}
 		}
+		*/
 		
-		public void addContactMine() {
+		/*public void addContactMine() {
 			if (contactmines > contactminesActive) {
 				contactminesActive++;
 				Explosion.createExplosionOnCell(currentCell, Static.player.getFlamePower(), Static.player.getDelay(), Static.player.getSuperbomb(), 2, true, true);
 			}
-		}
+		}*/
 		
 		public void removeContactMine() {
 			contactminesActive--;

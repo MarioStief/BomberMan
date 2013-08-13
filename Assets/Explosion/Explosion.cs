@@ -32,7 +32,7 @@ public class Explosion : MonoBehaviour
 	private float createTime;
 	private bool powerupsPlaced = false;
 	
-	private static GameObject guiObject;
+	/*private static GameObject guiObject;
 	
 	public static GameObject GUIObject {
 		get {
@@ -41,9 +41,32 @@ public class Explosion : MonoBehaviour
 			}
 			return guiObject;
 		}
-	}
+	}*/
 	
 	// Factory-Klasse, um einen Konstruktor auf einem Monobehaviour-Objekt zu emulieren, der die Explosion auf einer Zelle startet
+	[RPC]
+	public Explosion createExplosionOnCell(int lpos, int bpos, int flamePower, float delay, bool superbomb, int extra, bool createBomb, bool self) {
+		//Explosion thisObj = GUIObject.AddComponent<Explosion>();
+		//calls Start() on the object and initializes it.
+		
+		this.cell = Static.rink.gameArea[lpos][bpos];
+		
+		//this.cell = cell;
+		this.flamePower = flamePower;
+		this.delay = delay;
+		this.superbomb = superbomb;
+		this.extra = extra;
+		this.createBomb = createBomb;
+		this.transform.position = cell.getCenterPos();
+		this.self = self;
+		
+		cell.setExplosion(this);
+		cell.setBomb(true);
+		
+		return this;
+	}
+	
+/*
 	public static Explosion createExplosionOnCell(Parcel cell, int flamePower, float delay, bool superbomb, int extra, bool createBomb, bool self) {
 		Explosion thisObj = GUIObject.AddComponent<Explosion>();
 		//calls Start() on the object and initializes it.
@@ -71,7 +94,8 @@ public class Explosion : MonoBehaviour
 		thisObj.transform.position = cell.getCenterPos();
 		return thisObj;
 	}
-
+*/
+	GameObject bomb;
 	void Start() {
 		timer = 0.0f;
 		createTime = Time.time;
@@ -87,7 +111,6 @@ public class Explosion : MonoBehaviour
 		instantiatePSystems();
 
 		if (createBomb) {
-			GameObject bomb;
 			if (contactMine) {
 				bomb = GameObject.Instantiate(Static.contactMinePrefab, transform.position, Quaternion.identity) as GameObject;
 				EXPLOSIONTIMER = 0.5f;
@@ -98,8 +121,8 @@ public class Explosion : MonoBehaviour
 			}
 			cell.setGameObject(bomb);
 		}
-		cell.setExplosion(this);
-		cell.setBomb(true);
+		//cell.setExplosion(this);
+		//cell.setBomb(true);
 	}
 	
 	public void startExplosion() {
@@ -117,6 +140,10 @@ public class Explosion : MonoBehaviour
 	}
 	
 	void Update() {
+		
+		if (this.cell == null)
+			return;
+		
 		float elapsedTime = Time.time - createTime;
 		if (waitingForBombExplosion) {
 			if (elapsedTime > EXPLOSIONTIMER && extra == 0) {
@@ -130,7 +157,8 @@ public class Explosion : MonoBehaviour
 			}
 		} else {
 			if (elapsedTime > 1.0f) { // ist eine Sekunde nichts passiert: GameObjekt zerstören
-				Destroy (this);
+				Destroy (bomb);
+				Destroy (gameObject);
 			}
 
 			if (elapsedTime > 0.3f) {					// nach 300 ms ohne Aktualisierung:
@@ -223,8 +251,8 @@ public class Explosion : MonoBehaviour
 										flameDelay = 0.1f;
 										superPowerup = true;
 									}
-									Explosion ex = Explosion.createExplosionOnCell(explosionField.getCell(), flameReach, flameDelay, superPowerup, 0, false);
-									ex.startExplosion();
+									//Explosion ex = Explosion.createExplosionOnCell(explosionField.getCell(), flameReach, flameDelay, superPowerup, 0, false);
+									//ex.startExplosion();
 								}
 								explosionField.getCell().destroyPowerup(true);
 							}

@@ -76,7 +76,7 @@ public class SplitMeshIntoTriangles : MonoBehaviour
         //Time.timeScale = 0.2f;
         yield return new WaitForSeconds(0.8f);
         //Time.timeScale = 1.0f;
-        Destroy(gameObject);
+        Destroy(this);
     }
     void Start()
     {
