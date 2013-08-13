@@ -196,14 +196,14 @@ public class Explosion : MonoBehaviour
 						
 						// Besonders hervorheben
 						if (superbomb) {
-							if (flamePower == Player.MAXFLAMEPOWER)
+							if (flamePower == Static.player.getMaxFlamePower())
 								detonator.color = Color.cyan;
 							else
 								detonator.color = Color.blue;
 							detonator.addShockWave();
 						} else {
 							// normal bomb
-							if (flamePower == Player.MAXFLAMEPOWER)
+							if (flamePower == Static.player.getMaxFlamePower())
 								detonator.color = Color.yellow;
 						}
 						
