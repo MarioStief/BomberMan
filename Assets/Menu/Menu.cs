@@ -155,14 +155,14 @@ public class Menu : MonoBehaviour {
 			int i = 1;
 			foreach (HostData srv in servers) {
 				var name = srv.gameName + " " + srv.connectedPlayers + "/" + srv.playerLimit;
-				GUI.Label(new Rect(0,100+25*i,width,20), name);
+				GUI.Label(new Rect(0,170+25*i,width,20), name);
 				/*var hostInfo : String = "[";
 				for (var host in srv.ip)
 					hostInfo = hostInfo + host + ":" + srv.port + " ";
 				hostInfo = hostInfo + "]";
 				GUILayout.Label(hostInfo);
 				//GUILayout.Label(srv.comment);*/
-				if (GUI.Button(new Rect(width,100+25*i,75,20), "Connect")) {
+				if (GUI.Button(new Rect(width,170+25*i,75,20), "Connect")) {
 					if (nickname.Length > 0) {
 						PlayerPrefs.SetString("Player Name", nickname);
 						PlayerPrefs.SetFloat("PlayerRed", playerColor.r);

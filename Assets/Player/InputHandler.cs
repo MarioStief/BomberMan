@@ -206,15 +206,18 @@ public class InputHandler : MonoBehaviour {
 			
 			float verticalMovement = Input.GetAxis("Vertical");
 			float vm = Static.player.getSpeed() * verticalMovement * Time.deltaTime;
-			vm = determineVerticalParcelPosition( verticalMovement, vm);
+			vm = determineVerticalParcelPosition(verticalMovement, vm);
 			verticalAngle += vm;
 			
-			horizontalMovement = Input.GetAxis("Horizontal") * Static.player.getSpeed();
-			float m = horizontalMovement*Time.deltaTime*Static.player.getSpeed()*(-2);
-			m = determineHorizontalParcelPosition( horizontalMovement, m);
-			horizontalAngle += m;
+			//float m = Static.player.getSpeed() * horizontalMovement * Time.deltaTime;
+			//m = determineHorizontalParcelPosition(horizontalMovement, m);
+			//horizontalAngle += m;
 			
 			if (vertAngle != 0) {
+				
+				transform.RotateAround(Vector3.zero, transform.right, -vm * Mathf.Rad2Deg);
+				//Debug.Log("rotate around zero with axis " + axis + " um winkel " + vm);
+				/*
 				// turn the player to our zero
 				Vector3 tmp = new Vector3(
 					Mathf.Cos(-horizontalAngle) * transform.position.x - Mathf.Sin(-horizontalAngle) * transform.position.y,
@@ -233,6 +236,7 @@ public class InputHandler : MonoBehaviour {
 					Mathf.Sin(horizontalAngle) * tmp.x + Mathf.Cos(horizontalAngle) * tmp.y,
 					tmp.z
 				);
+				*/
 			}
 			
 			return;
@@ -255,6 +259,7 @@ public class InputHandler : MonoBehaviour {
 				Static.player.setDead(true);
 				renderer.material.color = Color.black;
 				StartCoroutine(deadPlayer());
+				networkView.RPC("removePlayer", RPCMode.OthersBuffered, Network.player);
 			}
 			
 			
@@ -303,6 +308,12 @@ public class InputHandler : MonoBehaviour {
 	public void destroyPowerup(int lpos, int bpos, bool shatter) {
 		Parcel cell = Static.rink.gameArea[lpos][bpos];
 		cell.destroyPowerup(shatter);
+	}
+	[RPC]
+	public void removePlayer(NetworkPlayer p) {
+		if (networkView.owner == p) {
+			transform.localScale = Vector3.zero;
+		}
 	}
 	
 	private void moveCharacter(){
