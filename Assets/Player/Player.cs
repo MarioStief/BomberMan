@@ -1,5 +1,5 @@
-using System;
 using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace AssemblyCSharp
@@ -33,7 +33,7 @@ namespace AssemblyCSharp
 		private bool dead = false;
 		
 		private UnityEngine.Object[] icons = new UnityEngine.Object[6];
-		private String[] iconText = new String[4];
+		private string[] iconText = new string[4];
 		
 		private List<Parcel> triggerbombList = new List<Parcel>();
 		
@@ -69,7 +69,7 @@ namespace AssemblyCSharp
 			
 			//int extra = TRIGGERBOMB ? 1 : 0;
 			//String[] stats = {bombs.ToString(), ((int) speed*1000).ToString(), flamePower.ToString(), ((int) delay*1000).ToString(), SUPERBOMB ? 1 : 0, extra};
-			String[] iconText = {
+			string[] iconText = {
 				bombs.ToString(),
 				((int) speed*1000).ToString() + " ms",
 				flamePower.ToString(),
@@ -81,7 +81,7 @@ namespace AssemblyCSharp
 			// SomeStrangeMenu.updatePrefabs(prefabs);
 		}
 		
-		public String[] getIconText() {
+		public string[] getIconText() {
 			return iconText;
 		}
 
@@ -361,11 +361,10 @@ namespace AssemblyCSharp
 		{
 			List<Parcel> randomList = new List<Parcel>();
 			
-			System.Random r = new System.Random();
 		    int randomIndex = 0;
 		    while (sortedList.Count > 0)
 		    {
-		    	randomIndex = r.Next(0, sortedList.Count);
+		    	randomIndex = Random.Range(0, sortedList.Count);
 		    	randomList.Add(sortedList[randomIndex]);
 				sortedList.RemoveAt(randomIndex);
 			}

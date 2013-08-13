@@ -235,7 +235,7 @@ public class Explosion : MonoBehaviour
 							obj = GameObject.Instantiate(explodingCell.getMeshManipulator().getBoxObject(), explodingCell.getCenterPos(), Quaternion.identity) as GameObject;
 							SplitMeshIntoTriangles.createMeshExplosion(obj, cell.getCenterPos(), 1);
 							
-							int random = new System.Random().Next(0, (int) 100/DROPCHANCE);
+							int random = Random.Range(0, (int) 100/DROPCHANCE);
 							//Debug.Log("Placing Powerup for cell " + explodingCell.getCoordinates() + ": " + (random == 0 ? "yes" : "no"));
 							if (random == 0) { // Random().Next(0, 4) € {0, 1, 2, 3}
 								PowerupPool.setPowerup(explodingCell);

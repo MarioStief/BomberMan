@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using System.Collections.Generic;
 using System.Text;
@@ -65,11 +64,10 @@ namespace AssemblyCSharp
 		{
 			List<Powerup> randomList = new List<Powerup>();
 			
-			System.Random r = new System.Random();
 		    int randomIndex = 0;
 		    while (sortedList.Count > 0)
 		    {
-		    	randomIndex = r.Next(0, sortedList.Count);
+		    	randomIndex = Random.Range(0, sortedList.Count);
 		    	randomList.Add(sortedList[randomIndex]);
 				sortedList.RemoveAt(randomIndex);
 			}

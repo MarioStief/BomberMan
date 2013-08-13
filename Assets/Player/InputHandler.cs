@@ -176,19 +176,19 @@ public class InputHandler : MonoBehaviour {
 		playerHandler.GetComponent<CapsuleCollider>().enabled = false;
 		while (Static.player.isDead()) {
 			do {			
-				switch (new System.Random().Next(0, 2)) {
+				switch (Random.Range(0, 2)) {
 				case 0:
 					if (verticalMovement != 0f) {
 						verticalMovement = 0f;
 					} else {
-						verticalMovement = (new System.Random().Next(0, 2) == 0 ? 0.1f : -0.1f);
+						verticalMovement = (Random.Range(0, 2) == 0 ? 0.1f : -0.1f);
 					}
 					break;
 				case 1:
 					if (horizontalMovement != 0f) {
 						horizontalMovement = 0f;
 					} else {
-						horizontalMovement = (new System.Random().Next(0, 2) == 0 ? 0.1f : -0.1f);
+						horizontalMovement = (Random.Range(0, 2) == 0 ? 0.1f : -0.1f);
 					}
 					break;
 				}

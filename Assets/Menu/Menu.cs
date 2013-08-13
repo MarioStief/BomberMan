@@ -23,12 +23,6 @@ public class Menu : MonoBehaviour {
 	
 	public Transform playerPrefab;
 	
-	// CJs stuff
-	private GameObject obj_gameController;
-	private NET_Client scr_netClient;
-	private NET_Server scr_netServer;
-	
-	
 	private static bool created = false;
 	public void Awake() {
 	    if (!created) {
@@ -41,10 +35,6 @@ public class Menu : MonoBehaviour {
 	
 	public void Start () {
 		nickname += Mathf.Floor(Random.value*1000);
-		
-		obj_gameController = GameObject.FindGameObjectWithTag("GameController");
-		scr_netClient = obj_gameController.GetComponent<NET_Client>();
-        scr_netServer = obj_gameController.GetComponent<NET_Server>();
 		
 		// load settings
 		nickname = PlayerPrefs.GetString("Player Name", nickname);
@@ -113,7 +103,6 @@ public class Menu : MonoBehaviour {
 			} else {
                 Debug.Log("Successfully diconnected from the server");
 			}
-			scr_netClient.clearClients();
 			Application.LoadLevel(0);
 			screen = "kicked";
 		}
@@ -125,12 +114,9 @@ public class Menu : MonoBehaviour {
 	void OnPlayerDisconnected(NetworkPlayer p) {
 		Network.RemoveRPCs(p);
 		//Network.DestroyPlayerObjects(p);
-		int pid = scr_netServer.removeClient(p);
-		if (pid != -1) {
-			networkView.RPC("removePlayer", RPCMode.OthersBuffered, p, pid);
-			networkView.RPC("incommingChatMessage", RPCMode.All, playerList[p] + " leaved");
-			playerList.Remove(p);
-		}
+		networkView.RPC("removePlayer", RPCMode.OthersBuffered, p);
+		networkView.RPC("incommingChatMessage", RPCMode.All, playerList[p] + " leaved");
+		playerList.Remove(p);
 	}
 	
 	
@@ -174,9 +160,6 @@ public class Menu : MonoBehaviour {
 						PlayerPrefs.SetFloat("PlayerGreen", playerColor.g);
 						PlayerPrefs.SetFloat("PlayerBlue", playerColor.b);
 						
-						// instantiate CJs Client
-						scr_netClient.StartClient(nickname, null, 0);
-						
 						Network.Connect(srv);
 					}
 				}
@@ -196,7 +179,7 @@ public class Menu : MonoBehaviour {
 		// display a chat and the list of currently conntected players
 		GUI.BeginGroup(new Rect(10, 100, 200, 400));
 		GUILayout.Label("Connected Players:");
-		foreach (var p in playerList) //scr_netClient.AnnotatedClientNames()
+		foreach (var p in playerList)
             GUILayout.Label(p.Value);
 		GUI.EndGroup();
 		
@@ -267,10 +250,6 @@ public class Menu : MonoBehaviour {
 				
 				showGUI = false;
 				
-				// change State
-				//MenuState m = MenuState.instance;
-				//m.startGameServer();
-				
 				networkView.RPC("startGame",RPCMode.AllBuffered, (int)Random.value*100000);
 			}
 		}
@@ -289,8 +268,7 @@ public class Menu : MonoBehaviour {
 			GUI.color = new Color(255,0,0);
 			if (GUI.Button(new Rect(0,j*24+21,18,15), "x")) {
 				Network.CloseConnection(p.Key, true);
-				int pid = scr_netServer.removeClient(p.Key);
-				networkView.RPC("removePlayer", RPCMode.OthersBuffered, p.Key, pid);
+				networkView.RPC("removePlayer", RPCMode.OthersBuffered, p.Key);
 				networkView.RPC("incommingChatMessage", RPCMode.All, p.Value + " was kicked");
 				playerList.Remove(p.Key);
 			}
@@ -357,9 +335,6 @@ public class Menu : MonoBehaviour {
 				chat = "Welcome to Bomberman Galaxy.";
 				// and add myself to the list of players
 				//playerList.Add(nickname);
-				
-				// CJ
-				scr_netServer.StartServer();
 			}
 		}
 		if (GUI.Button(new Rect(x,y+2*height,width,height), "How to Play")) {
@@ -435,9 +410,8 @@ public class Menu : MonoBehaviour {
 		playerList.Add(p, nick);
 	}
 	[RPC]
-	public void removePlayer(NetworkPlayer p, int pid) {
+	public void removePlayer(NetworkPlayer p) {
 		playerList.Remove(p);
-		scr_netClient.removeClient(pid);
 	}	
 	
 	[RPC]

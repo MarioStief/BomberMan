@@ -30,7 +30,7 @@ public class MeshManipulator : MonoBehaviour {
 		sphere = Static.sphereHandler;
 		cubeMesh = GetComponent<MeshFilter>().mesh;
 		vertexPosition = new Vector3[8];
-		boxTexture = new System.Random().Next(0, 2);
+		boxTexture = Random.Range(0, 2);
 		
 		//grassTex = Resources.Load("Textures\\grassPlane2.jpg") as Texture;
 	}
