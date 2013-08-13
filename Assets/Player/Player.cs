@@ -165,6 +165,14 @@ namespace AssemblyCSharp
 			return -1;
 		}
 		
+		public bool addContactMine() {
+			if (contactmines > contactminesActive) {
+				contactminesActive++;
+				return true;
+			}
+			return false;
+		}
+		
 		/*
 		public void addBomb() {
 			if (triggerbombs > triggerbombsActive) {

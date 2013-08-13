@@ -32,26 +32,13 @@ public class Explosion : MonoBehaviour
 	private float createTime;
 	private bool powerupsPlaced = false;
 	
-	/*private static GameObject guiObject;
-	
-	public static GameObject GUIObject {
-		get {
-			if (guiObject == null) {
-				guiObject = new GameObject("Explosion");
-			}
-			return guiObject;
-		}
-	}*/
 	
 	// Factory-Klasse, um einen Konstruktor auf einem Monobehaviour-Objekt zu emulieren, der die Explosion auf einer Zelle startet
 	[RPC]
 	public Explosion createExplosionOnCell(int lpos, int bpos, int flamePower, float delay, bool superbomb, int extra, bool createBomb, bool self) {
-		//Explosion thisObj = GUIObject.AddComponent<Explosion>();
-		//calls Start() on the object and initializes it.
 		
 		this.cell = Static.rink.gameArea[lpos][bpos];
 		
-		//this.cell = cell;
 		this.flamePower = flamePower;
 		this.delay = delay;
 		this.superbomb = superbomb;
@@ -63,38 +50,13 @@ public class Explosion : MonoBehaviour
 		cell.setExplosion(this);
 		cell.setBomb(true);
 		
+		if (!self)
+			startExplosion();
+		
 		return this;
 	}
-	
-/*
-	public static Explosion createExplosionOnCell(Parcel cell, int flamePower, float delay, bool superbomb, int extra, bool createBomb, bool self) {
-		Explosion thisObj = GUIObject.AddComponent<Explosion>();
-		//calls Start() on the object and initializes it.
-		thisObj.cell = cell;
-		thisObj.flamePower = flamePower;
-		thisObj.delay = delay;
-		thisObj.superbomb = superbomb;
-		thisObj.extra = extra;
-		thisObj.createBomb = createBomb;
-		thisObj.transform.position = cell.getCenterPos();
-		thisObj.self = self;
-		return thisObj;
-	}
 
-	// Factory-Klasse, um einen Konstruktor auf einem Monobehaviour-Objekt zu emulieren, der die Explosion auf einer Zelle startet
-	public static Explosion createExplosionOnCell(Parcel cell, int flamePower, float delay, bool superbomb, int extra, bool createBomb) {
-		Explosion thisObj = GUIObject.AddComponent<Explosion>();
-		//calls Start() on the object and initializes it.
-		thisObj.cell = cell;
-		thisObj.flamePower = flamePower;
-		thisObj.delay = delay;
-		thisObj.superbomb = superbomb;
-		thisObj.extra = extra;
-		thisObj.createBomb = createBomb;
-		thisObj.transform.position = cell.getCenterPos();
-		return thisObj;
-	}
-*/
+	
 	GameObject bomb;
 	void Start() {
 		timer = 0.0f;
@@ -157,7 +119,8 @@ public class Explosion : MonoBehaviour
 			}
 		} else {
 			if (elapsedTime > 1.0f) { // ist eine Sekunde nichts passiert: GameObjekt zerstören
-				Destroy (this);
+				Destroy (bomb);
+				Destroy (gameObject);
 			}
 
 			if (elapsedTime > 0.3f) {					// nach 300 ms ohne Aktualisierung:
@@ -250,7 +213,9 @@ public class Explosion : MonoBehaviour
 										flameDelay = 0.1f;
 										superPowerup = true;
 									}
-									//Explosion ex = Explosion.createExplosionOnCell(explosionField.getCell(), flameReach, flameDelay, superPowerup, 0, false);
+									GameObject ex = Network.Instantiate(Resources.Load("Prefabs/Bombe"), explosionField.getCell().getCenterPos(), Quaternion.identity, 0) as GameObject;
+									ex.networkView.RPC("createExplosionOnCell", RPCMode.All, explosionField.getCell().getLpos(), explosionField.getCell().getBpos(), 
+									                   flameReach, flameDelay, superPowerup, 0, false, false);
 									//ex.startExplosion();
 								}
 								explosionField.getCell().destroyPowerup(true);
