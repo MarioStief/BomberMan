@@ -258,7 +258,8 @@ public class InputHandler : MonoBehaviour {
 			
 			// Falls die Zelle ein Powerup enthält -> aufsammeln
 			if (currCell.hasPowerup()) {
-				Static.player.powerupCollected(currCell.destroyPowerup(false));
+				networkView.RPC("destroyPowerup", RPCMode.All, currCell.getLpos(), currCell.getBpos(), false);
+				//Static.player.powerupCollected(currCell.destroyPowerup(false));
 			}
 			
 			// Leertaste -> Bombe legen
@@ -294,6 +295,12 @@ public class InputHandler : MonoBehaviour {
 		} else {
 			moveCharacter();
 		}
+	}
+	
+	[RPC]
+	public void destroyPowerup(int lpos, int bpos, bool shatter) {
+		Parcel cell = Static.rink.gameArea[lpos][bpos];
+		cell.destroyPowerup(shatter);
 	}
 	
 	private void moveCharacter(){
