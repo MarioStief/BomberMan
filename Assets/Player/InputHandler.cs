@@ -368,54 +368,54 @@ public class InputHandler : MonoBehaviour {
 			//rink.renderAll();	// 4Debug !!! Achtung: Muss im fertigen Spiel raus. Zieht locker 20 FPS!
 		}
 		
-			Vector3 lookDirection = Vector3.zero;
+		Vector3 lookDirection = Vector3.zero;
 
-			// Spielerrotation
-			int GAP = 2;
-			if (verticalMovement > 0) {
-				// nach oben schauen
-				if (horizontalMovement < 0) {
-					// nach links oben schauen
-					lookDirection = currCell.getSurroundingCell(GAP,GAP).getCenterPos();
-					//currCell.getSurroundingCell(GAP,GAP).colorCell(Color.magenta);
-				} else if (horizontalMovement > 0) {
-					// nach rechts oben schauen
-					lookDirection = currCell.getSurroundingCell(GAP,-GAP).getCenterPos();
-					//currCell.getSurroundingCell(GAP,-GAP).colorCell(Color.magenta);
-				} else {
-					// nur nach oben schauen
-					lookDirection = currCell.getSurroundingCell(GAP,0).getCenterPos();
-					//currCell.getSurroundingCell(GAP,0).colorCell(Color.magenta);
-				}
-			} else if (verticalMovement < 0) {
-				// nach unten schauen
-				if (horizontalMovement < 0) {
-					// nach links unten schauen
-					lookDirection = currCell.getSurroundingCell(-GAP,GAP).getCenterPos();
-					//currCell.getSurroundingCell(-GAP,GAP).colorCell(Color.magenta);
-				} else if (horizontalMovement > 0) {
-					// nach rechts unten schauen
-					lookDirection = currCell.getSurroundingCell(-GAP,-GAP).getCenterPos();
-					//currCell.getSurroundingCell(-GAP,-GAP).colorCell(Color.magenta);
-				} else {
-					// nur nach unten schauen
-					lookDirection = currCell.getSurroundingCell(-GAP,0).getCenterPos();
-					//currCell.getSurroundingCell(-GAP,0).colorCell(Color.magenta);
-				}
+		// Spielerrotation
+		int GAP = 2;
+		if (verticalMovement > 0) {
+			// nach oben schauen
+			if (horizontalMovement < 0) {
+				// nach links oben schauen
+				lookDirection = currCell.getSurroundingCell(GAP,GAP).getCenterPos();
+				//currCell.getSurroundingCell(GAP,GAP).colorCell(Color.magenta);
+			} else if (horizontalMovement > 0) {
+				// nach rechts oben schauen
+				lookDirection = currCell.getSurroundingCell(GAP,-GAP).getCenterPos();
+				//currCell.getSurroundingCell(GAP,-GAP).colorCell(Color.magenta);
 			} else {
-				if (horizontalMovement < 0) {
-					// nur nach links schauen
-					lookDirection = currCell.getSurroundingCell(0,GAP).getCenterPos();
-					//currCell.getSurroundingCell(0,GAP).colorCell(Color.magenta);
-				} else if (horizontalMovement > 0) {
-					// nur nach rechts schauen
-					lookDirection = currCell.getSurroundingCell(0,-GAP).getCenterPos();
-					//currCell.getSurroundingCell(0,-GAP).colorCell(Color.magenta);
-				}
+				// nur nach oben schauen
+				lookDirection = currCell.getSurroundingCell(GAP,0).getCenterPos();
+				//currCell.getSurroundingCell(GAP,0).colorCell(Color.magenta);
 			}
+		} else if (verticalMovement < 0) {
+			// nach unten schauen
+			if (horizontalMovement < 0) {
+				// nach links unten schauen
+				lookDirection = currCell.getSurroundingCell(-GAP,GAP).getCenterPos();
+				//currCell.getSurroundingCell(-GAP,GAP).colorCell(Color.magenta);
+			} else if (horizontalMovement > 0) {
+				// nach rechts unten schauen
+				lookDirection = currCell.getSurroundingCell(-GAP,-GAP).getCenterPos();
+				//currCell.getSurroundingCell(-GAP,-GAP).colorCell(Color.magenta);
+			} else {
+				// nur nach unten schauen
+				lookDirection = currCell.getSurroundingCell(-GAP,0).getCenterPos();
+				//currCell.getSurroundingCell(-GAP,0).colorCell(Color.magenta);
+			}
+		} else {
+			if (horizontalMovement < 0) {
+				// nur nach links schauen
+				lookDirection = currCell.getSurroundingCell(0,GAP).getCenterPos();
+				//currCell.getSurroundingCell(0,GAP).colorCell(Color.magenta);
+			} else {
+				// nur nach rechts schauen
+				lookDirection = currCell.getSurroundingCell(0,-GAP).getCenterPos();
+				//currCell.getSurroundingCell(0,-GAP).colorCell(Color.magenta);
+			}
+		}
 		
-			if (lookDirection != Vector3.zero)
-				transform.LookAt(lookDirection);
+		//lookDirection.z
+		transform.LookAt(lookDirection);
 		
 	}
 	

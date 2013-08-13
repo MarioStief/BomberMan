@@ -14,6 +14,6 @@ public class pulse : MonoBehaviour {
 	void Update () {
 		t += Time.deltaTime;
 		transform.RotateAround (Vector3.zero, transform.position, 100 * Time.deltaTime);
-		light.intensity = 5 * Mathf.Abs(Mathf.Tan(t));
+		light.intensity = 4 * Mathf.Abs(Mathf.Tan(t));
 	}
 }
