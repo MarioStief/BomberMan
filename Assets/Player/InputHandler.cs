@@ -12,6 +12,8 @@ public class InputHandler : MonoBehaviour {
 	
 	bool DEBUGPLAYERPOSITION = false;
 	
+	Vector3 lookDirection = new Vector3(0, 0, 0);
+	
 	private GameObject playerHandler;
 	
 	private int n_L;				// Anzahl Längen und Breitengeraden
@@ -371,51 +373,63 @@ public class InputHandler : MonoBehaviour {
 		Vector3 lookDirection = Vector3.zero;
 
 		// Spielerrotation
-		int GAP = 2;
+		int GAP = 3;
 		if (verticalMovement > 0) {
 			// nach oben schauen
 			if (horizontalMovement < 0) {
 				// nach links oben schauen
-				lookDirection = currCell.getSurroundingCell(GAP,GAP).getCenterPos();
+				lookDirection = new Vector3(0, 315, 0);
+				//lookDirection = currCell.getSurroundingCell(GAP,GAP).getCenterPos();
 				//currCell.getSurroundingCell(GAP,GAP).colorCell(Color.magenta);
 			} else if (horizontalMovement > 0) {
 				// nach rechts oben schauen
-				lookDirection = currCell.getSurroundingCell(GAP,-GAP).getCenterPos();
+				lookDirection = new Vector3(0, 45, 0);
+				//lookDirection = currCell.getSurroundingCell(GAP,-GAP).getCenterPos();
 				//currCell.getSurroundingCell(GAP,-GAP).colorCell(Color.magenta);
 			} else {
 				// nur nach oben schauen
-				lookDirection = currCell.getSurroundingCell(GAP,0).getCenterPos();
+				lookDirection = new Vector3(0, 0, 0);
+				//lookDirection = currCell.getSurroundingCell(GAP,0).getCenterPos();
 				//currCell.getSurroundingCell(GAP,0).colorCell(Color.magenta);
 			}
 		} else if (verticalMovement < 0) {
 			// nach unten schauen
 			if (horizontalMovement < 0) {
 				// nach links unten schauen
-				lookDirection = currCell.getSurroundingCell(-GAP,GAP).getCenterPos();
+				lookDirection = new Vector3(0, 225, 0);
+				//lookDirection = currCell.getSurroundingCell(-GAP,GAP).getCenterPos();
 				//currCell.getSurroundingCell(-GAP,GAP).colorCell(Color.magenta);
 			} else if (horizontalMovement > 0) {
 				// nach rechts unten schauen
-				lookDirection = currCell.getSurroundingCell(-GAP,-GAP).getCenterPos();
+				lookDirection = new Vector3(0, 135, 0);
+				//lookDirection = currCell.getSurroundingCell(-GAP,-GAP).getCenterPos();
 				//currCell.getSurroundingCell(-GAP,-GAP).colorCell(Color.magenta);
 			} else {
 				// nur nach unten schauen
-				lookDirection = currCell.getSurroundingCell(-GAP,0).getCenterPos();
+				lookDirection = new Vector3(0, 180, 0);
+				//lookDirection = currCell.getSurroundingCell(-GAP,0).getCenterPos();
 				//currCell.getSurroundingCell(-GAP,0).colorCell(Color.magenta);
 			}
 		} else {
 			if (horizontalMovement < 0) {
 				// nur nach links schauen
-				lookDirection = currCell.getSurroundingCell(0,GAP).getCenterPos();
+				lookDirection = new Vector3(0, 270, 0);
+				//lookDirection = currCell.getSurroundingCell(0,GAP).getCenterPos();
 				//currCell.getSurroundingCell(0,GAP).colorCell(Color.magenta);
-			} else {
+			} else if (horizontalMovement > 0){
 				// nur nach rechts schauen
-				lookDirection = currCell.getSurroundingCell(0,-GAP).getCenterPos();
+				lookDirection = new Vector3(0, 90, 0);
+				//lookDirection = currCell.getSurroundingCell(0,-GAP).getCenterPos();
 				//currCell.getSurroundingCell(0,-GAP).colorCell(Color.magenta);
 			}
 		}
 		
-		//lookDirection.z
-		transform.LookAt(lookDirection);
+		/*
+		Vector3 relativePos = lookDirection - transform.position;
+        Quaternion rotation = Quaternion.LookRotation(relativePos);
+        transform.rotation = rotation;
+        */
+        transform.eulerAngles = lookDirection;
 		
 	}
 	
