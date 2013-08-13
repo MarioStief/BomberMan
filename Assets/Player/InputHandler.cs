@@ -200,7 +200,7 @@ public class InputHandler : MonoBehaviour {
 	void Update () {
 		
 		// Gegner drehen mit dem Planeten..!
-		if (!networkView.isMine) {
+		if (!networkView.isMine && Static.rink != null) {
 			
 			float verticalMovement = Input.GetAxis("Vertical");
 			float vm = Static.player.getSpeed() * verticalMovement * Time.deltaTime;
@@ -235,52 +235,53 @@ public class InputHandler : MonoBehaviour {
 			
 			return;
 		}
-		
-		if (!Static.player.isDead()) {
-			
-			// -----------------------------------------------------------
-			// Bewegung und Bestimmung einer möglichen neuen currentParcel
-			// -----------------------------------------------------------
-			moveCharacter();
-			currCell = Static.rink.gameArea[lpos][bpos];
-			//currCell.colorCell(Color.cyan);
-			
-			if (currCell.hasContactMine()) {
-				currCell.getExplosion().startExplosion();
-			}
+		if (Static.rink != null) {
+			if (!Static.player.isDead()) {
 				
-			if (currCell.isExploding()) {
-				Static.player.setDead(true);
-				renderer.material.color = Color.black;
-				StartCoroutine(deadPlayer());
-			}
-			
-			
-			// Falls die Zelle ein Powerup enthält -> aufsammeln
-			if (currCell.hasPowerup()) {
-				Static.player.powerupCollected(currCell.destroyPowerup(false));
-			}
-			
-			// Leertaste -> Bombe legen
-			if ( Input.GetKeyDown(KeyCode.Space)){
-				if (!currCell.hasBomb() && !currCell.hasContactMine()) {
-					Static.player.addBomb();
+				// -----------------------------------------------------------
+				// Bewegung und Bestimmung einer möglichen neuen currentParcel
+				// -----------------------------------------------------------
+				moveCharacter();
+					currCell = Static.rink.gameArea[lpos][bpos];
+				//currCell.colorCell(Color.cyan);
+				
+				if (currCell.hasContactMine()) {
+					currCell.getExplosion().startExplosion();
 				}
+					
+				if (currCell.isExploding()) {
+					Static.player.setDead(true);
+					renderer.material.color = Color.black;
+					StartCoroutine(deadPlayer());
+				}
+				
+				
+				// Falls die Zelle ein Powerup enthält -> aufsammeln
+				if (currCell.hasPowerup()) {
+					Static.player.powerupCollected(currCell.destroyPowerup(false));
+				}
+				
+				// Leertaste -> Bombe legen
+				if ( Input.GetKeyDown(KeyCode.Space)){
+					if (!currCell.hasBomb() && !currCell.hasContactMine()) {
+						Static.player.addBomb();
+					}
+				}
+				
+				if ((Input.GetKeyDown(KeyCode.LeftShift)) || (Input.GetKeyDown(KeyCode.RightShift))) {
+					if (!currCell.hasBomb() && !currCell.hasContactMine())
+						Static.player.addContactMine();
+					Static.player.releaseTriggerBombs();
+				}
+	
+				
+				if ((Time.time - createTime) > 1.0f) {
+					createTime = Time.time;
+					Static.player.increaseHP();
+				}
+			} else {
+				moveCharacter();
 			}
-			
-			if ((Input.GetKeyDown(KeyCode.LeftShift)) || (Input.GetKeyDown(KeyCode.RightShift))) {
-				if (!currCell.hasBomb() && !currCell.hasContactMine())
-					Static.player.addContactMine();
-				Static.player.releaseTriggerBombs();
-			}
-
-			
-			if ((Time.time - createTime) > 1.0f) {
-				createTime = Time.time;
-				Static.player.increaseHP();
-			}
-		} else {
-			moveCharacter();
 		}
 	}
 	
@@ -349,7 +350,7 @@ public class InputHandler : MonoBehaviour {
 			//rink.renderAll();	// 4Debug !!! Achtung: Muss im fertigen Spiel raus. Zieht locker 20 FPS!
 		}
 		
-			Vector3 lookDirection = currCell.up.getCenterPos();
+			Vector3 lookDirection = Vector3.zero;
 
 			// Spielerrotation
 			int GAP = 2;
@@ -388,14 +389,15 @@ public class InputHandler : MonoBehaviour {
 					// nur nach links schauen
 					lookDirection = currCell.getSurroundingCell(0,GAP).getCenterPos();
 					//currCell.getSurroundingCell(0,GAP).colorCell(Color.magenta);
-				} else {
+				} else if (horizontalMovement > 0) {
 					// nur nach rechts schauen
 					lookDirection = currCell.getSurroundingCell(0,-GAP).getCenterPos();
 					//currCell.getSurroundingCell(0,-GAP).colorCell(Color.magenta);
 				}
 			}
 		
-			transform.LookAt(lookDirection);
+			if (lookDirection != Vector3.zero)
+				transform.LookAt(lookDirection);
 		
 	}
 	
