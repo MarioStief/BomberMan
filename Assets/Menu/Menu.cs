@@ -16,6 +16,7 @@ public class Menu : MonoBehaviour {
 
 	private string nickname = "Player ";
 	private static Color playerColor;
+	private int expDetail = 5; // 1-10
 	private string chat = "";
 	
 	private Dictionary<NetworkPlayer,string> playerList = new Dictionary<NetworkPlayer, string>();
@@ -27,6 +28,7 @@ public class Menu : MonoBehaviour {
 	public void Awake() {
 	    if (!created) {
 			DontDestroyOnLoad(transform.gameObject);
+			DontDestroyOnLoad(colorPicker);
 	        created = true;
 	    } else {
 	        Destroy(transform.gameObject);
@@ -139,6 +141,13 @@ public class Menu : MonoBehaviour {
 		if (GUI.Button (new Rect(0,92, width,20), "choose Color")) {
 			colorPicker.SetActive(!colorPicker.activeSelf);
 		}
+		
+		// GRAPHIC-DETAILS
+		GUI.Label(new Rect(0,120,width,20), "Graphic-Details:");
+		GUI.Label(new Rect(0,145,50,20), "low");
+		GUI.Label(new Rect(width-40,145,50,20), "height");
+		expDetail = (int)GUI.HorizontalSlider (new Rect (0, 140, width, 20), (float)expDetail, 1.0f, 10.0f);
+		Preferences.setExplosionDetail(11-expDetail);
 	
 		if (!colorPicker.activeSelf) {
 			// SERVER LIST
@@ -190,24 +199,32 @@ public class Menu : MonoBehaviour {
 
 	private bool showMaxPlayers = false;
 	void serverScreen() {
-	
-		GUI.BeginGroup (new Rect(Screen.width/2-100, Screen.height/2-250, 200, 500));
+		int width = 150;
+		GUI.BeginGroup (new Rect(Screen.width/2-100, 50, 200, 500));
 		// NICK
-		GUI.Label(new Rect(25,10,150,20), "Nickname:");
-		nickname = GUI.TextField(new Rect(25,30,150,20), nickname, 30);
+		GUI.Label(new Rect(25,10,width,20), "Nickname:");
+		nickname = GUI.TextField(new Rect(25,30,width,20), nickname, 30);
 		
 		// COLOR
-		if (GUI.Button (new Rect(25,52, 150,20), "choose Color")) {
+		if (GUI.Button (new Rect(25,52, width,20), "choose Color")) {
 			colorPicker.SetActive(!colorPicker.activeSelf);
 		}
-		
+
 		if (!colorPicker.activeSelf) {
+		
+			// GRAPHIC-DETAILS
+			GUI.Label(new Rect(25,80,width,20), "Graphic-Details:");
+			GUI.Label(new Rect(25,105,50,20), "low");
+			GUI.Label(new Rect(width-15,105,50,20), "height");
+			expDetail = (int)GUI.HorizontalSlider (new Rect (25, 100, width, 20), (float)expDetail, 1.0f, 10.0f);
+			Preferences.setExplosionDetail(11-expDetail);
+		
 			// SERVER NAME
-			GUI.Label(new Rect(25,110,150,20), "Server Name:");
-			serverName = GUI.TextField(new Rect(25,130,150,20), serverName, 30);
+			GUI.Label(new Rect(25,150,width,20), "Server Name:");
+			serverName = GUI.TextField(new Rect(25,170,width,20), serverName, 30);
 			
 			// MAX PLAYERS
-			if (GUI.Button(new Rect(25, 150, 150, 20), "Max. Players: "+maxPlayers)) {
+			if (GUI.Button(new Rect(25, 190, width, 20), "Max. Players: "+maxPlayers)) {
 				showMaxPlayers = !showMaxPlayers;
 		    }
 		    if (showMaxPlayers) {
@@ -216,7 +233,7 @@ public class Menu : MonoBehaviour {
 					int p = (int)Mathf.Pow(2,i);
 					if (Network.connections.Length+1 > p)
 						continue;
-					if (GUI.Button(new Rect(25, 150+(20*i), 150, 20), p.ToString())) {
+					if (GUI.Button(new Rect(25, 190+(20*i), width, 20), p.ToString())) {
 						showMaxPlayers = false;
 						maxPlayers = p;
 						Network.maxConnections = maxPlayers-1;
@@ -225,21 +242,21 @@ public class Menu : MonoBehaviour {
 		    } else {
 				// SOME SETTINGS
 				bool pe = Preferences.getNegativePowerups();
-				if (pe != GUI.Toggle(new Rect(25,180,150,20), pe, "negative Powerups")) {
+				if (pe != GUI.Toggle(new Rect(25,220,width,20), pe, "negative Powerups")) {
 					Preferences.setNegative(!pe);
 				}
 				pe = Preferences.getDestroyablePowerups();
-				if (pe != GUI.Toggle(new Rect(25,200,150,20), pe, "destroyable Powerups")) {
+				if (pe != GUI.Toggle(new Rect(25,240,width,20), pe, "destroyable Powerups")) {
 					Preferences.setDestroyablePowerups(!pe);
 				}
 				bool pee = Preferences.getExplodingPowerups();
-				if (pe && pee != GUI.Toggle(new Rect(25,220,150,20), pee, "exploding Powerups")) {
+				if (pe && pee != GUI.Toggle(new Rect(25,260,width,20), pee, "exploding Powerups")) {
 					Preferences.setExplodingPowerups(!pee);
 				}
 			}
 			
 		    // START GAME
-			if (GUI.Button(new Rect(50,300,100,30),"Start Game")) {
+			if (GUI.Button(new Rect(50,340,100,30),"Start Game")) {
 				// save settings
 				PlayerPrefs.SetInt("Server MaxPlayers", maxPlayers);
 				PlayerPrefs.SetString("Server Name", serverName);

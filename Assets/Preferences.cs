@@ -48,7 +48,9 @@ public static class Preferences
 	}
 
 	public static void setExplosionDetail(int explosion) {
-		explosionDetail = explosion;
-		PlayerPrefs.SetInt("Explosion Detail", explosionDetail);
+		if (explosion != explosionDetail) {
+			explosionDetail = explosion;
+			PlayerPrefs.SetInt("Explosion Detail", explosionDetail);
+		}
 	}
 }
