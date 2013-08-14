@@ -13,6 +13,7 @@ public class InputHandler : MonoBehaviour {
 	bool DEBUGPLAYERPOSITION = false;
 	
 	Vector3 lookDirection = new Vector3(0, 0, 0);
+	int angle = 0;
 	
 	private GameObject playerHandler;
 	
@@ -378,57 +379,51 @@ public class InputHandler : MonoBehaviour {
 			
 			moveAlongEquator(m);
 			if ( m == 0) horizontalAngle = hAngle;
-			//rink.renderAll();	// 4Debug !!! Achtung: Muss im fertigen Spiel raus. Zieht locker 20 FPS!
 		}
 		
-		Vector3 lookDirection = Vector3.zero;
-		int angle = 0;
-
 		// Spielerrotation
-		int GAP = 3;
+		int newAngle = angle;
 		if (verticalMovement > 0) {
 			// nach oben schauen
 			if (horizontalMovement < 0) {
 				// nach links oben schauen
-				angle = 315;
+				newAngle = 315;
 			} else if (horizontalMovement > 0) {
 				// nach rechts oben schauen
-				angle = 45;
+				newAngle = 45;
 			} else {
 				// nur nach oben schauen
-				angle = 0;
+				newAngle = 0;
 			}
 		} else if (verticalMovement < 0) {
 			// nach unten schauen
 			if (horizontalMovement < 0) {
 				// nach links unten schauen
-				angle = 225;
+				newAngle = 225;
 			} else if (horizontalMovement > 0) {
 				// nach rechts unten schauen
-				angle = 135;
+				newAngle = 135;
 			} else {
 				// nur nach unten schauen
-				angle = 180;
+				newAngle = 180;
 			}
 		} else {
 			if (horizontalMovement < 0) {
 				// nur nach links schauen
-				angle = 270;
+				newAngle = 270;
 			} else if (horizontalMovement > 0){
 				// nur nach rechts schauen
-				angle = 90;
+				newAngle = 90;
 			}
 		}
 		
-		/*
-		Vector3 relativePos = lookDirection - transform.position;
-        Quaternion rotation = Quaternion.LookRotation(relativePos);
-        transform.rotation = rotation
-        */
-		//lookDirection.x = Camera.main.transform.position.x;
-		transform.up = Camera.main.transform.position;
-		transform.Rotate(0, angle, 0, Space.Self);
+		if (Mathf.Abs(angle - newAngle) > 180)
+			angle = (angle + newAngle) / 2 + 180;
+		else
+			angle = (angle + newAngle) / 2;
 		
+		transform.up = transform.position;
+		transform.Rotate(0f, angle, 0f, Space.Self);
 	}
 	
 	// <summary>
