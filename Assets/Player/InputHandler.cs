@@ -97,7 +97,6 @@ public class InputHandler : MonoBehaviour {
 	void OnSerializeNetworkView(BitStream stream, NetworkMessageInfo info) {
 		if (stream.isWriting)
 		{
-			// calculate my position on sphere
 			Vector3 p = transform.position;
 			stream.Serialize(ref p);
 			
@@ -118,11 +117,10 @@ public class InputHandler : MonoBehaviour {
 			Quaternion fr = Quaternion.Euler(new Vector3(0, 0, 0));
 			stream.Serialize(ref fr);
 			transform.rotation = fr;
-
+			
 			transform.position = fp; // Spieler ist auf Äquator
 			Vector3 axis = Vector3.Cross(Vector3.forward, transform.position).normalized;
-			transform.RotateAround(Vector3.zero, axis, (verticalAngle * Mathf.Rad2Deg));
-			transform.RotateAround(Vector3.zero, axis, (-fva * Mathf.Rad2Deg));
+			transform.RotateAround(Vector3.zero, axis, (verticalAngle * Mathf.Rad2Deg) + (-fva * Mathf.Rad2Deg));
 		}
 	
 	}
@@ -180,22 +178,15 @@ public class InputHandler : MonoBehaviour {
 		// Gegner drehen mit dem Planeten..!
 		if (!networkView.isMine && Static.rink != null) {
 			
-			float verticalMovement = Input.GetAxis("Vertical");
-			float vm = Static.player.getSpeed() * verticalMovement * Time.deltaTime;
-			vm = determineVerticalParcelPosition(verticalMovement, vm);
-			verticalAngle += vm;
-			verticalAngle = verticalAngle % (Mathf.PI*2);
-			
-			float m = Static.player.getSpeed() * horizontalMovement * Time.deltaTime;
-			m = determineHorizontalParcelPosition(horizontalMovement, m);
-			horizontalAngle += m;
-			horizontalAngle = horizontalAngle % (Mathf.PI*2);
-			
 			if (vertAngle != 0) { // an Wänden hängen bleiben..
+				float verticalMovement = Input.GetAxis("Vertical");
+				float vm = Static.player.getSpeed() * verticalMovement * Time.deltaTime;
+				vm = determineVerticalParcelPosition(verticalMovement, vm);
+				verticalAngle += vm;
+				//verticalAngle = verticalAngle % (Mathf.PI*2);
 				
 				Vector3 axis = Vector3.Cross(Vector3.forward, transform.position);
 				transform.RotateAround(Vector3.zero, axis, vm * Mathf.Rad2Deg);
-
 			}
 			
 			return;
@@ -300,7 +291,7 @@ public class InputHandler : MonoBehaviour {
 				m = determineVerticalParcelPosition( verticalMovement, m);
 			}
 			verticalAngle += m;
-			verticalAngle = verticalAngle % (Mathf.PI*2);
+			//verticalAngle = verticalAngle % (Mathf.PI*2);
 			
 			Static.sphereHandler.move(m);
 			vertAngle = m;
@@ -330,7 +321,7 @@ public class InputHandler : MonoBehaviour {
 				m = determineHorizontalParcelPosition( horizontalMovement, m);
 			}
 			horizontalAngle += m;
-			horizontalAngle = horizontalAngle % (Mathf.PI*2);
+			//horizontalAngle = horizontalAngle % (Mathf.PI*2);
 			
 			moveAlongEquator(m);
 		}
@@ -658,6 +649,10 @@ public class InputHandler : MonoBehaviour {
 										Mathf.Sin(movement) * camera.transform.position.x + Mathf.Cos(movement) * camera.transform.position.y,
 										camera.transform.position.z);
 		camera.transform.LookAt(Vector3.zero, Vector3.forward);
+		
+		// Licht mitdrehen..
+		GameObject.FindGameObjectWithTag("Sun").transform.RotateAround(Vector3.zero, Vector3.forward, movement*Mathf.Rad2Deg);
+		GameObject.FindGameObjectWithTag("Sun").transform.eulerAngles = new Vector3(0,90,0);
 	}
 	
 	void OnParticleCollision(GameObject explosion) {
