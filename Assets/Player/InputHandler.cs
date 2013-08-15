@@ -98,18 +98,11 @@ public class InputHandler : MonoBehaviour {
 		if (stream.isWriting)
 		{
 			// calculate my position on sphere
-			/*Vector3 p = new Vector3(
-				transform.position.x,
-				Mathf.Cos(verticalAngle) * transform.position.y - Mathf.Sin(verticalAngle) * transform.position.z,
-				Mathf.Sin(verticalAngle) * transform.position.y + Mathf.Cos(verticalAngle) * transform.position.z
-			);*/
 			Vector3 p = transform.position;
 			stream.Serialize(ref p);
 			
 			float va = verticalAngle;
 			stream.Serialize(ref va);
-			float ha = horizontalAngle;
-			stream.Serialize(ref ha);
 			
 			Quaternion r = transform.rotation;
 			stream.Serialize(ref r);
@@ -122,32 +115,14 @@ public class InputHandler : MonoBehaviour {
 			float fva = 0f;
 			stream.Serialize(ref fva);
 			
-			float fha = 0f;
-			stream.Serialize(ref fha);
-			
-			// turn the player to our zero
-			fp = new Vector3(
-				Mathf.Cos(-fha) * fp.x - Mathf.Sin(-fha) * fp.y,
-				Mathf.Sin(-fha) * fp.x + Mathf.Cos(-fha) * fp.y,
-				fp.z
-			);
-			// now turn him up/down
-			fp = new Vector3(
-				fp.x,
-				Mathf.Cos(fva-verticalAngle) * fp.y - Mathf.Sin(fva-verticalAngle) * fp.z,
-				Mathf.Sin(fva-verticalAngle) * fp.y + Mathf.Cos(fva-verticalAngle) * fp.z
-			);
-			// and back
-			transform.position = new Vector3(
-				Mathf.Cos(fha) * fp.x - Mathf.Sin(fha) * fp.y,
-				Mathf.Sin(fha) * fp.x + Mathf.Cos(fha) * fp.y,
-				fp.z
-			);
-			
-			
 			Quaternion fr = Quaternion.Euler(new Vector3(0, 0, 0));
 			stream.Serialize(ref fr);
 			transform.rotation = fr;
+
+			transform.position = fp; // Spieler ist auf Äquator
+			Vector3 axis = Vector3.Cross(Vector3.forward, transform.position).normalized;
+			transform.RotateAround(Vector3.zero, axis, (verticalAngle * Mathf.Rad2Deg));
+			transform.RotateAround(Vector3.zero, axis, (-fva * Mathf.Rad2Deg));
 		}
 	
 	}
@@ -209,35 +184,18 @@ public class InputHandler : MonoBehaviour {
 			float vm = Static.player.getSpeed() * verticalMovement * Time.deltaTime;
 			vm = determineVerticalParcelPosition(verticalMovement, vm);
 			verticalAngle += vm;
+			verticalAngle = verticalAngle % (Mathf.PI*2);
 			
-			//float m = Static.player.getSpeed() * horizontalMovement * Time.deltaTime;
-			//m = determineHorizontalParcelPosition(horizontalMovement, m);
-			//horizontalAngle += m;
+			float m = Static.player.getSpeed() * horizontalMovement * Time.deltaTime;
+			m = determineHorizontalParcelPosition(horizontalMovement, m);
+			horizontalAngle += m;
+			horizontalAngle = horizontalAngle % (Mathf.PI*2);
 			
-			if (vertAngle != 0) {
+			if (vertAngle != 0) { // an Wänden hängen bleiben..
 				
-				transform.RotateAround(Vector3.zero, transform.right, -vm * Mathf.Rad2Deg);
-				//Debug.Log("rotate around zero with axis " + axis + " um winkel " + vm);
-				/*
-				// turn the player to our zero
-				Vector3 tmp = new Vector3(
-					Mathf.Cos(-horizontalAngle) * transform.position.x - Mathf.Sin(-horizontalAngle) * transform.position.y,
-					Mathf.Sin(-horizontalAngle) * transform.position.x + Mathf.Cos(-horizontalAngle) * transform.position.y,
-					transform.position.z
-				);
-				// now turn him up/down
-				tmp = new Vector3(
-					tmp.x,
-					Mathf.Cos(-vm) * tmp.y - Mathf.Sin(-vm) * tmp.z,
-					Mathf.Sin(-vm) * tmp.y + Mathf.Cos(-vm) * tmp.z
-				);
-				// and back
-				transform.position = new Vector3(
-					Mathf.Cos(horizontalAngle) * tmp.x - Mathf.Sin(horizontalAngle) * tmp.y,
-					Mathf.Sin(horizontalAngle) * tmp.x + Mathf.Cos(horizontalAngle) * tmp.y,
-					tmp.z
-				);
-				*/
+				Vector3 axis = Vector3.Cross(Vector3.forward, transform.position);
+				transform.RotateAround(Vector3.zero, axis, vm * Mathf.Rad2Deg);
+
 			}
 			
 			return;
@@ -266,8 +224,8 @@ public class InputHandler : MonoBehaviour {
 			
 			// Falls die Zelle ein Powerup enthält -> aufsammeln
 			if (currCell.hasPowerup()) {
-				networkView.RPC("destroyPowerup", RPCMode.All, currCell.getLpos(), currCell.getBpos(), false);
-				//Static.player.powerupCollected(currCell.destroyPowerup(false));
+				networkView.RPC("destroyPowerup", RPCMode.Others, currCell.getLpos(), currCell.getBpos(), false);
+				Static.player.powerupCollected(currCell.destroyPowerup(false));
 			}
 			
 			// Leertaste -> Bombe legen
@@ -338,15 +296,13 @@ public class InputHandler : MonoBehaviour {
 				}
 			}
 		
-			float vAngle = verticalAngle;
-			verticalAngle += m;
-
 			if (!Static.player.isDead()) {
 				m = determineVerticalParcelPosition( verticalMovement, m);
 			}
+			verticalAngle += m;
+			verticalAngle = verticalAngle % (Mathf.PI*2);
 			
 			Static.sphereHandler.move(m);
-			if ( m == 0) verticalAngle = vAngle;
 			vertAngle = m;
 		}
 		
@@ -370,15 +326,13 @@ public class InputHandler : MonoBehaviour {
 				horizontalHelper += m;
 			}
 		 
-			float hAngle = horizontalAngle;
-			horizontalAngle += m;
-			
 			if (!Static.player.isDead()) {
 				m = determineHorizontalParcelPosition( horizontalMovement, m);
 			}
+			horizontalAngle += m;
+			horizontalAngle = horizontalAngle % (Mathf.PI*2);
 			
 			moveAlongEquator(m);
-			if ( m == 0) horizontalAngle = hAngle;
 		}
 		
 		// Spielerrotation
