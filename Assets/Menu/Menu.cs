@@ -143,9 +143,9 @@ public class Menu : MonoBehaviour {
 		}
 		
 		// GRAPHIC-DETAILS
-		GUI.Label(new Rect(0,120,width,20), "Graphic-Details:");
-		GUI.Label(new Rect(0,145,50,20), "low");
-		GUI.Label(new Rect(width-40,145,50,20), "height");
+		GUI.Label(new Rect(0,120,width,20), "Effect Details:");
+		GUI.Label(new Rect(0,145,50,20), "Min");
+		GUI.Label(new Rect(width-40,145,50,20), "Max");
 		expDetail = (int)GUI.HorizontalSlider (new Rect (0, 140, width, 20), (float)expDetail, 1.0f, 10.0f);
 		Preferences.setExplosionDetail(11-expDetail);
 	

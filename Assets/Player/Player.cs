@@ -198,7 +198,8 @@ namespace AssemblyCSharp
 		}
 		
 		public void releaseTriggerBombs() {
-			foreach (Parcel cell in triggerbombList) {
+			List<Parcel> triggerBombs = new List<Parcel>(triggerbombList);
+			foreach (Parcel cell in triggerBombs) {
 				cell.getExplosion().startExplosion();
 				removeTriggerBomb(cell);
 			}
