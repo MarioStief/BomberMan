@@ -138,7 +138,7 @@ public class Menu : MonoBehaviour {
 		nickname = GUI.TextField(new Rect(0,70,width,20), nickname, 30);
 	
 		// COLOR
-		if (GUI.Button (new Rect(0,92, width,20), "choose Color")) {
+		if (GUI.Button (new Rect(0,92, width,20), "Illumination Color")) {
 			colorPicker.SetActive(!colorPicker.activeSelf);
 		}
 		
@@ -206,7 +206,7 @@ public class Menu : MonoBehaviour {
 		nickname = GUI.TextField(new Rect(25,30,width,20), nickname, 30);
 		
 		// COLOR
-		if (GUI.Button (new Rect(25,52, width,20), "choose Color")) {
+		if (GUI.Button (new Rect(25,52, width,20), "Illumination Color")) {
 			colorPicker.SetActive(!colorPicker.activeSelf);
 		}
 
