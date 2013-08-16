@@ -43,6 +43,24 @@ public class SphereBuilder : MonoBehaviour {
 		// Gebe den Würfeln korrekte Höhen gemäß der Werte aus gameArea
 		gameArea.updateHeight();
 		
+		// colorate the player
+		Texture2D illuminColor = Resources.Load("Textures/Player/astrod00d_selfillum") as Texture2D;
+		Color[] color = illuminColor.GetPixels();
+		
+		for (int i = 0; i < color.Length; i++)
+			if (color[i] != color[0])
+				color[i] = Menu.getPlayerColor();
+		
+		illuminColor.SetPixels(color);
+		illuminColor.Apply();
+		
+		/* Folgend kann Ingame die Farbe angepasst werden, aber nicht extern die Textur verändert
+		Texture2D playerColor = new Texture2D(1024, 1024, TextureFormat.ARGB32, false);
+		playerColor.SetPixels(color);
+		playerColor.Apply();
+		//playerPrefab.renderer.material.SetTexture("_SelfIllumin", playerColor);
+		*/
+		
 		// instantiate the player
 		Vector3 pos = new Vector3(-1.41561e-07f, 2.080631f, 0.01059199f);
 		Network.Instantiate(playerPrefab, pos, transform.rotation, 1);
