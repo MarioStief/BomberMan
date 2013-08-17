@@ -97,15 +97,20 @@ public class InputHandler : MonoBehaviour {
 	
 	public void playSound(AudioClip clip) {
 		AudioSource audioSource = gameObject.GetComponent<AudioSource>();
-		if (audioSource.isPlaying)
+		if (audioSource.isPlaying) {
+			// neue Soundsource dazu
+			foreach (AudioSource audioIterator in GetComponents<AudioSource>()) {
+				if (!audioIterator.isPlaying) // entferne nicht mehr laufende
+					Destroy(audioIterator);
+			}
 			audioSource = gameObject.AddComponent<AudioSource>();
+		}
 		audioSource.clip = clip;
 		audioSource.Play();
 	}
 	
 	void OnSerializeNetworkView(BitStream stream, NetworkMessageInfo info) {
-		if (stream.isWriting)
-		{
+		if (stream.isWriting) {
 			Vector3 p = transform.position;
 			stream.Serialize(ref p);
 			
@@ -115,8 +120,7 @@ public class InputHandler : MonoBehaviour {
 			Quaternion r = transform.rotation;
 			stream.Serialize(ref r);
 		}
-		else
-		{
+		else {
 			Vector3 fp = Vector3.zero;
 			stream.Serialize(ref fp);
 			
@@ -238,7 +242,7 @@ public class InputHandler : MonoBehaviour {
 						GameObject ex = Network.Instantiate(Resources.Load("Prefabs/Bombe"), currCell.getCenterPos(), Quaternion.identity, 0) as GameObject;
 						ex.networkView.RPC("createExplosionOnCell", RPCMode.All, currCell.getLpos(), currCell.getBpos(), 
 					    	               Static.player.getFlamePower(), Static.player.getDelay(), Static.player.getSuperbomb(), extra, true, true);
-						playSound(Static.bombLayedSoundEffect);
+						playSound(Static.bombDropSoundEffect);
 					}
 				}
 			}
@@ -249,6 +253,7 @@ public class InputHandler : MonoBehaviour {
 						GameObject ex = Network.Instantiate(Resources.Load("Prefabs/Bombe"), currCell.getCenterPos(), Quaternion.identity, 0) as GameObject;
 						ex.networkView.RPC("createExplosionOnCell", RPCMode.All, currCell.getLpos(), currCell.getBpos(), 
 					     	              Static.player.getFlamePower(), Static.player.getDelay(), Static.player.getSuperbomb(), 2, true, true);
+						playSound(Static.contactMineDropSoundEffect);
 					}
 				}
 				Static.player.releaseTriggerBombs();

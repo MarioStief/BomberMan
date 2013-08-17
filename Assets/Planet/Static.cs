@@ -34,7 +34,8 @@ namespace AssemblyCSharp
 		public static UnityEngine.Object extraIconPrefab;
 		
 		//Sound effects:
-		public static AudioClip bombLayedSoundEffect;
+		public static AudioClip bombDropSoundEffect;
+		public static AudioClip contactMineDropSoundEffect;
 		public static AudioClip contactMineExplosionSoundEffect;
 		public static AudioClip powerupSoundEffect;
 		public static AudioClip powerdownSoundEffect;
@@ -87,12 +88,13 @@ namespace AssemblyCSharp
 			*/
 			
 			//Sound effects:
-			bombLayedSoundEffect = Resources.Load("Sounds/bomb") as AudioClip;
-			contactMineExplosionSoundEffect = Resources.Load("Sounds/beep") as AudioClip;
+			bombDropSoundEffect = Resources.Load("Sounds/bombDrop") as AudioClip;
+			contactMineDropSoundEffect = Resources.Load("Sounds/contactMineDrop") as AudioClip;
+			contactMineExplosionSoundEffect = Resources.Load("Sounds/contactMineExplode") as AudioClip;
 			powerupSoundEffect = Resources.Load("Sounds/powerup") as AudioClip;
 			powerdownSoundEffect = Resources.Load("Sounds/powerdown") as AudioClip;
-			superPowerupSoundEffect = Resources.Load("Sounds/powerup") as AudioClip;
-			extraPowerupSoundEffect = Resources.Load("Sounds/powerup") as AudioClip;
+			superPowerupSoundEffect = Resources.Load("Sounds/super") as AudioClip;
+			extraPowerupSoundEffect = Resources.Load("Sounds/extra") as AudioClip;
 			playerDeadSoundEffect = Resources.Load("Sounds/dead") as AudioClip;
 		}
 		

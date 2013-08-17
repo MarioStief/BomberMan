@@ -93,9 +93,7 @@ public class Explosion : MonoBehaviour
 			createTime = Time.time;
 			
 			if (contactMine) {
-				AudioSource audioSource = gameObject.AddComponent<AudioSource>();
-				audioSource.clip = Static.contactMineExplosionSoundEffect;
-				audioSource.Play();
+				Static.inputHandler.playSound(Static.contactMineExplosionSoundEffect);
 				createTime += 0.5f;
 			}
 		}
