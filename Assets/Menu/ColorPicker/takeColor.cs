@@ -3,7 +3,9 @@ using UnityEngine;
 public class takeColor : MonoBehaviour {
 	
 	void OnColorChange(HSBColor color) {
-		Menu.setPlayerColor(color.ToColor());
+		Color c = color.ToColor();
+		c.a = 1f;
+		Menu.setPlayerColor(c);
 	}
 	
 }

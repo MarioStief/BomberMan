@@ -3,9 +3,6 @@ using System.Collections;
 
 public class inGame : MonoBehaviour {
 	
-	void Start () {
-	}
-	
 	void Update () {
 		if (Input.GetKeyDown(KeyCode.Escape) && Application.loadedLevel != 0) //MenuState.instance.Update() == GM_State.UpdateRet.NEXT_STATE
 			Menu.showGUI = !Menu.showGUI;

@@ -15,7 +15,7 @@ public class InputHandler : MonoBehaviour {
 	Vector3 lookDirection = new Vector3(0, 0, 0);
 	int angle = 0;
 	
-	private GameObject playerHandler;
+	private GameObject sun;
 	
 	private int n_L;				// Anzahl Längen und Breitengeraden
 	private int n_B;
@@ -45,16 +45,10 @@ public class InputHandler : MonoBehaviour {
 	float horizontalMovement;
 	
 	void Awake() {
-		//playerHandler = GameObject.Find("Player");
-		playerHandler = GameObject.FindGameObjectWithTag("Player");
 		Static.setInputHandler(this);
+		sun = GameObject.FindGameObjectWithTag("Sun");
 	}
-	
-	void OnNetworkInstantiate(NetworkMessageInfo info) {
-		if (info.sender != Network.player) {
-		}
-		Debug.Log("New object instantiated by " + info.sender);
-	}
+
 	
 	// Use this for initialization
 	void Start () {
@@ -154,11 +148,11 @@ public class InputHandler : MonoBehaviour {
 			detonator.Explode();
 			float scale = 1f - ((multiplicator - 10f) / 10f); // Range: 1 - 0
 			//Debug.Log ("---> " + scale);
-			playerHandler.transform.localScale *= scale;
+			transform.localScale *= scale;
 			elapsedTime = Time.time - createTime;
 		}
-		playerHandler.transform.localScale = Vector3.zero;
-		playerHandler.GetComponent<CapsuleCollider>().enabled = false;
+		transform.localScale = Vector3.zero;
+		GetComponent<CapsuleCollider>().enabled = false;
 		while (Static.player.isDead()) {
 			do {			
 				switch (Random.Range(0, 2)) {
@@ -188,7 +182,12 @@ public class InputHandler : MonoBehaviour {
 		if (!networkView.isMine && Static.rink != null) {
 			
 			if (vertAngle != 0) { // an Wänden hängen bleiben..
-				float verticalMovement = Input.GetAxis("Vertical");
+				float verticalMovement;
+				if (Static.player.isDead()) {
+					verticalMovement = this.verticalMovement;
+				} else {
+					verticalMovement = Input.GetAxis("Vertical");
+				}
 				float vm = Static.player.getSpeed() * verticalMovement * Time.deltaTime;
 				vm = determineVerticalParcelPosition(verticalMovement, vm);
 				verticalAngle += vm;
@@ -650,19 +649,18 @@ public class InputHandler : MonoBehaviour {
 	
 	private void moveAlongEquator(float movement) {
 		
-		transform.position = new Vector3(Mathf.Cos(movement)* transform.position.x - Mathf.Sin(movement) * transform.position.y,
-										Mathf.Sin(movement) * transform.position.x + Mathf.Cos(movement) * transform.position.y,
-										transform.position.z);
+		movement = movement * Mathf.Rad2Deg;
 		
+		// Spieler drehen
+		transform.RotateAround(Vector3.zero, Vector3.forward, movement);
 		
-		camera.transform.position = new Vector3(Mathf.Cos(movement)* camera.transform.position.x - Mathf.Sin(movement) * camera.transform.position.y,
-										Mathf.Sin(movement) * camera.transform.position.x + Mathf.Cos(movement) * camera.transform.position.y,
-										camera.transform.position.z);
+		// Kamera drehen
+		camera.transform.RotateAround(Vector3.zero, Vector3.forward, movement);
 		camera.transform.LookAt(Vector3.zero, Vector3.forward);
 		
 		// Licht mitdrehen..
-		GameObject.FindGameObjectWithTag("Sun").transform.RotateAround(Vector3.zero, Vector3.forward, movement*Mathf.Rad2Deg);
-		GameObject.FindGameObjectWithTag("Sun").transform.eulerAngles = new Vector3(0,90,0);
+		sun.transform.RotateAround(Vector3.zero, Vector3.forward, movement);
+		sun.transform.eulerAngles = new Vector3(0,90,0);
 	}
 	
 	/*
