@@ -58,10 +58,10 @@ namespace AssemblyCSharp
 				clip = Static.powerupSoundEffect;
 				break;
 			case 5:
-				clip = Static.powerupSoundEffect;
+				clip = Static.extraPowerupSoundEffect;
 				break;
 			case 10:
-				clip = Static.powerupSoundEffect;
+				clip = Static.superPowerupSoundEffect;
 				break;
 			}
 			return clip;
