@@ -19,12 +19,16 @@ namespace AssemblyCSharp
 					value = 1;
 			else if (type == PowerupType.PLAYER_SPEED_DOWN)
 					value = 1;
-			else if (type == PowerupType.PLAYER_SPEED_UP)
-					value = 3; 
+			else if (type == PowerupType.DELAY_SPEED_DOWN)
+					value = 1;
 			else if	(type == PowerupType.BOMB_UP)
 					value = 3;
 			else if (type == PowerupType.FLAME_UP)
 					value = 3;
+			else if (type == PowerupType.PLAYER_SPEED_UP)
+					value = 3; 
+			else if (type == PowerupType.DELAY_SPEED_UP)
+					value = 3; 
 			else if (type == PowerupType.TRIGGERBOMB)
 					value = 5;
 			else if (type == PowerupType.CONTACTMINE)
