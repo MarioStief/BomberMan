@@ -39,7 +39,7 @@ namespace AssemblyCSharp
 		private Explosion explosion;
 		private bool exploding;
 		private int powerupExplodingValue;
-		private string powerupAudio;
+		private AudioClip powerupAudio;
 		
 		private PowerupType powerupType;
 		

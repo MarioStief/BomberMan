@@ -95,9 +95,9 @@ public class InputHandler : MonoBehaviour {
 		//transform.LookAt(currCell.up.getCenterPos());
 	}
 	
-	public void playSound(string clip) {
+	public void playSound(AudioClip clip) {
 		AudioSource audioSource = gameObject.GetComponent<AudioSource>();
-		audioSource.clip = Resources.Load(clip) as AudioClip;
+		audioSource.clip = clip;
 		//audioSource.GetComponent<AudioSource>().volume *= 2;
 		audioSource.Play();
 	}
@@ -228,7 +228,7 @@ public class InputHandler : MonoBehaviour {
 			}
 			
 			// Leertaste -> Bombe legen
-			if ( Input.GetKeyDown(KeyCode.Space)){
+			if (Input.GetKeyDown(KeyCode.Space)){
 				if (!currCell.hasBomb() && !currCell.hasContactMine()) {
 					//Static.player.addBomb();
 					
@@ -237,7 +237,7 @@ public class InputHandler : MonoBehaviour {
 						GameObject ex = Network.Instantiate(Resources.Load("Prefabs/Bombe"), currCell.getCenterPos(), Quaternion.identity, 0) as GameObject;
 						ex.networkView.RPC("createExplosionOnCell", RPCMode.All, currCell.getLpos(), currCell.getBpos(), 
 					    	               Static.player.getFlamePower(), Static.player.getDelay(), Static.player.getSuperbomb(), extra, true, true);
-						playSound("Sounds/bomb");
+						playSound(Static.bombLayedSoundEffect);
 					}
 				}
 			}

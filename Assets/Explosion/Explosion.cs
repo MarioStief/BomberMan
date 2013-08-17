@@ -94,7 +94,7 @@ public class Explosion : MonoBehaviour
 			
 			if (contactMine) {
 				AudioSource audioSource = gameObject.AddComponent<AudioSource>();
-				audioSource.clip = Resources.Load("Sounds/beep") as AudioClip;
+				audioSource.clip = Static.contactMineExplosionSoundEffect;
 				audioSource.Play();
 				createTime += 0.5f;
 			}

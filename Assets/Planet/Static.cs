@@ -33,6 +33,16 @@ namespace AssemblyCSharp
 		public static UnityEngine.Object superBombIconPrefab;
 		public static UnityEngine.Object extraIconPrefab;
 		
+		//Sound effects:
+		public static AudioClip bombLayedSoundEffect;
+		public static AudioClip contactMineExplosionSoundEffect;
+		public static AudioClip powerupSoundEffect;
+		public static AudioClip powerdownSoundEffect;
+		public static AudioClip superPowerupSoundEffect;
+		public static AudioClip extraPowerupSoundEffect;
+		public static AudioClip playerDeadSoundEffect;
+
+		
 		/*
 		 * if needed: the static ones:
 		 * public static UnityEngine.Object emptyIconPrefab;
@@ -76,6 +86,15 @@ namespace AssemblyCSharp
 			superBombActiveIconPrefab = Resources.Load("Textures/Menu/superBombActive.png");
 			superBombIconInactivePrefab = Resources.Load("Textures/Menu/superBombInactive.png");
 			*/
+			
+			//Sound effects:
+			bombLayedSoundEffect = Resources.Load("Sounds/bomb") as AudioClip;
+			contactMineExplosionSoundEffect = Resources.Load("Sounds/beep") as AudioClip;
+			powerupSoundEffect = Resources.Load("Sounds/powerup") as AudioClip;
+			powerdownSoundEffect = Resources.Load("Sounds/powerdown") as AudioClip;
+			superPowerupSoundEffect = Resources.Load("Sounds/powerup") as AudioClip;
+			extraPowerupSoundEffect = Resources.Load("Sounds/powerup") as AudioClip;
+			playerDeadSoundEffect = Resources.Load("Sounds/dead") as AudioClip;
 		}
 		
 		public static void setSphereBuilder(SphereBuilder s) {

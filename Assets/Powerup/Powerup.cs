@@ -44,20 +44,20 @@ namespace AssemblyCSharp
 			return value;
 		}
 		
-		public string getAudioClip() {
-			string clip = "";
+		public AudioClip getAudioClip() {
+			AudioClip clip = null;
 			switch (value) {
 			case 1:
-				clip = "Sounds/powerdown";
+				clip = Static.powerdownSoundEffect;
 				break;
 			case 3:
-				clip = "Sounds/powerup";
+				clip = Static.powerupSoundEffect;
 				break;
 			case 5:
-				clip = "Sounds/powerup";
+				clip = Static.powerupSoundEffect;
 				break;
 			case 10:
-				clip = "Sounds/powerup";
+				clip = Static.powerupSoundEffect;
 				break;
 			}
 			return clip;
