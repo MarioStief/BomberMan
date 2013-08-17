@@ -97,8 +97,9 @@ public class InputHandler : MonoBehaviour {
 	
 	public void playSound(AudioClip clip) {
 		AudioSource audioSource = gameObject.GetComponent<AudioSource>();
+		if (audioSource.isPlaying)
+			audioSource = gameObject.AddComponent<AudioSource>();
 		audioSource.clip = clip;
-		//audioSource.GetComponent<AudioSource>().volume *= 2;
 		audioSource.Play();
 	}
 	
