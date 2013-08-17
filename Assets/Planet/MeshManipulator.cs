@@ -50,12 +50,12 @@ public class MeshManipulator : MonoBehaviour {
 	
 	public void updateTexture(){
 		int type = meshParcel.getType();
-		if ( type == 0) {
+		if (type == 0) {
 			renderer.material.mainTexture = grassTex;
 			renderer.material.mainTextureScale = new Vector2(0.3f,0.3f);
 			renderer.material.SetTexture("_BumpMap", grassBump);
 		}
-		else if ( type == 2){
+		else if (type == 2){
 			renderer.material.mainTexture = rockTex;
 			renderer.material.SetTexture("_BumpMap", rockBump); 
 		}
@@ -119,7 +119,7 @@ public class MeshManipulator : MonoBehaviour {
 	// Die Höhe des Würfels wird im Aktualisierungsschritt beachtet.
 	// </summary>
 	public void updateCoordinates(){
-		if ( meshParcel != null) {
+		if (meshParcel != null) {
 			height = meshParcel.getHeight();
 			updateTexture();
 		}
@@ -145,11 +145,11 @@ public class MeshManipulator : MonoBehaviour {
 						sphere.sphereVertices[(int)vertexPosition[7].x][(int)vertexPosition[7].y][(int)vertexPosition[7].z]*height
 			);
 		
-		//if ( meshParcel != null) meshParcel.setCenter((height*cubeMesh.vertices[4] + 0.5f*height*(cubeMesh.vertices[9]-cubeMesh.vertices[4]))*(1.01f));
+		//if (meshParcel != null) meshParcel.setCenter((height*cubeMesh.vertices[4] + 0.5f*height*(cubeMesh.vertices[9]-cubeMesh.vertices[4]))*(1.01f));
 		
 		Vector3 center = (lift == 0.0f ? getCenter() : lift * getCenter());
-		if ( meshParcel != null) meshParcel.setGameObjectPosition(center);
-		if ( meshParcel != null) renderer.material.color = meshParcel.getColor();
+		if (meshParcel != null) meshParcel.setGameObjectPosition(center);
+		if (meshParcel != null) renderer.material.color = meshParcel.getColor();
 	}
 	
 	public void liftObject(float factor) {
@@ -165,7 +165,7 @@ public class MeshManipulator : MonoBehaviour {
 	// </param>
 	public void setVertices(Vector3[] v){
 		
-		if ( v.Length != 8 ){
+		if (v.Length != 8 ){
 			Debug.Log("Möp. Möp!");
 			return;
 		}

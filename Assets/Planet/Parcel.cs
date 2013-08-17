@@ -5,7 +5,7 @@ namespace AssemblyCSharp
 {
 	// <summary>
 	// Klasse zum Handeln jeweiliger Parzellen, insbesondere der Höhe
-	// und etwaiger GameObjects, die starr auf dieser Parzelle liegen ( etwa Upgrades)
+	// und etwaiger GameObjects, die starr auf dieser Parzelle liegen (etwa Upgrades)
 	// </summary>
 	public class Parcel
 	{
@@ -104,13 +104,13 @@ namespace AssemblyCSharp
 		
 		public void setType(int type){
 		
-			//if ( type == parcelType) return;
+			//if (type == parcelType) return;
 			
 			parcelType = type;
-			if ( parcelType == 0){
+			if (parcelType == 0){
 				height = 1.0f;	
 				//color = Color.green;
-			} else if ( parcelType == 1){
+			} else if (parcelType == 1){
 				height = upperLevel;	
 				//color = new Color(0.5f,0.5f,0.0f,1.0f);
 			} else {
@@ -132,7 +132,7 @@ namespace AssemblyCSharp
 		
 		public void setGameObjectPosition(Vector3 v){
 		
-			if ( obj == null) return;
+			if (obj == null) return;
 			
 			obj.transform.position = v;
 		}

@@ -49,7 +49,7 @@ namespace AssemblyCSharp
 		}
 		
 		// <summary>
-		// Erstellt die Gesamtspielfläche, bestehend aus Parzelen ( Parcel.cs);
+		// Erstellt die Gesamtspielfläche, bestehend aus Parzelen (Parcel.cs);
 		// Erstellt die dargestellte Spielfläche, bestehend aus MeshManipulator-Objekten.
 		// </summary>
 		private void initializeRink(int width, int height){
@@ -63,7 +63,7 @@ namespace AssemblyCSharp
 			
 			for(int i = 0; i < height; i++){
 				for(int j = 0; j <width; j++){
-					if ( i % 2 == 0 & j % 2 == 0){
+					if (i % 2 == 0 & j % 2 == 0){
 						gameArea[i][j] = new Parcel(2);	// Hoher Steinquader
 					} else{
 						gameArea[i][j] = new Parcel(0);	// Bodenfläche
@@ -125,8 +125,8 @@ namespace AssemblyCSharp
 		public void updateHeight(){
 			for(int r = 0; r < drawnArea.Length; r++){
 				for(int s = 0; s < drawnArea[r].Length; s++){
-					drawnArea[r][s].setParcel( gameArea[r][s]);
-					drawnArea[r][s].setHeight( gameArea[r][s].getHeight() );
+					drawnArea[r][s].setParcel(gameArea[r][s]);
+					drawnArea[r][s].setHeight(gameArea[r][s].getHeight() );
 				}	
 			}	
 		}

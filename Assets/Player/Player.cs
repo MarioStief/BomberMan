@@ -221,7 +221,7 @@ namespace AssemblyCSharp
 		}
 		
 		public void setXPos(float x){
-			if ( x > 1) xpos = 1;
+			if (x > 1) xpos = 1;
 			xpos = x;	
 		}
 		
@@ -230,7 +230,7 @@ namespace AssemblyCSharp
 		}
 		
 		public void setZPos(float z){
-			if ( zpos > 1) zpos = 1;
+			if (zpos > 1) zpos = 1;
 			zpos = z;	
 		}
 		
@@ -350,7 +350,7 @@ namespace AssemblyCSharp
 		public void setCurrentParcel(Parcel parcel){
 			
 			/*
-			if ( currentCell != null){
+			if (currentCell != null){
 				currentCell.hightlightColor(false);	
 			}
 			*/
