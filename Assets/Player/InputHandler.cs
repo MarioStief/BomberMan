@@ -46,7 +46,7 @@ public class InputHandler : MonoBehaviour {
 	
 	void Awake() {
 		//playerHandler = GameObject.Find("Player");
-		//playerHandler = GameObject.FindGameObjectWithTag("Player");
+		playerHandler = GameObject.FindGameObjectWithTag("Player");
 		Static.setInputHandler(this);
 	}
 	
@@ -92,7 +92,7 @@ public class InputHandler : MonoBehaviour {
 		verticalHelper = 0.0f;
 		horizontalHelper = 0.0f;
 		
-		//transform.LookAt(currCell.up.getCenterPos());
+		transform.position += new Vector3(0.21f, 0.21f, 0.21f);
 	}
 	
 	public void playSound(AudioClip clip) {

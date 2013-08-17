@@ -41,7 +41,6 @@ namespace AssemblyCSharp
 		public static AudioClip superPowerupSoundEffect;
 		public static AudioClip extraPowerupSoundEffect;
 		public static AudioClip playerDeadSoundEffect;
-
 		
 		/*
 		 * if needed: the static ones:
