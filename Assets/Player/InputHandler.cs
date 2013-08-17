@@ -92,7 +92,7 @@ public class InputHandler : MonoBehaviour {
 		verticalHelper = 0.0f;
 		horizontalHelper = 0.0f;
 		
-		transform.position += new Vector3(0.21f, 0.21f, 0.21f);
+		//transform.position += new Vector3(0.21f, 0.21f, 0.21f);
 	}
 	
 	public void playSound(AudioClip clip) {
