@@ -46,7 +46,8 @@ public class InputHandler : MonoBehaviour {
 	
 	void Awake() {
 		//playerHandler = GameObject.Find("Player");
-		playerHandler = GameObject.FindGameObjectWithTag("Player");
+		//playerHandler = GameObject.FindGameObjectWithTag("Player");
+		Static.setInputHandler(this);
 	}
 	
 	void OnNetworkInstantiate(NetworkMessageInfo info) {
@@ -91,7 +92,14 @@ public class InputHandler : MonoBehaviour {
 		verticalHelper = 0.0f;
 		horizontalHelper = 0.0f;
 		
-		transform.LookAt(currCell.up.getCenterPos());
+		//transform.LookAt(currCell.up.getCenterPos());
+	}
+	
+	public void playSound(string clip) {
+		AudioSource audioSource = gameObject.GetComponent<AudioSource>();
+		audioSource.clip = Resources.Load(clip) as AudioClip;
+		//audioSource.GetComponent<AudioSource>().volume *= 2;
+		audioSource.Play();
 	}
 	
 	void OnSerializeNetworkView(BitStream stream, NetworkMessageInfo info) {
@@ -229,6 +237,7 @@ public class InputHandler : MonoBehaviour {
 						GameObject ex = Network.Instantiate(Resources.Load("Prefabs/Bombe"), currCell.getCenterPos(), Quaternion.identity, 0) as GameObject;
 						ex.networkView.RPC("createExplosionOnCell", RPCMode.All, currCell.getLpos(), currCell.getBpos(), 
 					    	               Static.player.getFlamePower(), Static.player.getDelay(), Static.player.getSuperbomb(), extra, true, true);
+						playSound("Sounds/bomb");
 					}
 				}
 			}

@@ -39,6 +39,7 @@ namespace AssemblyCSharp
 		private Explosion explosion;
 		private bool exploding;
 		private int powerupExplodingValue;
+		private string powerupAudio;
 		
 		private PowerupType powerupType;
 		
@@ -185,7 +186,9 @@ namespace AssemblyCSharp
 			powerupType = powerup.getType();
 			obj.GetComponent<PowerupTexture>().setType(powerupType);
 			powerupExplodingValue = powerup.getValue();
+			powerupAudio = powerup.getAudioClip();
 			powerupOnCell = true;
+			
 		}
 
 		public PowerupType destroyPowerup(bool shatter) {
@@ -199,6 +202,7 @@ namespace AssemblyCSharp
 			powerupOnCell = false;
 			powerupExplodingValue = 0;
 			getMeshManipulator().liftObject(0.0f);
+			Static.inputHandler.playSound(powerupAudio);
 			return powerupType;
 		}
 		

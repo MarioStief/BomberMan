@@ -8,19 +8,11 @@ namespace AssemblyCSharp
 	public class Powerup
 	{
 		PowerupType type;
+		int value = 0;
 		
 		public Powerup(PowerupType type)
 		{
 			this.type = type;
-		}
-		
-		public PowerupType getType()
-		{
-			return type;
-		}
-		
-		public int getValue() {
-			int value = 0;
 			if	(type == PowerupType.BOMB_DOWN)
 					value = 1;
 			else if (type == PowerupType.FLAME_DOWN)
@@ -41,7 +33,34 @@ namespace AssemblyCSharp
 					value = 10;
 			else if (type == PowerupType.SUPERBOMB)
 					value = 10;
+		}
+		
+		public PowerupType getType()
+		{
+			return type;
+		}
+		
+		public int getValue() {
 			return value;
+		}
+		
+		public string getAudioClip() {
+			string clip = "";
+			switch (value) {
+			case 1:
+				clip = "Sounds/powerdown";
+				break;
+			case 3:
+				clip = "Sounds/powerup";
+				break;
+			case 5:
+				clip = "Sounds/powerup";
+				break;
+			case 10:
+				clip = "Sounds/powerup";
+				break;
+			}
+			return clip;
 		}
 	}
 }

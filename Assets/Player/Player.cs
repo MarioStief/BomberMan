@@ -36,14 +36,6 @@ namespace AssemblyCSharp
 		private string[] iconText = new string[4];
 		
 		private List<Parcel> triggerbombList = new List<Parcel>();
-		//private GameObject soundPlayer = new GameObject("Sound Machine");
-		AudioSource audioSource = GameObject.Find("Menu").AddComponent<AudioSource>();
-		
-		public void playSound (string soundName) {
-			audioSource.clip = Resources.Load(soundName) as AudioClip;
-			//audioSource.GetComponent<AudioSource>().volume *= 2;
-			audioSource.Play();
-		}
 		
 		public void updateMenuStats() {
 			
@@ -103,24 +95,18 @@ namespace AssemblyCSharp
 		
 		public void powerupCollected(PowerupType type)
 		{
-			int soundType = 0;
-
 			if (type == PowerupType.BOMB_UP) {
 				bombs++;
-				soundType = 1;
 			} else if (type == PowerupType.BOMB_DOWN) {
 				if (bombs > 1) {
 					bombs--;
-					soundType = 2;
 				}
 			} else if (type == PowerupType.FLAME_UP) {
 				if (flamePower < MAXFLAMEPOWER) {
 					flamePower++;
-					soundType = 1;
 				} else {
 					Static.setGoldenFlame(true);
 					updateMenuStats();
-					soundType = 4;
 				}
 			} else if (type == PowerupType.FLAME_DOWN) {
 				if (flamePower == MAXFLAMEPOWER) {
@@ -129,44 +115,36 @@ namespace AssemblyCSharp
 				}
 				if (flamePower > 1) {
 					flamePower--;
-					soundType = 2;
 				}
 			} else if (type == PowerupType.PLAYER_SPEED_UP) {
 				if (speed < MAXSPEED) {
 					speed += 0.05f;
-					soundType = 1;
 				}
 			} else if (type == PowerupType.PLAYER_SPEED_DOWN) {
 				if (speed > 1.0f) {
 					speed -= 0.05f;
-					soundType = 2;
 				}
 			} else if (type == PowerupType.DELAY_SPEED_UP) {
 				if (delay > MINDELAY) {
-					soundType = 1;
 					delay -= 0.02f;
 				}
 			} else if (type == PowerupType.DELAY_SPEED_DOWN) {
 				if (delay < MAXDELAY) {
 					speed += 0.02f;
-					soundType = 2;
 				}
 			} else if (type == PowerupType.GOLDEN_FLAME) {
 				flamePower = MAXFLAMEPOWER;
 				Static.setGoldenFlame(true);
 				updateMenuStats();
-				soundType = 4;
 			} else if (type == PowerupType.SUPERBOMB) {
 				SUPERBOMB = true;
 				Static.setSuperbomb(true);
 				updateMenuStats();
-				soundType = 4;
 			} else if (type == PowerupType.TRIGGERBOMB) {
 				if (triggerbombs < 3) {
 					triggerbombs++;
 					contactmines = 0;
 					Static.setExtra(1);
-					soundType = 3;
 					updateMenuStats();
 				}
 			} else if (type == PowerupType.CONTACTMINE) {
@@ -174,30 +152,8 @@ namespace AssemblyCSharp
 					contactmines++;
 					triggerbombs = 0;
 					Static.setExtra(2);
-					soundType = 3;
 					updateMenuStats();
 				}
-			}
-			switch (soundType) {
-			case 0:
-				break; // item had no effect
-			case 1:
-				playSound("Sounds/powerup");
-				break;
-			case 2:
-				playSound("Sounds/powerdown");
-				break;
-			/* Extra
-			case 3:
-				audioSource.clip = Resources.Load("Sounds/extra") as AudioClip;
-				break;
-			*/
-			/* Superpowerup
-			case 4:
-				audioSource.clip = Resources.Load("Sounds/super") as AudioClip;
-				break;
-			*/
-
 			}
 			Debug.Log("bombs: " + bombs + ", flamePower: " + flamePower + ", speed: " + speed*1000 + " ms, delay: " + delay*1000 + " ms");
 		}
@@ -302,7 +258,7 @@ namespace AssemblyCSharp
 		public void setDead(bool d) {
 			dead = d;
 			if (d) {
-				playSound("Sounds/dead");
+				Static.inputHandler.playSound("Sounds/dead");
 				// Verteile Powerups über das Spielfeld
 				List<Parcel> parcelPool = new List<Parcel>();
 				Parcel[][] gameArea = Static.gameArea;

@@ -6,6 +6,7 @@ namespace AssemblyCSharp
 	public static class Static
 	{
 		public static SphereBuilder sphereHandler;
+		public static InputHandler inputHandler;
 		public static Rink rink;
 		public static Parcel[][] gameArea;
 		public static MeshManipulator[][] drawnArea;
@@ -80,7 +81,11 @@ namespace AssemblyCSharp
 		public static void setSphereBuilder(SphereBuilder s) {
 			sphereHandler = s;
 		}
-		
+
+		public static void setInputHandler(InputHandler i) {
+			inputHandler = i;
+		}
+
 		public static void setExtra(int type) {
 			switch (type) {
 			case 0:
