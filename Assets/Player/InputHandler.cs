@@ -96,6 +96,8 @@ public class InputHandler : MonoBehaviour {
 		
 		verticalHelper = 0.0f;
 		horizontalHelper = 0.0f;
+		
+		//transform.localPosition += new Vector3(0.2f, 0.2f, 0.2f);
 	}
 	
 	public void playSound(AudioClip clip) {
@@ -144,6 +146,7 @@ public class InputHandler : MonoBehaviour {
 	IEnumerator deadPlayer() {
 		float createTime = Time.time;
 		float elapsedTime = 0.0f;
+		GameObject.Find("playerMesh").animation.CrossFade("die");
 		while (elapsedTime < 10f) {
 			float multiplicator = elapsedTime + 10f; // 10 <= multiplicator <= 20
 			float x = transform.position.x;
@@ -159,9 +162,9 @@ public class InputHandler : MonoBehaviour {
 			detonator.GetComponent<AudioSource>().volume /= distance * multiplicator;
 			detonator.GetComponent<AudioSource>().Play();
 			detonator.Explode();
-			float scale = 1f - ((multiplicator - 10f) / 10f); // Range: 1 - 0
+			//float scale = 1f - ((multiplicator - 10f) / 10f); // Range: 1 - 0
 			//Debug.Log ("---> " + scale);
-			transform.localScale *= scale;
+			//transform.localScale *= scale;
 			elapsedTime = Time.time - createTime;
 		}
 		transform.localScale = Vector3.zero;
@@ -190,6 +193,13 @@ public class InputHandler : MonoBehaviour {
 	}
 	
 	void Update () {
+		
+		if ((Mathf.Abs(Input.GetAxis("Vertical")) > 0.2) || (Mathf.Abs(Input.GetAxis("Horizontal")) > 0.2))
+			GameObject.Find("playerMesh").animation.CrossFade("runforward");
+		else
+			if (!Static.player.isDead())
+				GameObject.Find("playerMesh").animation.CrossFade("idle");
+
 		
 		// Gegner drehen mit dem Planeten..!
 		if (!networkView.isMine && Static.rink != null) {
@@ -290,7 +300,6 @@ public class InputHandler : MonoBehaviour {
 	}
 	
 	private void moveCharacter() {
-		
 		float verticalMovement;
 		if (Static.player.isDead()) {
 			verticalMovement = this.verticalMovement;
