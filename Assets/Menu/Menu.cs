@@ -295,7 +295,7 @@ public class Menu : MonoBehaviour {
 				showGUI = false;
 				
 				CancelInvoke("refreshServerName");
-				networkView.RPC("startGame",RPCMode.AllBuffered, (int)Random.value*100000);
+				networkView.RPC("startGame",RPCMode.AllBuffered, Mathf.FloorToInt(Random.value*100000));
 			}
 		}
 		GUI.EndGroup();
@@ -497,7 +497,7 @@ public class Menu : MonoBehaviour {
 	}
 	
 	[RPC]
-	void startGame(int seed) {
+	public void startGame(int seed) {
 		Application.LoadLevel(1);
 		Random.seed = seed;
 		showGUI = false;
