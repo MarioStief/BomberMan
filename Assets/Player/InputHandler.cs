@@ -12,10 +12,7 @@ public class InputHandler : MonoBehaviour {
 	
 	bool DEBUGPLAYERPOSITION = false;
 	
-	Vector3 lookDirection = new Vector3(0, 0, 0);
 	int angle = 0;
-	
-	private GameObject sun;
 	
 	private int n_L;				// Anzahl Längen und Breitengeraden
 	private int n_B;
@@ -23,11 +20,10 @@ public class InputHandler : MonoBehaviour {
 	private int lpos;				// Position der aktuellen Parzelle rink.gameArea ist [lpos][bpos]
 	private int bpos;
 	
-	private float verticalAngle;	
-	private float oldVerticalAngle;
+	private float verticalAngle;
 	private float horizontalAngle;
 	
-	private static float vertAngle; // statische Kopie von verticalAngle
+	private static float vertAngleM, vertAngle=0; // statische Kopie von verticalAngle
 	
 	private float verticalHelper;
 	private float horizontalHelper;
@@ -35,7 +31,8 @@ public class InputHandler : MonoBehaviour {
 	private int vDirection;			// Bewegungsrichtung
 	private int hDirection;
 	
-	private GameObject camera;
+	private GameObject cam;
+	private GameObject sun;
 	
 	private Parcel currCell;
 	
@@ -44,12 +41,16 @@ public class InputHandler : MonoBehaviour {
 	float verticalMovement;
 	float horizontalMovement;
 	
+	bool running = false;
+	
 	private float playerRadius = 3.5f * Mathf.Deg2Rad;
 	
 	void Awake() {
 		Static.setInputHandler(this);
 		sun = GameObject.FindGameObjectWithTag("Sun");
-		camera = GameObject.FindGameObjectWithTag("MainCamera");
+		cam = GameObject.FindGameObjectWithTag("MainCamera");
+		
+		DontDestroyOnLoad(gameObject);
 	}
 
 	
@@ -71,6 +72,7 @@ public class InputHandler : MonoBehaviour {
 		renderer.material.SetTexture("_SelfIllumin", illuminColor);
 		
 		if (!networkView.isMine) {
+			verticalAngle = vertAngle;
 			return;
 		}
 		
@@ -96,8 +98,6 @@ public class InputHandler : MonoBehaviour {
 		
 		verticalHelper = 0.0f;
 		horizontalHelper = 0.0f;
-		
-		//transform.localPosition += new Vector3(0.2f, 0.2f, 0.2f);
 	}
 	
 	public void playSound(AudioClip clip) {
@@ -124,6 +124,9 @@ public class InputHandler : MonoBehaviour {
 			
 			Quaternion r = transform.rotation;
 			stream.Serialize(ref r);
+			
+			bool ir = running;
+			stream.Serialize(ref ir);
 		}
 		else {
 			Vector3 fp = Vector3.zero;
@@ -139,6 +142,14 @@ public class InputHandler : MonoBehaviour {
 			transform.position = fp; // Spieler ist auf Äquator
 			Vector3 axis = Vector3.Cross(Vector3.forward, transform.position).normalized;
 			transform.RotateAround(Vector3.zero, axis, (verticalAngle * Mathf.Rad2Deg) + (-fva * Mathf.Rad2Deg));
+			
+			// Animate Player
+			bool fir = false;
+			stream.Serialize(ref fir);
+			if (fir)
+				GetComponentInChildren<Animation>().CrossFade("runforward");
+			else
+				GetComponentInChildren<Animation>().CrossFade("idle");
 		}
 	
 	}
@@ -198,15 +209,14 @@ public class InputHandler : MonoBehaviour {
 		// Gegner drehen mit dem Planeten..!
 		if (!networkView.isMine && Static.rink != null) {
 			
-			if (vertAngle != 0) { // an Wänden hängen bleiben..
-				float verticalMovement;
-				if (Static.player.isDead()) {
-					verticalMovement = this.verticalMovement;
-				} else {
-					verticalMovement = Input.GetAxis("Vertical");
+			if (vertAngleM != 0) { // an Wänden hängen bleiben..
+				float vm;
+				if (Static.player.isDead())
+					vm = Static.player.getSpeed() * this.verticalMovement * -1 * Time.deltaTime;
+				else {
+					vm = Static.player.getSpeed() * Input.GetAxis("Vertical") * Time.deltaTime;
+					vm = determineVerticalParcelPosition(Input.GetAxis("Vertical"), vm);
 				}
-				float vm = Static.player.getSpeed() * verticalMovement * Time.deltaTime;
-				vm = determineVerticalParcelPosition(verticalMovement, vm);
 				verticalAngle += vm;
 				//verticalAngle = verticalAngle % (Mathf.PI*2);
 				
@@ -216,15 +226,6 @@ public class InputHandler : MonoBehaviour {
 			
 			return;
 		}
-
-		// Animate Player
-		if (!Static.player.isDead()) {
-			if ((Mathf.Abs(Input.GetAxis("Vertical")) > 0.2) || (Mathf.Abs(Input.GetAxis("Horizontal")) > 0.2))
-				GetComponentInChildren<Animation>().CrossFade("runforward");
-			else
-				GetComponentInChildren<Animation>().CrossFade("idle");
-		}
-
 
 		
 		if (Static.rink != null && !Static.player.isDead()) {
@@ -304,17 +305,18 @@ public class InputHandler : MonoBehaviour {
 	}
 	
 	private void moveCharacter() {
-		float verticalMovement;
+		
+		float verticalMovement, vm=0, m=0;
 		if (Static.player.isDead()) {
 			verticalMovement = this.verticalMovement;
 		} else {
 			verticalMovement = Input.GetAxis("Vertical");
 		}
 		if (verticalMovement != 0) {
-			float m = Static.player.getSpeed() * verticalMovement * Time.deltaTime;
+			vm = Static.player.getSpeed() * verticalMovement * Time.deltaTime;
 			if (vDirection == 0) {
 				
-				vDirection = (int)Mathf.Sign(m);
+				vDirection = (int)Mathf.Sign(vm);
 				
 				if (vDirection == 1) {
 					verticalHelper -= 	Mathf.PI/(2*(n_L-1));
@@ -324,13 +326,14 @@ public class InputHandler : MonoBehaviour {
 			}
 		
 			if (!Static.player.isDead()) {
-				m = determineVerticalParcelPosition(verticalMovement, m);
+				vm = determineVerticalParcelPosition(verticalMovement, vm);
 			}
-			verticalAngle += m;
+			verticalAngle += vm;
 			//verticalAngle = verticalAngle % (Mathf.PI*2);
+			vertAngle = verticalAngle;
 			
-			Static.sphereHandler.move(m);
-			vertAngle = m;
+			Static.sphereHandler.move(vm);
+			vertAngleM = vm;
 		}
 		
 		float horizontalMovement;
@@ -340,7 +343,7 @@ public class InputHandler : MonoBehaviour {
 			horizontalMovement = Input.GetAxis("Horizontal") * Static.player.getSpeed();
 		}
 		if (horizontalMovement != 0) {
-			float m = horizontalMovement*Time.deltaTime*Static.player.getSpeed()*(-2);
+			m = horizontalMovement*Time.deltaTime*Static.player.getSpeed()*(-2);
 			if (hDirection == 0) {
 				
 				hDirection = (int)Mathf.Sign(m);
@@ -405,6 +408,15 @@ public class InputHandler : MonoBehaviour {
 		
 		transform.up = transform.position;
 		transform.Rotate(0f, angle, 0f, Space.Self);
+		
+		// Animate Player
+		if (!Static.player.isDead()) {
+			running = Mathf.Abs(m) > 0.002 || Mathf.Abs(vm) > 0.002;
+			if (running)
+				GetComponentInChildren<Animation>().CrossFade("runforward");
+			else
+				GetComponentInChildren<Animation>().CrossFade("idle");
+		}
 	}
 	
 	// <summary>
@@ -655,8 +667,8 @@ public class InputHandler : MonoBehaviour {
 		transform.RotateAround(Vector3.zero, Vector3.forward, movement);
 		
 		// Kamera drehen
-		camera.transform.RotateAround(Vector3.zero, Vector3.forward, movement);
-		camera.transform.LookAt(Vector3.zero, Vector3.forward);
+		cam.transform.RotateAround(Vector3.zero, Vector3.forward, movement);
+		cam.transform.LookAt(Vector3.zero, Vector3.forward);
 		
 		// Licht mitdrehen..
 		sun.transform.RotateAround(Vector3.zero, Vector3.forward, movement);

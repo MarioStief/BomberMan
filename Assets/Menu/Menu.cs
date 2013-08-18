@@ -95,19 +95,28 @@ public class Menu : MonoBehaviour {
 	}
 	void OnDisconnectedFromServer(NetworkDisconnection info) {
         if (Network.isServer) {
+			MasterServer.UnregisterHost();
             Debug.Log("Local server connection disconnected");
+			screen = "start";
 		} else {
             if (info == NetworkDisconnection.LostConnection) {
                 Debug.Log("Lost connection to the server");
 			} else {
                 Debug.Log("Successfully diconnected from the server");
 			}
-			Application.LoadLevel(0);
-			screen = "kicked";
-			showGUI = true;
+			if (screen == "disconnected")
+				screen = "start";
+			else
+				screen = "kicked";
 		}
+		Application.LoadLevel(0);
+		showGUI = true;
 		playerList = new Dictionary<NetworkPlayer,string>();
 		playerColorList = new Dictionary<NetworkPlayer,Color>();
+		// delete all Players
+		foreach (var p in GameObject.FindGameObjectsWithTag("Player")) {
+			Destroy(p);
+		}
     }
 	
 	
@@ -285,6 +294,7 @@ public class Menu : MonoBehaviour {
 				
 				showGUI = false;
 				
+				CancelInvoke("refreshServerName");
 				networkView.RPC("startGame",RPCMode.AllBuffered, (int)Random.value*100000);
 			}
 		}
@@ -345,11 +355,7 @@ public class Menu : MonoBehaviour {
 			// we are ingame!
 			if (GUI.Button(new Rect(x,y,width,height), "Disconnect")) {
 				Network.Disconnect();
-				if (Network.isServer) {
-					MasterServer.UnregisterHost();
-					CancelInvoke("refreshServerName");
-				}
-				Application.LoadLevel(0);
+				screen = "disconnect";
 			}
 		} else {
 			if (GUI.Button(new Rect(x,y,width,height), "Join Server")) {
@@ -435,11 +441,7 @@ public class Menu : MonoBehaviour {
 				&& chatMsg.Trim().Length > 0 && nickname.Trim().Length > 0) {
 			networkView.RPC("incommingChatMessage", RPCMode.All, nickname + ": " + chatMsg);
 			chatMsg = "";
-			if (!showGUI) {
-				GUI.SetNextControlName("game");
-            	GUI.Label(new Rect(-100, -100, 1, 1), "");
-            	GUI.FocusControl("game");
-			}
+			inGame.focusToChat = true;
 		}
 	}
 	

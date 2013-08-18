@@ -11,7 +11,7 @@ public class inGame : MonoBehaviour {
 			Menu.showGUI = !Menu.showGUI;
 	}
 	
-	private bool focusToChat = true;
+	public static bool focusToChat = true;
 	void OnGUI () {
 		if (Application.loadedLevel == 0)
 			return;
@@ -20,9 +20,14 @@ public class inGame : MonoBehaviour {
 			Menu.showGUI = !Menu.showGUI;
 		}
 		
-		if (Input.GetKeyDown(KeyCode.Return)) {
-			if (focusToChat)
+		if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Return) {
+			if (focusToChat) {
 				GUI.FocusControl("chat");
+			} else {
+				GUI.SetNextControlName("game");
+            	GUI.Label(new Rect(-100, -100, 1, 1), "");
+            	GUI.FocusControl("game");
+			}
 			focusToChat = !focusToChat;
 		}
 		
