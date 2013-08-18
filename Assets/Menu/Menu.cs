@@ -496,8 +496,8 @@ public class Menu : MonoBehaviour {
 	
 	[RPC]
 	void startGame(int seed) {
-		Random.seed = seed;
 		Application.LoadLevel(1);
+		Random.seed = seed;
 		showGUI = false;
 		chat = "";
 		incommingChatMessage("Game started. Have Fun!", new NetworkMessageInfo());
