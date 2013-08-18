@@ -87,6 +87,7 @@ public class Explosion : MonoBehaviour
 		//cell.setBomb(true);
 	}
 	
+	[RPC]
 	public void startExplosion() {
 		if (waitingForBombExplosion) {
 			waitingForBombExplosion = false;
@@ -257,10 +258,10 @@ public class Explosion : MonoBehaviour
 						if (explodingCell.hasBomb() || explodingCell.hasContactMine()) {
 							explodingCell.getExplosion().startExplosion();
 							if (explodingCell.getExplosion().isTriggerBomb()) { // remove triggerBomb from list
-								List<Parcel> triggerBombs = new List<Parcel>(Static.player.getTriggerBombs());
-								foreach (Parcel cell in triggerBombs) {
-									if (explodingCell == cell) {
-										Static.player.removeTriggerBomb(cell);
+								Dictionary<Parcel,GameObject> triggerBombs = new Dictionary<Parcel,GameObject>(Static.player.getTriggerBombs());
+								foreach (var entry in triggerBombs) {
+									if (explodingCell == entry.Key) {
+										Static.player.removeTriggerBomb(entry.Key);
 									}
 								}
 							}
