@@ -19,17 +19,18 @@ public class Menu : MonoBehaviour {
 	private int expDetail = 5; // 1-10
 	private string chat = "";
 	
-	private Dictionary<NetworkPlayer,string> playerList = new Dictionary<NetworkPlayer, string>();
+	private static Dictionary<NetworkPlayer,string> playerList = new Dictionary<NetworkPlayer, string>();
+	private static Dictionary<NetworkPlayer,Color> playerColorList = new Dictionary<NetworkPlayer, Color>();
 	public static bool showGUI = true;
 	
-	private static bool created = false;
+	public static Menu instance = null;
 	public void Awake() {
-	    if (!created) {
+	    if (instance == null) {
 			DontDestroyOnLoad(transform.gameObject);
-	        created = true;
+	        instance = this;
 	    } else {
 	        Destroy(transform.gameObject);
-	    } 
+	    }
 	}
 	
 	public void Start () {
@@ -85,10 +86,11 @@ public class Menu : MonoBehaviour {
 	void OnConnectedToServer() {
 		
 		chat = "Welcome to Bomberman Galaxy.";
-		// tell the others my nick
-		networkView.RPC("newPlayer", RPCMode.OthersBuffered, nickname, Network.player);
+		// tell the others my nick and color
+		networkView.RPC("newPlayer", RPCMode.OthersBuffered, Network.player, nickname, playerColor.r, playerColor.g, playerColor.b);
 		playerList.Add(Network.player, nickname+" (me)");
-		networkView.RPC("incommingChatMessage", RPCMode.All, nickname + " joined");
+		playerColorList.Add(Network.player, playerColor);
+		networkView.RPC("incommingChatMessage", RPCMode.Others, nickname + " joined");
 		screen = "waitingForStart";
 	}
 	void OnDisconnectedFromServer(NetworkDisconnection info) {
@@ -105,16 +107,20 @@ public class Menu : MonoBehaviour {
 			showGUI = true;
 		}
 		playerList = new Dictionary<NetworkPlayer,string>();
+		playerColorList = new Dictionary<NetworkPlayer,Color>();
     }
 	
 	
 	// SERVER SIDE ONLY
 	void OnPlayerDisconnected(NetworkPlayer p) {
 		Network.RemoveRPCs(p);
-		//Network.DestroyPlayerObjects(p);
-		networkView.RPC("removePlayer", RPCMode.OthersBuffered, p);
-		networkView.RPC("incommingChatMessage", RPCMode.All, playerList[p] + " leaved");
-		playerList.Remove(p);
+		Network.DestroyPlayerObjects(p);
+		if (playerList.ContainsKey(p)) {
+			networkView.RPC("removePlayer", RPCMode.OthersBuffered, p);
+			networkView.RPC("incommingChatMessage", RPCMode.All, playerList[p] + " leaved");
+			playerList.Remove(p);
+			playerColorList.Remove(p);
+		}
 	}
 	
 	
@@ -190,12 +196,16 @@ public class Menu : MonoBehaviour {
 		// display a chat and the list of currently conntected players
 		GUI.BeginGroup(new Rect(10, 100, 200, 400));
 		GUILayout.Label("Connected Players:");
-		foreach (var p in playerList)
+		Color c = GUI.contentColor;
+		foreach (var p in playerList) {
+			GUI.contentColor = playerColorList[p.Key];
             GUILayout.Label(p.Value);
+		}
+		GUI.contentColor = c;
 		GUI.EndGroup();
 		
 		GUI.Box(new Rect(Screen.width/2-100, 50, 200, 24), "Waiting for server to start game");
-		chatArea(-1);
+		chatArea();
 	}
 
 
@@ -289,13 +299,17 @@ public class Menu : MonoBehaviour {
 		int j = 0;
 		Dictionary<NetworkPlayer,string> tpl = playerList;
 		foreach (var p in tpl) {
+			
+			GUI.color = playerColorList[p.Key];
 			GUI.Label(new Rect(20,j*24+20,200,24), p.Value);
-			GUI.color = new Color(255,0,0);
-			if (GUI.Button(new Rect(0,j*24+21,18,15), "x")) {
+ 
+			GUI.color = Color.red;
+			if (p.Key != Network.player && GUI.Button(new Rect(0,j*24+21,18,15), "x")) {
 				Network.CloseConnection(p.Key, true);
 				networkView.RPC("removePlayer", RPCMode.OthersBuffered, p.Key);
 				networkView.RPC("incommingChatMessage", RPCMode.All, p.Value + " was kicked");
 				playerList.Remove(p.Key);
+				playerColorList.Remove(p.Key);
 			}
 			GUI.color = Color.white;
 			j++;
@@ -303,7 +317,7 @@ public class Menu : MonoBehaviour {
 		GUI.EndGroup();
 		
 		// CHAT
-		chatArea(-1);
+		chatArea();
 	}
 	
 	void kickedScreen() {
@@ -311,8 +325,10 @@ public class Menu : MonoBehaviour {
 		GUIStyle s = new GUIStyle();
 	    s.fontSize = 50;
 		s.alignment = TextAnchor.MiddleCenter;
+		s.normal.textColor = Color.white;
 		GUI.Label(new Rect(Screen.width/2-150, 100, 300, 100), "Server disconnected!", s);
 		playerList = new Dictionary<NetworkPlayer,string>();
+		playerColorList = new Dictionary<NetworkPlayer,Color>();
 		
 		if (GUI.Button(new Rect(Screen.width/2-50,270,100,30), "continue")) {
 			screen = "start";
@@ -359,7 +375,7 @@ public class Menu : MonoBehaviour {
 				
 				chat = "Welcome to Bomberman Galaxy.";
 				// and add myself to the list of players
-				//playerList.Add(nickname);
+				networkView.RPC("newPlayer", RPCMode.AllBuffered, Network.player, nickname, playerColor.r, playerColor.g, playerColor.b);
 			}
 		}
 		if (GUI.Button(new Rect(x,y+2*height,width,height), "How to Play")) {
@@ -391,36 +407,51 @@ public class Menu : MonoBehaviour {
 
 	
 	// check if serverName changed
-	private string regServerName;
+	private string regServerName, regNick;
 	void refreshServerName() {
 		if (serverName != regServerName) {
 		    MasterServer.RegisterHost("BomberManUniTrier", serverName, "a comment!");
 		    regServerName = serverName;
 		}
+		if (nickname != regNick && nickname.Trim().Length > 1) {
+			playerList[Network.player] = nickname;
+			regNick = nickname;
+			networkView.RPC("newPlayer", RPCMode.AllBuffered, Network.player, nickname, playerColor.r, playerColor.g, playerColor.b);
+		}
 	}
 	
 	private string chatMsg = "";
-	public void chatArea(int time2show) {
+	public void chatArea() {
 		int x = Screen.width - 230;
 		
 	    GUI.skin.label.alignment = TextAnchor.LowerLeft;
 		GUI.Label(new Rect(x,30,150,Screen.height-70), chat);
 	    GUI.skin.label.alignment = TextAnchor.MiddleLeft;
 
+		GUI.SetNextControlName("chat");
 		chatMsg = GUI.TextField(new Rect(x,Screen.height-40,150,20), chatMsg);
-		if ((GUI.Button(new Rect(x+160,Screen.height-40,50,20), "Send")
-				|| Event.current.keyCode == KeyCode.Return)
-				&& chatMsg.Length > 0) {
+		if (((GUI.Button(new Rect(x+160,Screen.height-40,50,20), "Send")
+				|| Event.current.keyCode == KeyCode.Return))
+				&& chatMsg.Trim().Length > 0 && nickname.Trim().Length > 0) {
 			networkView.RPC("incommingChatMessage", RPCMode.All, nickname + ": " + chatMsg);
 			chatMsg = "";
+			if (!showGUI) {
+				GUI.SetNextControlName("game");
+            	GUI.Label(new Rect(-100, -100, 1, 1), "");
+            	GUI.FocusControl("game");
+			}
 		}
 	}
 	
 	public static void setPlayerColor(Color color) {
         playerColor = color;
+		if (playerColorList.ContainsKey(Network.player))
+			playerColorList[Network.player] = color;
 	}
-	public static Color getPlayerColor() {
-        return playerColor;
+	public static Color getPlayerColor(NetworkPlayer p) {
+		if (playerList.ContainsKey(p))
+	        return playerColorList[p];
+		return Color.white;
 	}
 	public static bool isInGame() {
 		return !showGUI;
@@ -429,28 +460,47 @@ public class Menu : MonoBehaviour {
 	
 	[RPC]
 	public void incommingChatMessage(string text, NetworkMessageInfo info) {
-		// max x lines
-		int lines = (int) (Screen.height / GUI.skin.label.lineHeight);
 		chat += "\n" + text;
-		if (chat.Replace("\n","").Length + lines <= chat.Length) {
+		// max x lines
+		if (chat.Replace("\n","").Length + 100 <= chat.Length) {
 			chat = chat.Substring(chat.IndexOf('\n'));
+		}
+		if (!showGUI)
+			Invoke("removeChatLine", 4f);
+	}
+	public void removeChatLine() {
+		if (chat.IndexOf('\n',1) > 0) {
+			chat = chat.Substring(chat.IndexOf('\n',1));
+		} else {
+			chat = "";
 		}
 	}
 
 	[RPC]
-	public void newPlayer(string nick, NetworkPlayer p) {
-		playerList.Add(p, nick);
+	public void newPlayer(NetworkPlayer p, string nick, float r, float g, float b) {
+		if (playerList.ContainsKey(p))
+			playerList[p] = nick;
+		else
+			playerList.Add(p, nick);
+		
+		if (playerColorList.ContainsKey(p))
+			playerColorList[p] = new Color(r,g,b);
+		else
+			playerColorList.Add(p, new Color(r,g,b));
 	}
 	[RPC]
 	public void removePlayer(NetworkPlayer p) {
 		playerList.Remove(p);
-	}	
+		playerColorList.Remove(p);
+	}
 	
 	[RPC]
 	void startGame(int seed) {
 		Random.seed = seed;
 		Application.LoadLevel(1);
 		showGUI = false;
+		chat = "";
+		incommingChatMessage("Game started. Have Fun!", new NetworkMessageInfo());
 	}
 	
 }
