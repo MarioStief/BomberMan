@@ -27,8 +27,10 @@ public class startPan : MonoBehaviour {
 		}
 			
 		if (effect && camera.nearClipPlane > targetClip) {
-			transform.position = targetPos;
-			transform.rotation = Quaternion.Euler(targetRot);
+			transform.position = Vector3.Slerp(transform.position, targetPos, Time.deltaTime*4);
+			transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(targetRot), Time.deltaTime * 8);
+			//transform.position = targetPos;
+			//transform.rotation = Quaternion.Euler(targetRot);
 			
 			camera.nearClipPlane -= 0.05f;
 		} else {
