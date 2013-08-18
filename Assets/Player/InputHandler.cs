@@ -44,29 +44,40 @@ public class InputHandler : MonoBehaviour {
 	float verticalMovement;
 	float horizontalMovement;
 	
+	private float playerRadius = 30;
+	
 	void Awake() {
 		Static.setInputHandler(this);
 		sun = GameObject.FindGameObjectWithTag("Sun");
+		camera = GameObject.FindGameObjectWithTag("MainCamera");
 	}
 
 	
 	// Use this for initialization
 	void Start () {
 		
+		// colorate the player
+		Texture2D illuminColor = Instantiate(Resources.Load("Textures/Player/astrod00d_selfillum") as Texture2D) as Texture2D;
+		Color[] color = illuminColor.GetPixels();
+		
+		Color pColor = Menu.getPlayerColor(networkView.owner);
+		for (int i = 0; i < color.Length; i++)
+			if (color[i] != color[0])
+				color[i] = pColor;
+		
+		illuminColor.SetPixels(color);
+		illuminColor.Apply();
+		
+		renderer.material.SetTexture("_SelfIllumin", illuminColor);
+		
 		if (!networkView.isMine) {
 			return;
 		}
-		
-		camera = GameObject.FindGameObjectWithTag("MainCamera");
-		
-		// set my color
-		renderer.material.color = Menu.getPlayerColor();
 		
 		Static.sphereHandler.move(0.000001f); // CK, fixed color on startup :)
 		moveAlongEquator(0.000001f);
 		
 		createTime = Time.time;
-		
 		
 		n_L = Static.sphereHandler.n_L;
 		n_B = Static.sphereHandler.n_B;
@@ -85,8 +96,6 @@ public class InputHandler : MonoBehaviour {
 		
 		verticalHelper = 0.0f;
 		horizontalHelper = 0.0f;
-		
-		//transform.position += new Vector3(0.21f, 0.21f, 0.21f);
 	}
 	
 	public void playSound(AudioClip clip) {
