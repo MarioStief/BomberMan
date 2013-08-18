@@ -210,15 +210,16 @@ public class InputHandler : MonoBehaviour {
 			
 			if (vertAngleM != 0) { // an Wänden hängen bleiben..
 				float vm;
-				if (Static.player.isDead())
-					vm = Static.player.getSpeed() * this.verticalMovement * -1 * Time.deltaTime;
-				else {
+				if (Static.player.isDead()) {
+					vm = vertAngleM;
+					vertAngleM = 0;
+				} else {
 					vm = Static.player.getSpeed() * Input.GetAxis("Vertical") * Time.deltaTime;
 					vm = determineVerticalParcelPosition(Input.GetAxis("Vertical"), vm);
 				}
 				verticalAngle += vm;
 				//verticalAngle = verticalAngle % (Mathf.PI*2);
-				
+
 				Vector3 axis = Vector3.Cross(Vector3.forward, transform.position);
 				transform.RotateAround(Vector3.zero, axis, vm * Mathf.Rad2Deg);
 			}
