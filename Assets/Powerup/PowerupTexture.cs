@@ -18,7 +18,13 @@ namespace AssemblyCSharp
 		public Material superBomb;
 		
 		float t = 0.0f;
-		Vector3 diff = Vector3.zero;
+		Vector3 random;
+		Vector3 random2;
+		
+		void Start() {
+			random = new Vector3(Random.Range(0f, 10f), Random.Range(0f,10f), Random.Range(0f, 10f));
+			random2 = new Vector3(Random.Range(0f, 10f), Random.Range(0f,10f), Random.Range(0f, 10f));
+		}
 		
 		public void setType (PowerupType type) {
 			Material material = null;
@@ -55,8 +61,9 @@ namespace AssemblyCSharp
 		void Update() {
 			float deltaTime = Time.deltaTime;
 			t += deltaTime;
-			transform.RotateAround(Vector3.zero, transform.position, 20 * deltaTime);
-			float offset = 0.057f + Mathf.Sin(2*t)/25;
+			transform.RotateAround(Vector3.zero, random, 20 * deltaTime);
+			transform.RotateAround(Vector3.zero, transform.position + random2, 20 * deltaTime);
+			float offset = 0.06f + Mathf.Sin(2*t)/25;
 			float x = transform.parent.position.x * offset;
 			float y = transform.parent.position.y * offset;
 			float z = transform.parent.position.z * offset;
