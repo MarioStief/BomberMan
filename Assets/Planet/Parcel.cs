@@ -188,22 +188,22 @@ namespace AssemblyCSharp
 			obj.transform.Find("powerup").gameObject.GetComponent<PowerupTexture>().setType(powerupType);
 			powerupExplodingValue = powerup.getValue();
 			powerupAudio = powerup.getAudioClip();
-			powerupOnCell = true;
-			
+			powerupOnCell = true;	
 		}
 
-		public PowerupType destroyPowerup(bool shatter) {
-			if (shatter) { // if shatter
-			//if (shatter && Preferences.getExplodingPowerups() == false) { // if shatter
+		public PowerupType destroyPowerup(bool collected, bool shatter) {
+			if (shatter) {
 				SplitMeshIntoTriangles.createMeshExplosion(obj, getCenterPos(), Preferences.getExplosionDetail()); // Zerbersten lassen
 			} else {
 				GameObject.Destroy(obj);
+				Static.inputHandler.playSound(powerupAudio);
 			}
+			if (collected)
+				Static.inputHandler.playSound(powerupAudio);
 			obj = null;
 			powerupOnCell = false;
 			powerupExplodingValue = 0;
 			getMeshManipulator().liftObject(0.0f);
-			Static.inputHandler.playSound(powerupAudio);
 			return powerupType;
 		}
 		

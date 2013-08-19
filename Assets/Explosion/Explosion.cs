@@ -217,7 +217,7 @@ public class Explosion : MonoBehaviour
 									                   flameReach, flameDelay, superPowerup, 0, false, false);
 									//ex.startExplosion();
 								}
-								explosionField.getCell().destroyPowerup(true);
+								explosionField.getCell().destroyPowerup(false, true);
 							}
 						}
 						

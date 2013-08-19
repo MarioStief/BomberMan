@@ -97,6 +97,8 @@ public class InputHandler : MonoBehaviour {
 		
 		verticalHelper = 0.0f;
 		horizontalHelper = 0.0f;
+		
+		Static.player.setDead(false, networkView);
 	}
 	
 	public void playSound(AudioClip clip) {
@@ -252,7 +254,7 @@ public class InputHandler : MonoBehaviour {
 			// Falls die Zelle ein Powerup enthält -> aufsammeln
 			if (currCell.hasPowerup()) {
 				networkView.RPC("startEvent", RPCMode.Others, currCell.getLpos(), currCell.getBpos(), 0);
-				Static.player.powerupCollected(currCell.destroyPowerup(false));
+				Static.player.powerupCollected(currCell.destroyPowerup(true, false));
 			}
 			
 			// Leertaste -> Bombe legen
@@ -297,10 +299,10 @@ public class InputHandler : MonoBehaviour {
 		Parcel cell = Static.rink.gameArea[lpos][bpos];
 		switch (mode) {
 			case 0: // destroy powerup
-				cell.destroyPowerup(false);
+				cell.destroyPowerup(false, false);
 				break;
 			case 1: // destroy powerup
-				cell.destroyPowerup(true);
+				cell.destroyPowerup(false, true);
 				break;
 			case 3: // explding contact-mine
 				cell.getExplosion().startExplosion();

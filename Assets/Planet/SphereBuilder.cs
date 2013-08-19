@@ -53,47 +53,70 @@ public class SphereBuilder : MonoBehaviour {
 		// in dem Fall muss die Kamera über den Spieler rotiert werden
 		/*
 		do {
-			B_pos = Random.Range(0, 8);
-			L_pos = Random.Range(0, 8);
+			B_pos = Random.Range(0, 19);
+			L_pos = Random.Range(0, 30);
 		} while (gameArea.getGameArea()[B_pos][L_pos].getType() == 2);
+		Vector3 pos = gameArea.getGameArea()[B_pos][L_pos].getCenterPos();
 		*/
 		
-		// Spawnpunkt und zufällig 2 benachbarte Felder frei räumen
+		// Spawnpunkt freiräumen
 		gameArea.getGameArea()[B_pos][L_pos].setType(0);
-		for (int i = 0; i < 2; i++) {
-			int x;
-			switch (Random.Range(0, 4)) {
+		
+		// shuffle directions
+		ArrayList list = new ArrayList();
+		list.Add(0);
+		list.Add(1);
+		list.Add(2);
+		list.Add(3);
+		int[] directions = new int[4];
+		for (int i = 0; i < 4; i++) {
+			int index = Random.Range(0, 4-i);
+			directions[i] = (int) list[index];
+			list.RemoveAt(index);
+		}
+		
+		//Debug.Log("[" + directions[0] + " " + directions[1] + " " + directions[2] + " " + directions[3] + "]");
+		
+		// zufällig 2 benachbarte Felder freiräumen, die keine Steinblöcke sind
+		int hasDirections = 0;
+		for (int i = 0; hasDirections < 2; i++) {
+			int x = 0;
+			int y = 0;
+			switch (directions[i]) {
 			case 0:
 				if (B_pos == 0)
 					x = 18;
 				else
 					x = B_pos-1;
-				gameArea.getGameArea()[x][L_pos].setType(0);
+				y = L_pos;
 				break;
 			case 1:
 				if (B_pos == 18)
 					x = 0;
 				else
 					x = B_pos+1;
-				gameArea.getGameArea()[x][L_pos].setType(0);
+				y = L_pos;
 				break;
 			case 2:
+				x = B_pos;
 				if (L_pos == 0)
-					x = 29;
+					y = 29;
 				else
-					x = L_pos-1;
-				gameArea.getGameArea()[B_pos][x].setType(0);
+					y = L_pos-1;
 				break;
 			case 3:
+				x = B_pos;
 				if (L_pos == 29)
-					x = 0;
+					y = 0;
 				else
-					x = L_pos+1;
-				gameArea.getGameArea()[B_pos][x].setType(0);
+					y = L_pos+1;
 				break;
-			}	
+			}
+			if (gameArea.getGameArea()[x][y].getType() != 2) {
+				gameArea.getGameArea()[x][y].setType(0);
+				hasDirections++;
+			}
 		}
-		//Vector3 pos = gameArea.getGameArea()[B_pos][L_pos].getCenterPos();
 		
 		if (Network.peerType != NetworkPeerType.Disconnected)
 			Network.Instantiate(playerPrefab, pos, transform.rotation, 1);
