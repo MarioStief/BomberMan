@@ -19,11 +19,6 @@ namespace AssemblyCSharp
 		
 		float t = 0.0f;
 		Vector3 diff = Vector3.zero;
-		GameObject powerup;
-		
-		void Start() {
-			//powerup = this.transform.Find("powerup").gameObject;
-		}
 		
 		public void setType (PowerupType type) {
 			Material material = null;
@@ -61,7 +56,11 @@ namespace AssemblyCSharp
 			float deltaTime = Time.deltaTime;
 			t += deltaTime;
 			transform.RotateAround(Vector3.zero, transform.position, 20 * deltaTime);
-			transform.localPosition = new Vector3(0f, 0.12f + Mathf.Sin(t)/12, 0f);
+			float offset = 0.057f + Mathf.Sin(2*t)/25;
+			float x = transform.parent.position.x * offset;
+			float y = transform.parent.position.y * offset;
+			float z = transform.parent.position.z * offset;
+			transform.localPosition = new Vector3(x, y, z);
 		}
 	}
 }
