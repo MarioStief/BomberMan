@@ -177,7 +177,7 @@ public class InputHandler : MonoBehaviour {
 			//float scale = 1f - ((multiplicator - 10f) / 10f); // Range: 1 - 0
 			//Debug.Log ("---> " + scale);
 			//transform.localScale *= scale;
-			transform.position -= 0.7f * transform.position.normalized * Time.deltaTime;
+			//transform.position -= 0.7f * transform.position.normalized * Time.deltaTime;
 			elapsedTime = Time.time - createTime;
 		}
 		transform.localScale = Vector3.zero;
@@ -206,6 +206,11 @@ public class InputHandler : MonoBehaviour {
 	}
 	
 	void Update () {
+		
+		if (Static.player.isDead()) { // vor Scham im Boden versinken lassen ;)
+			transform.position -= 0.023f * transform.position.normalized * Time.deltaTime;
+		}
+		
 		// Gegner drehen mit dem Planeten..!
 		if (!networkView.isMine && Static.rink != null) {
 			

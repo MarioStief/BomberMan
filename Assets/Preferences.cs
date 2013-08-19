@@ -9,8 +9,7 @@ public static class Preferences
 	private static int explosionDetail = 3; // 1 = very simple ... 10 = ultimate
 	private static int chestDensity = 30; // 10 = low ... 40 = high
 
-	
-	static Preferences() {
+	static void Start() {
 		destroyablePowerups = (PlayerPrefs.GetInt("Destroyable Powerups",(destroyablePowerups ? 1 : 0)) == 1 ? true : false);
 		explodingPowerups = (PlayerPrefs.GetInt("Exploding Powerups",(explodingPowerups ? 1 : 0)) == 1 ? true : false);
 		negativePowerups = (PlayerPrefs.GetInt("Negative Powerups",(negativePowerups ? 1 : 0)) == 1 ? true : false);
