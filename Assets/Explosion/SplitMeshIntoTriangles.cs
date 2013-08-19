@@ -9,6 +9,7 @@ public class SplitMeshIntoTriangles : MonoBehaviour
 	private Vector3 position;
 	private int simplify = 3;
 	private Vector3 scale;
+	private bool child = false;
 
 	
 	public static GameObject GUIObject {
@@ -25,15 +26,19 @@ public class SplitMeshIntoTriangles : MonoBehaviour
 		SplitMeshIntoTriangles thisObj = GUIObject.AddComponent<SplitMeshIntoTriangles>();
 		thisObj.gameObject = obj;
 		thisObj.position = position;
-		thisObj.simplify = simplify;
+		thisObj.simplify = 11-simplify;
+		//thisObj.child = child;
 		thisObj.scale = obj.transform.localScale;
 		return thisObj;
 	}
 	
     IEnumerator SplitMesh ()
     {
+		if (gameObject.transform.Find("powerup") != null)
+			gameObject = gameObject.transform.Find("powerup").gameObject;
         MeshFilter MF = gameObject.GetComponent<MeshFilter>();
         MeshRenderer MR = gameObject.GetComponent<MeshRenderer>();
+		
         Mesh M = MF.mesh;
         Vector3[] verts = M.vertices;
         Vector3[] normals = M.normals;

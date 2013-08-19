@@ -16,7 +16,8 @@ public class Menu : MonoBehaviour {
 
 	private string nickname = "Player ";
 	private static Color playerColor;
-	private int expDetail = 5; // 1-10
+	private int expDetail = Preferences.getExplosionDetail(); // 1 - 10
+	private int chestDensity = Preferences.getChestDensity(); // 5 - 50
 	private string chat = "";
 	
 	private static Dictionary<NetworkPlayer,string> playerList = new Dictionary<NetworkPlayer, string>();
@@ -27,24 +28,10 @@ public class Menu : MonoBehaviour {
 	public void Awake() {
 	    if (instance == null) {
 			DontDestroyOnLoad(transform.gameObject);
-<<<<<<< HEAD
-	        created = true;
-||||||| merged common ancestors
-			DontDestroyOnLoad(colorPicker.transform.gameObject);
-	        created = true;
-=======
 	        instance = this;
->>>>>>> b2aadccf061629298696c53aaaaec5470f597779
 	    } else {
 	        Destroy(transform.gameObject);
-<<<<<<< HEAD
-	    } 
-||||||| merged common ancestors
-			Destroy(colorPicker.transform.gameObject);
-	    } 
-=======
 	    }
->>>>>>> b2aadccf061629298696c53aaaaec5470f597779
 	}
 	
 	public void Start () {
@@ -54,25 +41,10 @@ public class Menu : MonoBehaviour {
 		nickname = PlayerPrefs.GetString("Player Name", nickname);
 		serverName = PlayerPrefs.GetString("Server Name", serverName);
 		maxPlayers = PlayerPrefs.GetInt("Server MaxPlayers", maxPlayers);
-<<<<<<< HEAD
-		playerColor.r = PlayerPrefs.GetFloat("PlayerRed", 0);
-		playerColor.g = PlayerPrefs.GetFloat("PlayerGreen", 0);
-		playerColor.b = PlayerPrefs.GetFloat("PlayerBlue", 1);
-
-        GameObject.FindGameObjectWithTag("GameController").GetComponent<Cameras>().SetCamera(Cameras.CAM_TYPE.MENU);
-	}
-
-	public void Update () {
-||||||| merged common ancestors
-	}
-
-	public void Update () {
-=======
 		playerColor.r = PlayerPrefs.GetFloat("PlayerRed", 0);
 		playerColor.g = PlayerPrefs.GetFloat("PlayerGreen", 1);
 		playerColor.b = PlayerPrefs.GetFloat("PlayerBlue", 0);
 		playerColor.a = 1f;
->>>>>>> b2aadccf061629298696c53aaaaec5470f597779
 	}
 
 
@@ -194,7 +166,8 @@ public class Menu : MonoBehaviour {
 			GUI.Label(new Rect(width-40,145,40,20), "Max");
 		    GUI.skin.label.alignment = TextAnchor.MiddleLeft;
 			expDetail = (int)GUI.HorizontalSlider (new Rect (0, 140, width, 20), (float)expDetail, 1.0f, 10.0f);
-			Preferences.setExplosionDetail(11-expDetail);
+			
+			Preferences.setExplosionDetail(expDetail);
 	
 			// SERVER LIST
 			HostData[] servers = MasterServer.PollHostList();
@@ -211,22 +184,9 @@ public class Menu : MonoBehaviour {
 				if (GUI.Button(new Rect(width,170+25*i,75,20), "Connect")) {
 					if (nickname.Length > 0) {
 						PlayerPrefs.SetString("Player Name", nickname);
-<<<<<<< HEAD
 						PlayerPrefs.SetFloat("PlayerRed", playerColor.r);
 						PlayerPrefs.SetFloat("PlayerGreen", playerColor.g);
 						PlayerPrefs.SetFloat("PlayerBlue", playerColor.b);
-						
-						// instantiate CJs Client
-						scr_netClient.StartClient(nickname, null, 0);
-||||||| merged common ancestors
-							
-						// instantiate CJs Client
-						scr_netClient.StartClient(nickname, null, 0);
-=======
-						PlayerPrefs.SetFloat("PlayerRed", playerColor.r);
-						PlayerPrefs.SetFloat("PlayerGreen", playerColor.g);
-						PlayerPrefs.SetFloat("PlayerBlue", playerColor.b);
->>>>>>> b2aadccf061629298696c53aaaaec5470f597779
 						
 						Network.Connect(srv);
 					}
@@ -280,20 +240,27 @@ public class Menu : MonoBehaviour {
 		if (!colorPicker.activeSelf) {
 		
 			// GRAPHIC-DETAILS
-			GUI.Label(new Rect(25,80,width,20), "Effect-Details:");
+			GUI.Label(new Rect(25,80,width,20), "Effect Details:");
 			GUI.Label(new Rect(25,105,50,20), "Min");
 		    GUI.skin.label.alignment = TextAnchor.MiddleRight;
 			GUI.Label(new Rect(width-15,105,50,20), "Max");
 		    GUI.skin.label.alignment = TextAnchor.MiddleLeft;
 			expDetail = (int)GUI.HorizontalSlider (new Rect (25, 100, width, 20), (float)expDetail, 1.0f, 10.0f);
-			Preferences.setExplosionDetail(11-expDetail);
+			GUI.Label(new Rect(25,140,width,20), "Chest Density:");
+			GUI.Label(new Rect(25,165,50,20), "Min");
+		    GUI.skin.label.alignment = TextAnchor.MiddleRight;
+			GUI.Label(new Rect(width-15,165,50,20), "Max");
+		    GUI.skin.label.alignment = TextAnchor.MiddleLeft;
+			chestDensity = (int)GUI.HorizontalSlider (new Rect (25, 160, width, 20), (float)chestDensity, 5.0f, 50.0f);
+			Preferences.setExplosionDetail(expDetail);
+			Preferences.setChestDensity(chestDensity);
 		
 			// SERVER NAME
-			GUI.Label(new Rect(25,150,width,20), "Server Name:");
-			serverName = GUI.TextField(new Rect(25,170,width,20), serverName, 30);
+			GUI.Label(new Rect(25,190,width,20), "Server Name:");
+			serverName = GUI.TextField(new Rect(25,210,width,20), serverName, 30);
 			
 			// MAX PLAYERS
-			if (GUI.Button(new Rect(25, 190, width, 20), "Max. Players: "+maxPlayers)) {
+			if (GUI.Button(new Rect(25, 230, width, 20), "Max. Players: "+maxPlayers)) {
 				showMaxPlayers = !showMaxPlayers;
 		    }
 		    if (showMaxPlayers) {
@@ -302,7 +269,7 @@ public class Menu : MonoBehaviour {
 					int p = (int)Mathf.Pow(2,i);
 					if (Network.connections.Length+1 > p)
 						continue;
-					if (GUI.Button(new Rect(25, 190+(20*i), width, 20), p.ToString())) {
+					if (GUI.Button(new Rect(25, 230+(20*i), width, 20), p.ToString())) {
 						showMaxPlayers = false;
 						maxPlayers = p;
 						Network.maxConnections = maxPlayers-1;
@@ -311,15 +278,15 @@ public class Menu : MonoBehaviour {
 		    } else {
 				// SOME SETTINGS
 				bool pe = Preferences.getNegativePowerups();
-				if (pe != GUI.Toggle(new Rect(25,220,width,20), pe, "negative Powerups")) {
+				if (pe != GUI.Toggle(new Rect(25,260,width,20), pe, "negative Powerups")) {
 					Preferences.setNegative(!pe);
 				}
 				pe = Preferences.getDestroyablePowerups();
-				if (pe != GUI.Toggle(new Rect(25,240,width,20), pe, "destroyable Powerups")) {
+				if (pe != GUI.Toggle(new Rect(25,280,width,20), pe, "destroyable Powerups")) {
 					Preferences.setDestroyablePowerups(!pe);
 				}
 				bool pee = Preferences.getExplodingPowerups();
-				if (pe && pee != GUI.Toggle(new Rect(25,260,width,20), pee, "exploding Powerups")) {
+				if (pe && pee != GUI.Toggle(new Rect(25,300,width,20), pee, "exploding Powerups")) {
 					Preferences.setExplodingPowerups(!pee);
 				}
 			}
@@ -336,22 +303,8 @@ public class Menu : MonoBehaviour {
 				
 				showGUI = false;
 				
-<<<<<<< HEAD
-				// change State
-				MenuState m = MenuState.instance;
-				m.startGameServer();
-				
-				// networkView.RPC("startGame",RPCMode.AllBuffered, (int)Random.value*100000);
-||||||| merged common ancestors
-				// change State
-				//MenuState m = MenuState.instance;
-				//m.startGameServer();
-				
-				networkView.RPC("startGame",RPCMode.AllBuffered, (int)Random.value*100000);
-=======
 				CancelInvoke("refreshServerName");
 				networkView.RPC("startGame",RPCMode.AllBuffered, Mathf.FloorToInt(Random.value*100000));
->>>>>>> b2aadccf061629298696c53aaaaec5470f597779
 			}
 		}
 		GUI.EndGroup();

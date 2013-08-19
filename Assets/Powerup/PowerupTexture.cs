@@ -4,32 +4,6 @@ namespace AssemblyCSharp
 {
 	public class PowerupTexture  : MonoBehaviour {
 		
-<<<<<<< HEAD
-		public Material bombUp;
-		public Material bombDown;
-		public Material flameUp;
-		public Material flameDown;
-		public Material playerSpeedUp;
-		public Material playerSpeedDown;
-		public Material delaySpeedUp;
-		public Material delaySpeedDown;
-		public Material triggerBomb;
-		public Material contactMine;
-		public Material goldenFlame;
-		public Material superBomb;
-||||||| merged common ancestors
-		public Material powerdown;
-		public Material powerup;
-		public Material superPowerup;
-
-		public Texture bomb;
-		public Texture flame;
-		public Texture playerSpeed;
-		public Texture delaySpeed;
-		public Texture goldenFlame;
-		public Texture superBomb;
-		public Texture triggerBomb;
-=======
 		public Material bombUp;
 		public Material bombDown;
 		public Material flameUp;
@@ -50,7 +24,6 @@ namespace AssemblyCSharp
 		void Start() {
 			//powerup = this.transform.Find("powerup").gameObject;
 		}
->>>>>>> b2aadccf061629298696c53aaaaec5470f597779
 		
 		public void setType (PowerupType type) {
 			Material material = null;

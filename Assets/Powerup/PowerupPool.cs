@@ -32,19 +32,9 @@ namespace AssemblyCSharp
 				for (int j = 0; j < 5; j++)
 					pool.Add(new Powerup(PowerupType.CONTACTMINE));
 				if (negative) {
-<<<<<<< HEAD
-					for (int j = 0; j < 2; j++)
-						pool.Add(new Powerup(PowerupType.BOMB_DOWN));
-					for (int j = 0; j < 2; j++)
-||||||| merged common ancestors
-					for (int j = 0; j < 2; j++)
-						pool.Add(new Powerup(PowerupType.BOMB_DOWN)); // 2
-					for (int j = 0; j < 2; j++)
-=======
 					for (int j = 0; j < 3; j++)
 						pool.Add(new Powerup(PowerupType.BOMB_DOWN));
 					for (int j = 0; j < 3; j++)
->>>>>>> b2aadccf061629298696c53aaaaec5470f597779
 						pool.Add(new Powerup(PowerupType.FLAME_DOWN));
 					for (int j = 0; j < 3; j++)
 						pool.Add(new Powerup(PowerupType.PLAYER_SPEED_DOWN));

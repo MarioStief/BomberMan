@@ -37,11 +37,6 @@ namespace AssemblyCSharp
 					value = 10;
 			else if (type == PowerupType.SUPERBOMB)
 					value = 10;
-<<<<<<< HEAD
-||||||| merged common ancestors
-			else if (type == PowerupType.TRIGGERBOMB)
-					value = 10;
-=======
 		}
 		
 		public PowerupType getType()
@@ -50,7 +45,6 @@ namespace AssemblyCSharp
 		}
 		
 		public int getValue() {
->>>>>>> b2aadccf061629298696c53aaaaec5470f597779
 			return value;
 		}
 		

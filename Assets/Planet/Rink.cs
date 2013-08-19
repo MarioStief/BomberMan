@@ -19,28 +19,6 @@ namespace AssemblyCSharp
 	//
 	public class Rink
 	{
-        public struct Pos
-        {
-            public int bpos, lpos;      // cell
-            public float xoff, yoff;    // offset in cell
-
-            public Pos(int bpos, int lpos, float xoff, float yoff)
-            {
-                this.bpos = bpos;
-                this.lpos = lpos;
-                this.xoff = xoff;
-                this.yoff = yoff;
-            }
-
-            public static void Serialize(ref Pos rpos, BitStream stream)
-            {
-                stream.Serialize(ref rpos.bpos);
-                stream.Serialize(ref rpos.lpos);
-                stream.Serialize(ref rpos.xoff);
-                stream.Serialize(ref rpos.yoff);
-            }
-        } 
-
 		private bool DEBUG = true;					// Debug-Modus aktivieren/ deaktivieren (s.o.)
 		
 		public Parcel[][] gameArea;					// Gesamtspielfläche LOGIK
@@ -65,52 +43,46 @@ namespace AssemblyCSharp
 			// Erstelle Pool aus Powerups
 			// Mit dem Parameter lässt sich die Poolgröße variieren
 			Static.setRink(this);
-<<<<<<< HEAD
-			PowerupPool.createPool(1);
-
-            Static.player.setCurrentParcel(gameArea[0][0]);
-||||||| merged common ancestors
-			PowerupPool.createPool(1);
-			
-			Player.setCurrentParcel(gameArea[0][0]);
-=======
 			PowerupPool.createPool(1);
 			
 			Static.player.setCurrentParcel(gameArea[0][0]);
->>>>>>> b2aadccf061629298696c53aaaaec5470f597779
 		}
 		
 		// <summary>
 		// Erstellt die Gesamtspielfläche, bestehend aus Parzelen (Parcel.cs);
 		// Erstellt die dargestellte Spielfläche, bestehend aus MeshManipulator-Objekten.
 		// </summary>
-		private void initializeRink(int width, int height){
+		private void initializeRink(int width, int height) {
 			
-			height = height-1;
+			height--;
 			// Init und Füllen von gameArea, so dass es einem BomberManspiel gleicht
 			gameArea = new Parcel[height][];
-			for(int i = 0; i < height; i++){
+			for (int i = 0; i < height; i++) {
 				gameArea[i] = new Parcel[width];
 			}
 			
-			for(int i = 0; i < height; i++){
-				for(int j = 0; j <width; j++){
-					if (i % 2 == 0 & j % 2 == 0){
+			for (int i = 0; i < height; i++) {
+				for (int j = 0; j < width; j++) {
+					if (i % 2 == 0 && j % 2 == 0) {
 						gameArea[i][j] = new Parcel(2);	// Hoher Steinquader
-					} else{
+					} else {
 						gameArea[i][j] = new Parcel(0);	// Bodenfläche
 					}
 					gameArea[i][j].setIdentity(i,j);	// DEBUG
+					//Debug.Log ("[" + i + "][" + j + "]");
 				}
 			}
-
-            UnityEngine.Random.seed = 0;
-			for(int i = 0; i < 3*width; i++){
-				gameArea[(int)(UnityEngine.Random.value*height)][(int)(UnityEngine.Random.value*width)].setType(1);	
+			
+			for (int i = 0; i < Preferences.getChestDensity() * width; i++) {
+				//gameArea[(int)(UnityEngine.Random.value*height)][(int)(UnityEngine.Random.value*width)].setType(1);	
+				int a = (int)(UnityEngine.Random.value*height);
+				int b = (int)(UnityEngine.Random.value*width);
+				if (gameArea[a][b].getType() == 0)
+					gameArea[a][b].setType(1);	
 			}
 			
-			for(int i = 0; i < height; i++){
-				for(int j = 0; j < width; j++){
+			for (int i = 0; i < height; i++) {
+				for (int j = 0; j < width; j++) {
 					Parcel right = gameArea[i][(j-1) < 0? width-1 : j-1];
 					Parcel left = gameArea[i][(j+1)%(width)];
 					Parcel up = gameArea[(i+1)%(height)][j];
@@ -121,7 +93,7 @@ namespace AssemblyCSharp
 			
 			// Init der gezeichneten Fläche
 			drawnArea = new MeshManipulator[height][];
-			for(int j = 0; j < height; j++){
+			for (int j = 0; j < height; j++) {
 				drawnArea[j] = new MeshManipulator[width];
 			}
 		}
@@ -132,10 +104,10 @@ namespace AssemblyCSharp
 		// auszulesen und sich im Anschluss neu zu zeichnen. Die Höhenwerte bleiben
 		// erhalten.
 		// </summary>
-		public void renderAll(){
+		public void renderAll() {
 		
-			for(int i = 0; i < drawnArea.Length; i++){
-				for(int j = 0; j < drawnArea[i].Length; j++){
+			for (int i = 0; i < drawnArea.Length; i++) {
+				for (int j = 0; j < drawnArea[i].Length; j++) {
 					drawnArea[i][j].updateCoordinates();	
 				}
 			}
@@ -145,7 +117,7 @@ namespace AssemblyCSharp
 		// <summary>
 		// Wie oben, für einen einzelnen Würfel
 		// </summary>
-		public void render(int i, int j){
+		public void render(int i, int j) {
 			drawnArea[i][j].updateCoordinates();
 		}
 		
@@ -155,9 +127,9 @@ namespace AssemblyCSharp
 		// zugehörigen Parzellen-Klasse Parcel.cs gespeichert sind: gameArea[r][s].getHeight()
 		// Der Würfel zeichnet sich automatisch neu.
 		// </summary>
-		public void updateHeight(){
-			for(int r = 0; r < drawnArea.Length; r++){
-				for(int s = 0; s < drawnArea[r].Length; s++){
+		public void updateHeight() {
+			for (int r = 0; r < drawnArea.Length; r++) {
+				for (int s = 0; s < drawnArea[r].Length; s++) {
 					drawnArea[r][s].setParcel(gameArea[r][s]);
 					drawnArea[r][s].setHeight(gameArea[r][s].getHeight() );
 				}	
@@ -167,16 +139,16 @@ namespace AssemblyCSharp
 		// <summary>
 		// s.o., für einen einzelnen Würfel
 		// </summary>
-		public void updateHeight(int i, int j){
+		public void updateHeight(int i, int j) {
 			drawnArea[i][j].setHeight(gameArea[i][j].getHeight());
 		}
 		
 		// <summary>
 		// Erhöht die vertikale Lage des Orientierungspunktes rinkPosition
 		// </summary>
-		//public void incrPositionHeight(){
+		//public void incrPositionHeight() {
 		//	highLightRinkPosition(false);
-		//	if (++rinkPosition.x >= gameArea.Length){
+		//	if (++rinkPosition.x >= gameArea.Length) {
 		///		rinkPosition.x = 0;	
 		//	}
 		//}
@@ -184,9 +156,9 @@ namespace AssemblyCSharp
 		// <summary>
 		// Vermindert die vertikale Lage des Orientierungspunktes rinkPosition
 		// </summary>
-		//public void decrPositionHeight(){
+		//public void decrPositionHeight() {
 		//	highLightRinkPosition(false);
-		//	if (--rinkPosition.x < 0){
+		//	if (--rinkPosition.x < 0) {
 		//		rinkPosition.x = gameArea.Length-1;	
 		//	}
 		//}
@@ -194,9 +166,9 @@ namespace AssemblyCSharp
 		// <summary>
 		// Erhöht die horizontale Lage des Orientierungspunktes rinkPosition
 		// </summary>
-		//public void incrPositionWidth(){
+		//public void incrPositionWidth() {
 		//	highLightRinkPosition(false);
-		//	if (++rinkPosition.y >= gameArea[0].Length){
+		//	if (++rinkPosition.y >= gameArea[0].Length) {
 		//		rinkPosition.y = 0;	
 		//	}
 		//}
@@ -204,9 +176,9 @@ namespace AssemblyCSharp
 		// <summary>
 		// Vermindert die vertikale Lage des Orientierungspunktes rinkPosition
 		// </summary>
-		//public void decrPositionWidth(){
+		//public void decrPositionWidth() {
 		//	highLightRinkPosition(false);
-		//	if (--rinkPosition.y < 0){
+		//	if (--rinkPosition.y < 0) {
 		//		rinkPosition.y = gameArea[0].Length-1;	
 		//	}
 		//}
@@ -221,21 +193,21 @@ namespace AssemblyCSharp
 		// mark == false: Färbt momentanen Würfel weiß.
 		// </summary>
 		/*
-		public void highLightRinkPosition(bool mark){
+		public void highLightRinkPosition(bool mark) {
 			
 			if (DEBUG == false) return;
 			
 			int x = (int)rinkPosition.x;
 			int y = (int)rinkPosition.y;
 		
-			if (mark){
+			if (mark) {
 				if (oldX != x || oldY != y) { // Temporär, um das Überfluten der Console zu vermeiden
 					oldX = x;
 					oldY = y;
 					Debug.Log("RedCube-Position: " + ((x+gameArea.Length/2)%(gameArea.Length)) + ", " + ((y+gameArea[0].Length/4)%(gameArea[0].Length/2)));
 				}
 				drawnArea[((x+gameArea.Length/2)%(gameArea.Length))][((y+gameArea[0].Length/4)%(gameArea[0].Length/2))].renderer.material.color = Color.red;	
-			} else{
+			} else {
 				drawnArea[((x+gameArea.Length/2)%(gameArea.Length))][((y+gameArea[0].Length/4)%(gameArea[0].Length/2))].renderer.material.color = Color.white;	
 			}
 		}
@@ -273,54 +245,6 @@ namespace AssemblyCSharp
 		public Parcel[][] getGameArea() {
 			return gameArea;
 		}
-
-        public Parcel GetCell(Pos rpos)
-        {
-            return gameArea[rpos.lpos][rpos.bpos];
-        }
-
-        // returns rpos in world space
-        public Vector3 GetPosition(Pos rpos)
-        {
-            // TODO
-            return gameArea[rpos.lpos][rpos.bpos].getCenterPos();
-        }
-
-        public static Pos GetRinkPosition(NET_ActorState.Message state)
-        {
-            float dv = Mathf.PI / (GM_World.N_L - 1);
-            float dh = Mathf.PI / GM_World.N_B;
-            float horzAng = state.horzAng;
-            while (0 > horzAng) horzAng += 2.0f * Mathf.PI;
-            int sh = ((1 + (int)(horzAng / dh)) % (2 * GM_World.N_B)) / 2;
-            sh = (sh + GM_World.N_B / 4) % GM_World.N_B;
-            float vertAng = state.vertAng;
-            while (-0.5f * Mathf.PI > vertAng) vertAng += Mathf.PI;
-            int sv = (int)((0.5f * Mathf.PI + vertAng) / dv);
-            sv = sv % (GM_World.N_L - 1);
-            return new Pos(sh, sv, 0.0f, 0.0f);
-        }
-
-        /*
-        public Vector3 GetPosition(Pos rpos)
-        {
-            int xpos = rpos.lpos;
-            int zpos = rpos.bpos;
-
-            float xoff = rpos.xoff;
-            float zoff = rpos.yoff;
-
-            MeshManipulator cellMesh = drawnArea[xpos][zpos];
-
-            //Debug.Log(xoff +" :: " + zoff);
-            Vector3 tl = cellMesh.getTopLeft();
-            Vector3 br = cellMesh.getBottomRight();
-            Vector3 pos = tl + new Vector3((-tl.x+br.x)*zoff, -tl.y+br.y, (-tl.z+br.z)*xoff);
-            //GameObject.Instantiate(Static.bombPrefab,pos,Quaternion.identity);// (Static.bombPrefab, pos , Quaternion.identity) as GameObject;
-
-            return pos;
-        }
-         * */
 	}
 }
 

@@ -6,59 +6,16 @@ namespace AssemblyCSharp
 {
 	public class Player
 	{
-<<<<<<< HEAD
 		private Parcel currentCell;	// current Parcel
 		private float xpos, zpos;	// Player's position in the current Parcel
-		
-		private float verticalHelper		= 0.0f;
-		private float horizontalHelper 	= 0.0f;
-||||||| merged common ancestors
-		private static Parcel currentCell;	// current Parcel
-		private static float xpos, zpos;	// Player's position in the current Parcel
-		
-		private static float verticalHelper		= 0.0f;
-		private static float horizontalHelper 	= 0.0f;
-=======
-		private Parcel currentCell;	// current Parcel
-		private float xpos, zpos;	// Player's position in the current Parcel
->>>>>>> b2aadccf061629298696c53aaaaec5470f597779
 		
 		private const float MAXSPEED = 0.8f;
 		private const float MINDELAY = 0.04f;
 		private const float MAXDELAY = 0.28f;
 		private const int MAXFLAMEPOWER = 10;
 		private const int MAXHP = 100;
-<<<<<<< HEAD
-		private static bool SUPERBOMB = false;
-		private static bool TRIGGERBOMB = false;
-		private static bool CONTACTMINE = false;
-||||||| merged common ancestors
-		private static bool SUPERBOMB = false;
-		private static bool TRIGGERBOMB = false;
-=======
 		private bool SUPERBOMB = false;
->>>>>>> b2aadccf061629298696c53aaaaec5470f597779
 		
-<<<<<<< HEAD
-		private int bombs = 1;
-		private int bombsActive = 0;
-		private int flamePower = 1;
-		private float speed = 0.4f;
-		private float delay = 0.2f;
-		private int hp = MAXHP;
-		
-		private bool dead = false;
-		
-		private static UnityEngine.Object[] icons;
-		private static String[] iconText;
-||||||| merged common ancestors
-		private static int bombs = 1;
-		private static int bombsActive = 0;
-		private static int flamePower = 1;
-		private static float speed = 0.4f;
-		private static float delay = 0.2f;
-		private static int hp = MAXHP;
-=======
 		private int bombs = 1;
 		private int bombsActive = 0;
 
@@ -72,77 +29,12 @@ namespace AssemblyCSharp
 		private float speed = 0.4f;
 		private float delay = 0.2f;
 		private int hp = MAXHP;
->>>>>>> b2aadccf061629298696c53aaaaec5470f597779
 		
 		private bool dead = false;
 		
-<<<<<<< HEAD
-		public void updateMenuStats() {
-			
-			/* returns integer array of player attributes
-			 * 
-			 * bombs = maximum Bombs, the player pocesses
-			 *         related icon: Static.bombIconPrefab
-			 * speed = player movement speed in ms
-			 * 	       related icon: Static.playerSpeedIconPrefab
-			 * flamepower = the size of the explosion
-			 *         related icon: Static.flameIconPrefab
-			 *         icon changes automatically if flame power reaches max and backwards
-			 * delay = the shorter the delay the faster the explosion spreads in ms
-			 *         related icon: Static.delaySpeedIconPrefab
-			 * superbomb = 1 for true, 0 for false
-			 *         related icon: Static.superBombIconPrefab
-			 *         icon automatically when superbomb is collected and backwards
-			 * extras = collected extra which uses the SHIFT key
-			 *         related icon: Static.extraIconPrefab
-			 *         icon is empty transparent at start and adapts
-			 * 
-			 * NOTE: icons are 32x32 and transparent
-			 */
-
-            icons = new UnityEngine.Object[6];
-			icons[0] = Static.bombIconPrefab;
-			icons[1] = Static.playerSpeedIconPrefab;
-			icons[2] = Static.flameIconPrefab;
-			icons[3] = Static.delaySpeedIconPrefab;
-			icons[4] = Static.superBombIconPrefab;
-			icons[5] = Static.extraIconPrefab;
-			
-			int extra = TRIGGERBOMB ? 1 : 0;
-			//String[] stats = {bombs.ToString(), ((int) speed*1000).ToString(), flamePower.ToString(), ((int) delay*1000).ToString(), SUPERBOMB ? 1 : 0, extra};
-			String[] iconText = {
-				bombs.ToString(),
-				((int) speed*1000).ToString() + " ms",
-				flamePower.ToString(),
-				((int) delay*1000).ToString() + " ms"
-			};
-			
-			// UPDATE MENU BAR
-			// SomeStrangeMenu.updateStats(stats);
-			// SomeStrangeMenu.updatePrefabs(prefabs);
-		}
-||||||| merged common ancestors
-		private static bool dead = false;
-=======
 		private UnityEngine.Object[] icons = new UnityEngine.Object[6];
 		private string[] iconText = new string[4];
->>>>>>> b2aadccf061629298696c53aaaaec5470f597779
 		
-<<<<<<< HEAD
-		public String[] getIconText() {
-			return iconText;
-		}
-
-		public UnityEngine.Object[] getIcons() {
-			return icons;
-		}
-
-		public static void addTriggerBomb(Parcel cell) {
-			triggerBombs.Add(cell);
-||||||| merged common ancestors
-		public static void addTriggerBomb(Parcel cell) {
-			triggerBombs.Add(cell);
-=======
 		private Dictionary<Parcel,GameObject> triggerbombList = new Dictionary<Parcel,GameObject>();
 		
 		public void updateMenuStats() {
@@ -187,7 +79,6 @@ namespace AssemblyCSharp
 			// UPDATE MENU BAR
 			// SomeStrangeMenu.updateStats(stats);
 			// SomeStrangeMenu.updatePrefabs(prefabs);
->>>>>>> b2aadccf061629298696c53aaaaec5470f597779
 		}
 		
 		public string[] getIconText() {
@@ -214,34 +105,16 @@ namespace AssemblyCSharp
 			} else if (type == PowerupType.FLAME_UP) {
 				if (flamePower < MAXFLAMEPOWER) {
 					flamePower++;
-<<<<<<< HEAD
-				else {
-					Static.setGoldenFlame(true);
-					updateMenuStats();
-				}
-||||||| merged common ancestors
-=======
 				} else {
 					Static.setGoldenFlame(true);
 					updateMenuStats();
 				}
->>>>>>> b2aadccf061629298696c53aaaaec5470f597779
 			} else if (type == PowerupType.FLAME_DOWN) {
-<<<<<<< HEAD
-				if (flamePower == MAXFLAMEPOWER) {
-					Static.setGoldenFlame(false);
-					updateMenuStats();
-				}
-				if (flamePower > 1)
-||||||| merged common ancestors
-				if (flamePower > 1)
-=======
 				if (flamePower == MAXFLAMEPOWER) {
 					Static.setGoldenFlame(false);
 					updateMenuStats();
 				}
 				if (flamePower > 1) {
->>>>>>> b2aadccf061629298696c53aaaaec5470f597779
 					flamePower--;
 				}
 			} else if (type == PowerupType.PLAYER_SPEED_UP) {
@@ -269,17 +142,6 @@ namespace AssemblyCSharp
 				Static.setSuperbomb(true);
 				updateMenuStats();
 			} else if (type == PowerupType.TRIGGERBOMB) {
-<<<<<<< HEAD
-				TRIGGERBOMB = true;
-				Static.setExtra(1);
-				updateMenuStats();
-			} else if (type == PowerupType.CONTACTMINE) {
-				CONTACTMINE = true;
-				Static.setExtra(2);
-				updateMenuStats();
-||||||| merged common ancestors
-					TRIGGERBOMB = true;
-=======
 				if (triggerbombs < 3) {
 					triggerbombs++;
 					contactmines = 0;
@@ -293,24 +155,15 @@ namespace AssemblyCSharp
 					Static.setExtra(2);
 					updateMenuStats();
 				}
->>>>>>> b2aadccf061629298696c53aaaaec5470f597779
 			}
 			Debug.Log("bombs: " + bombs + ", flamePower: " + flamePower + ", speed: " + speed*1000 + " ms, delay: " + delay*1000 + " ms");
 		}
 		
-<<<<<<< HEAD
-		public bool addBomb() {
-			if (bombsActive < bombs) {
-||||||| merged common ancestors
-		public static bool addBomb() {
-			if (bombsActive < bombs) {
-=======
 		// return "extra"
 		public int addBomb() {
 			if (triggerbombs > triggerbombsActive) {
 				return 1;
 			} else if (bombsActive < bombs) {
->>>>>>> b2aadccf061629298696c53aaaaec5470f597779
 				bombsActive++;
 				return 0;
 			}
@@ -366,16 +219,8 @@ namespace AssemblyCSharp
 			return triggerbombList;
 		}
 		
-<<<<<<< HEAD
-		public void setXPos(float x){
-			if ( x > 1) xpos = 1;
-||||||| merged common ancestors
-		public static void setXPos(float x){
-			if ( x > 1) xpos = 1;
-=======
 		public void setXPos(float x){
 			if (x > 1) xpos = 1;
->>>>>>> b2aadccf061629298696c53aaaaec5470f597779
 			xpos = x;	
 		}
 		
@@ -383,16 +228,8 @@ namespace AssemblyCSharp
 			return xpos;	
 		}
 		
-<<<<<<< HEAD
-		public void setZPos(float z){
-			if ( zpos > 1) zpos = 1;
-||||||| merged common ancestors
-		public static void setZPos(float z){
-			if ( zpos > 1) zpos = 1;
-=======
 		public void setZPos(float z){
 			if (zpos > 1) zpos = 1;
->>>>>>> b2aadccf061629298696c53aaaaec5470f597779
 			zpos = z;	
 		}
 		
@@ -417,13 +254,7 @@ namespace AssemblyCSharp
 			return speed;
 		}
 		
-<<<<<<< HEAD
-		public void setDead(bool d) {
-||||||| merged common ancestors
-		public static void setDead(bool d) {
-=======
 		public void setDead(bool d, NetworkView nv) {
->>>>>>> b2aadccf061629298696c53aaaaec5470f597779
 			dead = d;
 			if (d) {
 				Static.inputHandler.playSound(Static.playerDeadSoundEffect);
@@ -443,44 +274,14 @@ namespace AssemblyCSharp
 					parcelPool[0].addPowerup(new Powerup(PowerupType.SUPERBOMB));
 					parcelPool.RemoveAt(0);
 					SUPERBOMB = false;
-<<<<<<< HEAD
 					Static.setSuperbomb(false);
 					updateMenuStats();
-				}
-				if (TRIGGERBOMB) {
-					parcelPool[0].addPowerup(new Powerup(PowerupType.TRIGGERBOMB));
-					parcelPool.RemoveAt(0);
-					TRIGGERBOMB = false;
-					Static.setExtra(0);
-					updateMenuStats();
-				}
-				if (CONTACTMINE) {
-					parcelPool[0].addPowerup(new Powerup(PowerupType.CONTACTMINE));
-					parcelPool.RemoveAt(0);
-					CONTACTMINE = false;
-					Static.setExtra(0);
-					updateMenuStats();
-||||||| merged common ancestors
-				}
-				if (TRIGGERBOMB) {
-					parcelPool[0].addPowerup(new Powerup(PowerupType.TRIGGERBOMB));
-					parcelPool.RemoveAt(0);
-					TRIGGERBOMB = false;
-=======
-					Static.setSuperbomb(false);
-					updateMenuStats();
->>>>>>> b2aadccf061629298696c53aaaaec5470f597779
 				}
 				if (flamePower == MAXFLAMEPOWER && parcelPool.Count > 0) {
 					nv.RPC("addPowerup", RPCMode.Others, parcelPool[0].getLpos(), parcelPool[0].getBpos(), (int)PowerupType.GOLDEN_FLAME);
 					parcelPool[0].addPowerup(new Powerup(PowerupType.GOLDEN_FLAME));
 					parcelPool.RemoveAt(0);
 					bombs = 1;
-<<<<<<< HEAD
-					Static.setGoldenFlame(false);
-					updateMenuStats();
-||||||| merged common ancestors
-=======
 					Static.setGoldenFlame(false);
 					updateMenuStats();
 				}
@@ -499,7 +300,6 @@ namespace AssemblyCSharp
 					contactmines--;
 					Static.setExtra(0);
 					updateMenuStats();
->>>>>>> b2aadccf061629298696c53aaaaec5470f597779
 				}
 				while (bombs > 1 && parcelPool.Count > 0) {
 					nv.RPC("addPowerup", RPCMode.Others, parcelPool[0].getLpos(), parcelPool[0].getBpos(), (int)PowerupType.BOMB_UP);
@@ -527,16 +327,8 @@ namespace AssemblyCSharp
 				}
 			}
 		}
-<<<<<<< HEAD
-		
-		public bool isDead() {
-||||||| merged common ancestors
-		
-		public static bool isDead() {
-=======
 				
 		public bool isDead() {
->>>>>>> b2aadccf061629298696c53aaaaec5470f597779
 			return dead;
 		}
 		
@@ -598,41 +390,13 @@ namespace AssemblyCSharp
 			return SUPERBOMB;
 		}
 
-<<<<<<< HEAD
-		public bool getTriggerbomb() {
-			return TRIGGERBOMB;
-||||||| merged common ancestors
-		public static bool getTriggerbomb() {
-			return TRIGGERBOMB;
-=======
 		public bool hasTriggerbomb() {
 			return (triggerbombs > 0);
->>>>>>> b2aadccf061629298696c53aaaaec5470f597779
 		}
 
-<<<<<<< HEAD
-		public bool getContactMine() {
-			return CONTACTMINE;
-||||||| merged common ancestors
-		public static float getDelay() {
-			return delay;
-=======
 		public bool hasContactMine() {
 			return (contactmines > 0);
->>>>>>> b2aadccf061629298696c53aaaaec5470f597779
 		}
-<<<<<<< HEAD
-
-		public float getDelay() {
-			return delay;
-		}
-
-        public Rink.Pos GetPosition()
-        {
-            return new Rink.Pos(currentCell.getBpos(), currentCell.getLpos(), xpos, zpos);
-        }
-||||||| merged common ancestors
-=======
 
 		public float getDelay() {
 			return delay;
@@ -641,7 +405,6 @@ namespace AssemblyCSharp
 		public int getMaxFlamePower() {
 			return MAXFLAMEPOWER;
 		}
->>>>>>> b2aadccf061629298696c53aaaaec5470f597779
 	}
 }
 

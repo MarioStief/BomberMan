@@ -29,8 +29,6 @@ namespace AssemblyCSharp
 		Color highlightColor = Color.cyan;
 		
 		float height = 1.0f;
-
-        public int svid = 0; // used by server
 		
 		GameObject obj;					// Object auf der Parzelle, das gezeichnet werden soll.
 		
@@ -71,18 +69,6 @@ namespace AssemblyCSharp
 		public bool isExploding () {
 			return exploding;
 		}
-
-        // decreases the height of a cell without updating the mesh manipulator.
-        // used by server
-        public void decreaseHeight_NoManip()
-        {
-            if (height > (1.0f + STEP - 0.0001f))
-            { // also 1.01 oder höher
-                height -= STEP;
-            }
-            else if (height > 1f)
-                height = 1f;
-        }
 
 		public void decreaseHeight() {
 			if (height > (1.0f + STEP - 0.0001f)) { // also 1.01 oder höher
@@ -196,47 +182,28 @@ namespace AssemblyCSharp
 		}
 		
 		public void addPowerup(Powerup powerup) {
-            /*
-            cj
-            this method gets called by the server only. do not attempt to change the
-            mesh manipulator, since the server doesn't have any
-            
 			getMeshManipulator().liftObject(1.05f); // Sonst ist das Powerup halb im Boden
-<<<<<<< HEAD
-			obj = GameObject.Instantiate(Static.powerupPrefab, getCenterPos(), Quaternion.identity) as GameObject;
-             */
-            powerupType = powerup.getType();
-            powerupExplodingValue = powerup.getValue();
-            powerupOnCell = true;
-||||||| merged common ancestors
-			obj = GameObject.Instantiate(Static.powerupPrefab, getCenterPos(), Quaternion.identity) as GameObject;
-			powerupType = powerup.getType();
-			obj.GetComponent<PowerupTexture>().setType(powerupType);
-			powerupExplodingValue = powerup.getValue();
-			powerupOnCell = true;
-=======
 			obj = GameObject.Instantiate(Static.powerupPrefab, getCenterPos(), Quaternion.identity) as GameObject;
 			powerupType = powerup.getType();
 			obj.transform.Find("powerup").gameObject.GetComponent<PowerupTexture>().setType(powerupType);
 			powerupExplodingValue = powerup.getValue();
 			powerupAudio = powerup.getAudioClip();
-			powerupOnCell = true;
-			
->>>>>>> b2aadccf061629298696c53aaaaec5470f597779
+			powerupOnCell = true;	
 		}
 
-		public PowerupType destroyPowerup() {
+		public PowerupType destroyPowerup(bool collected, bool shatter) {
+			if (shatter) {
+				SplitMeshIntoTriangles.createMeshExplosion(obj, getCenterPos(), Preferences.getExplosionDetail()); // Zerbersten lassen
+			} else {
+				GameObject.Destroy(obj);
+				Static.inputHandler.playSound(powerupAudio);
+			}
+			if (collected)
+				Static.inputHandler.playSound(powerupAudio);
 			obj = null;
 			powerupOnCell = false;
 			powerupExplodingValue = 0;
-<<<<<<< HEAD
-			// getMeshManipulator().liftObject(0.0f); ignore this in server code, too
-||||||| merged common ancestors
 			getMeshManipulator().liftObject(0.0f);
-=======
-			getMeshManipulator().liftObject(0.0f);
-			Static.inputHandler.playSound(powerupAudio);
->>>>>>> b2aadccf061629298696c53aaaaec5470f597779
 			return powerupType;
 		}
 		
@@ -325,11 +292,6 @@ namespace AssemblyCSharp
 		public Vector3 getCenterPos() {
 			return Static.rink.drawnArea[lpos][bpos].getCenter();
 		}
-
-        public static bool SameCell(Parcel lhp, Parcel rhp) 
-        {
-            return lhp.bpos == rhp.bpos && lhp.lpos == rhp.lpos;    
-        }
 		
 		/*
 		public Vector3 getNormal() {

@@ -21,25 +21,14 @@ public class SphereBuilder : MonoBehaviour {
 																				// [n_L][n_B] geben für jeweiligen Längen- und Breitenkreis den Punkt im Raum an
 	public float [/*r*/][/*n_L*/][/*n_B*/] vertexAngles;	// Wird _NUR_ für Update-Alternative II benötigt!
 	
-	/*
+	
 	public int n_B = 8; 							// Auflösung der Breitenkreise; !! >= 4 !!
 	public int n_L = 8; 							// Auflösung der Längenkreise ; !! >= 4 !!
-     */
-
-    public int n_B = GM_World.N_B;
-    public int n_L = GM_World.N_L;
-
-    public void SetSize(int n_B, int n_L)
-    {
-        this.n_B = n_B;
-        this.n_L = n_L;
-    }
-
+	
+	public Transform playerPrefab;
+	
 	// Use this for initialization
-	public void Init () {
-
-        sphereCube = (GameObject)GameObject.Instantiate(Resources.Load("Prefabs/SphereCube"));
-		
+	void Start () {
 		Static.setSphereBuilder(this);
 		
 		adjSouthPole = n_L-2;
@@ -54,23 +43,85 @@ public class SphereBuilder : MonoBehaviour {
 		// Gebe den Würfeln korrekte Höhen gemäß der Werte aus gameArea
 		gameArea.updateHeight();
 		
-<<<<<<< HEAD
-		// instantiate the player
-        //Object playerPrefab = Resources.Load("Actor");
-        //Vector3 pos = new Vector3(-1.41561e-07f, 2.080631f, 0.01059199f);
-        //Network.Instantiate(playerPrefab, pos, transform.rotation, 1);
-||||||| merged common ancestors
 		// instantiate the player
 		Vector3 pos = new Vector3(-1.41561e-07f, 2.080631f, 0.01059199f);
-		Network.Instantiate(playerPrefab, pos, transform.rotation, 1);
-=======
-		// instantiate the player
-		Vector3 pos = new Vector3(-1.41561e-07f, 2.080631f, 0.01059199f);
+		
+		int B_pos = n_L/2-1;
+		int L_pos = n_B/4;
+		
+		// get random spawn point
+		// in dem Fall muss die Kamera über den Spieler rotiert werden
+		/*
+		do {
+			B_pos = Random.Range(0, 19);
+			L_pos = Random.Range(0, 30);
+		} while (gameArea.getGameArea()[B_pos][L_pos].getType() == 2);
+		Vector3 pos = gameArea.getGameArea()[B_pos][L_pos].getCenterPos();
+		*/
+		
+		// Spawnpunkt freiräumen
+		gameArea.getGameArea()[B_pos][L_pos].setType(0);
+		
+		// shuffle directions
+		ArrayList list = new ArrayList();
+		list.Add(0);
+		list.Add(1);
+		list.Add(2);
+		list.Add(3);
+		int[] directions = new int[4];
+		for (int i = 0; i < 4; i++) {
+			int index = Random.Range(0, 4-i);
+			directions[i] = (int) list[index];
+			list.RemoveAt(index);
+		}
+		
+		//Debug.Log("[" + directions[0] + " " + directions[1] + " " + directions[2] + " " + directions[3] + "]");
+		
+		// zufällig 2 benachbarte Felder freiräumen, die keine Steinblöcke sind
+		int hasDirections = 0;
+		for (int i = 0; hasDirections < 2; i++) {
+			int x = 0;
+			int y = 0;
+			switch (directions[i]) {
+			case 0:
+				if (B_pos == 0)
+					x = 18;
+				else
+					x = B_pos-1;
+				y = L_pos;
+				break;
+			case 1:
+				if (B_pos == 18)
+					x = 0;
+				else
+					x = B_pos+1;
+				y = L_pos;
+				break;
+			case 2:
+				x = B_pos;
+				if (L_pos == 0)
+					y = 29;
+				else
+					y = L_pos-1;
+				break;
+			case 3:
+				x = B_pos;
+				if (L_pos == 29)
+					y = 0;
+				else
+					y = L_pos+1;
+				break;
+			}
+			if (gameArea.getGameArea()[x][y].getType() != 2) {
+				gameArea.getGameArea()[x][y].setType(0);
+				hasDirections++;
+			}
+		}
+		
 		if (Network.peerType != NetworkPeerType.Disconnected)
 			Network.Instantiate(playerPrefab, pos, transform.rotation, 1);
 		else
 			Instantiate(playerPrefab, pos, transform.rotation);
->>>>>>> b2aadccf061629298696c53aaaaec5470f597779
 	}
 	
 	private void tesselateSphere(){
