@@ -17,6 +17,14 @@ namespace AssemblyCSharp
 		public Material goldenFlame;
 		public Material superBomb;
 		
+		float t = 0.0f;
+		Vector3 diff = Vector3.zero;
+		GameObject powerup;
+		
+		void Start() {
+			//powerup = this.transform.Find("powerup").gameObject;
+		}
+		
 		public void setType (PowerupType type) {
 			Material material = null;
 			if	(type == PowerupType.BOMB_UP) {
@@ -50,7 +58,17 @@ namespace AssemblyCSharp
 		}
 	
 		void Update() {
-			transform.RotateAround(Vector3.zero, transform.position, 20 * Time.deltaTime);
+			float deltaTime = Time.deltaTime;
+			t += deltaTime;
+			transform.RotateAround(Vector3.zero, transform.position, 20 * deltaTime);
+			//transform.Translate(transform.localPosition * Mathf.Sin(t)/20 * deltaTime, Space.World);
+			float floatingPosition = Mathf.Sin(t)/20 * deltaTime;
+			transform.localPosition = new Vector3(floatingPosition, floatingPosition, floatingPosition);
+			/*
+			transform.localPosition += diff;
+			Debug.Log (transform.localPosition + transform.localPosition * Mathf.Sin(t)/20 * deltaTime + " - " + transform.localPosition + " = " + (transform.localPosition + transform.localPosition * Mathf.Sin(t)/20 * Time.deltaTime - transform.localPosition));
+			diff = transform.localPosition + transform.localPosition * Mathf.Sin(t)/20 * deltaTime - transform.localPosition;
+			*/
 		}
 	}
 }

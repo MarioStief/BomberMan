@@ -184,7 +184,7 @@ namespace AssemblyCSharp
 			getMeshManipulator().liftObject(1.05f); // Sonst ist das Powerup halb im Boden
 			obj = GameObject.Instantiate(Static.powerupPrefab, getCenterPos(), Quaternion.identity) as GameObject;
 			powerupType = powerup.getType();
-			obj.GetComponent<PowerupTexture>().setType(powerupType);
+			obj.transform.Find("powerup").gameObject.GetComponent<PowerupTexture>().setType(powerupType);
 			powerupExplodingValue = powerup.getValue();
 			powerupAudio = powerup.getAudioClip();
 			powerupOnCell = true;
