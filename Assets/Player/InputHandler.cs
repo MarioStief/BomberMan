@@ -204,7 +204,6 @@ public class InputHandler : MonoBehaviour {
 	}
 	
 	void Update () {
-		
 		// Gegner drehen mit dem Planeten..!
 		if (!networkView.isMine && Static.rink != null) {
 			
@@ -236,6 +235,7 @@ public class InputHandler : MonoBehaviour {
 			moveCharacter();
 			currCell = Static.rink.gameArea[lpos][bpos];
 			//currCell.colorCell(Color.cyan);
+			//Debug.Log("[" + lpos + "][" + bpos + "]");
 			
 			if (currCell.hasContactMine()) {
 				networkView.RPC("startEvent", RPCMode.All, currCell.getLpos(), currCell.getBpos(), 3);
@@ -243,7 +243,7 @@ public class InputHandler : MonoBehaviour {
 				
 			if (currCell.isExploding()) {
 				Static.player.setDead(true, networkView);
-				renderer.material.color = Color.black;
+				//renderer.material.color = Color.black;
 				StartCoroutine(deadPlayer());
 				networkView.RPC("removePlayer", RPCMode.OthersBuffered, Network.player);
 			}

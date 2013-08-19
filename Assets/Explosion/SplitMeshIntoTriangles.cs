@@ -25,7 +25,7 @@ public class SplitMeshIntoTriangles : MonoBehaviour
 		SplitMeshIntoTriangles thisObj = GUIObject.AddComponent<SplitMeshIntoTriangles>();
 		thisObj.gameObject = obj;
 		thisObj.position = position;
-		thisObj.simplify = simplify;
+		thisObj.simplify = 11-simplify;
 		thisObj.scale = obj.transform.localScale;
 		return thisObj;
 	}

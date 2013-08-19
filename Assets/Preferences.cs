@@ -6,7 +6,8 @@ public static class Preferences
 	private static bool destroyablePowerups = true;
 	private static bool explodingPowerups = true;
 	private static bool negativePowerups = true;
-	private static int explosionDetail = 10; // 10 = very simple ... 1 = ultimate
+	private static int explosionDetail = 3; // 1 = very simple ... 10 = ultimate
+	private static int chestDensity = 30; // 10 = low ... 40 = high
 
 	
 	static Preferences() {
@@ -14,6 +15,7 @@ public static class Preferences
 		explodingPowerups = (PlayerPrefs.GetInt("Exploding Powerups",(explodingPowerups ? 1 : 0)) == 1 ? true : false);
 		negativePowerups = (PlayerPrefs.GetInt("Negative Powerups",(negativePowerups ? 1 : 0)) == 1 ? true : false);
 		explosionDetail = (PlayerPrefs.GetInt("Explosion Detail",explosionDetail));
+		chestDensity = (PlayerPrefs.GetInt("Chest Density",chestDensity));
 	}
 	
 	public static bool getDestroyablePowerups() {
@@ -51,6 +53,17 @@ public static class Preferences
 		if (explosion != explosionDetail) {
 			explosionDetail = explosion;
 			PlayerPrefs.SetInt("Explosion Detail", explosionDetail);
+		}
+	}
+
+	public static int getChestDensity() {
+		return chestDensity;
+	}
+
+	public static void setChestDensity(int chest) {
+		if (chest != chestDensity) {
+			chestDensity = chest;
+			PlayerPrefs.SetInt("Chest Density", chestDensity);
 		}
 	}
 }

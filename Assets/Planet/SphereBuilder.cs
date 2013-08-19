@@ -45,6 +45,56 @@ public class SphereBuilder : MonoBehaviour {
 		
 		// instantiate the player
 		Vector3 pos = new Vector3(-1.41561e-07f, 2.080631f, 0.01059199f);
+		
+		int B_pos = n_L/2-1;
+		int L_pos = n_B/4;
+		
+		// get random spawn point
+		// in dem Fall muss die Kamera über den Spieler rotiert werden
+		/*
+		do {
+			B_pos = Random.Range(0, 8);
+			L_pos = Random.Range(0, 8);
+		} while (gameArea.getGameArea()[B_pos][L_pos].getType() == 2);
+		*/
+		
+		// Spawnpunkt und zufällig 2 benachbarte Felder frei räumen
+		gameArea.getGameArea()[B_pos][L_pos].setType(0);
+		for (int i = 0; i < 2; i++) {
+			int x;
+			switch (Random.Range(0, 4)) {
+			case 0:
+				if (B_pos == 0)
+					x = 18;
+				else
+					x = B_pos-1;
+				gameArea.getGameArea()[x][L_pos].setType(0);
+				break;
+			case 1:
+				if (B_pos == 18)
+					x = 0;
+				else
+					x = B_pos+1;
+				gameArea.getGameArea()[x][L_pos].setType(0);
+				break;
+			case 2:
+				if (L_pos == 0)
+					x = 29;
+				else
+					x = L_pos-1;
+				gameArea.getGameArea()[B_pos][x].setType(0);
+				break;
+			case 3:
+				if (L_pos == 29)
+					x = 0;
+				else
+					x = L_pos+1;
+				gameArea.getGameArea()[B_pos][x].setType(0);
+				break;
+			}	
+		}
+		//Vector3 pos = gameArea.getGameArea()[B_pos][L_pos].getCenterPos();
+		
 		if (Network.peerType != NetworkPeerType.Disconnected)
 			Network.Instantiate(playerPrefab, pos, transform.rotation, 1);
 		else
