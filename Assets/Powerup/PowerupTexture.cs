@@ -61,14 +61,7 @@ namespace AssemblyCSharp
 			float deltaTime = Time.deltaTime;
 			t += deltaTime;
 			transform.RotateAround(Vector3.zero, transform.position, 20 * deltaTime);
-			//transform.Translate(transform.localPosition * Mathf.Sin(t)/20 * deltaTime, Space.World);
-			float floatingPosition = Mathf.Sin(t)/20 * deltaTime;
-			transform.localPosition = new Vector3(floatingPosition, floatingPosition, floatingPosition);
-			/*
-			transform.localPosition += diff;
-			Debug.Log (transform.localPosition + transform.localPosition * Mathf.Sin(t)/20 * deltaTime + " - " + transform.localPosition + " = " + (transform.localPosition + transform.localPosition * Mathf.Sin(t)/20 * Time.deltaTime - transform.localPosition));
-			diff = transform.localPosition + transform.localPosition * Mathf.Sin(t)/20 * deltaTime - transform.localPosition;
-			*/
+			transform.localPosition = new Vector3(0f, 0.12f + Mathf.Sin(t)/12, 0f);
 		}
 	}
 }
