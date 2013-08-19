@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using System.Collections.Generic;
 using System.Text;
@@ -7,21 +6,10 @@ namespace AssemblyCSharp
 {
 	public static class PowerupPool
 	{
-		public const int DROPCHANCE = 25; // Drop chance in %
+		public const int DROPCHANCE = 50; // Drop chance in %
 		private static bool destroyable = Preferences.getDestroyablePowerups();
 		private static bool negative = Preferences.getNegativePowerups();
 		private static List<Powerup> pool = new List<Powerup>();
-		
-		static PowerupPool() {
-			/*
-			bombUpPowerupPreftab = GameObject.Find("BombUp");
-			bombDownPowerupPreftab = bombUpPowerupPreftab;
-			bombDownPowerupPreftab.GetComponent("RenderSettings").haloStrength = 0.5;
-			((Behaviour)bombUpPowerupPreftab.GetComponent("Halo")).color = Color.red; // Does not work
-			// IDEE: Ohne Halo starten und diesen langsam vergrößern.
-			// So weiß man am Anfang noch nicht, ob es ein positives oder negatives Powerup ist.
-			*/
-		}
 		
 		public static void createPool(int size)
 		{
@@ -39,16 +27,28 @@ namespace AssemblyCSharp
 					pool.Add(new Powerup(PowerupType.GOLDEN_FLAME));
 				for (int j = 0; j < 1; j++)
 					pool.Add(new Powerup(PowerupType.SUPERBOMB));
-				for (int j = 0; j < 1; j++)
+				for (int j = 0; j < 5; j++)
 					pool.Add(new Powerup(PowerupType.TRIGGERBOMB));
+				for (int j = 0; j < 5; j++)
+					pool.Add(new Powerup(PowerupType.CONTACTMINE));
 				if (negative) {
+<<<<<<< HEAD
 					for (int j = 0; j < 2; j++)
 						pool.Add(new Powerup(PowerupType.BOMB_DOWN));
 					for (int j = 0; j < 2; j++)
+||||||| merged common ancestors
+					for (int j = 0; j < 2; j++)
+						pool.Add(new Powerup(PowerupType.BOMB_DOWN)); // 2
+					for (int j = 0; j < 2; j++)
+=======
+					for (int j = 0; j < 3; j++)
+						pool.Add(new Powerup(PowerupType.BOMB_DOWN));
+					for (int j = 0; j < 3; j++)
+>>>>>>> b2aadccf061629298696c53aaaaec5470f597779
 						pool.Add(new Powerup(PowerupType.FLAME_DOWN));
-					for (int j = 0; j < 2; j++)
+					for (int j = 0; j < 3; j++)
 						pool.Add(new Powerup(PowerupType.PLAYER_SPEED_DOWN));
-					for (int j = 0; j < 2; j++)
+					for (int j = 0; j < 3; j++)
 						pool.Add(new Powerup(PowerupType.DELAY_SPEED_DOWN));
 				}
 			}
@@ -63,11 +63,10 @@ namespace AssemblyCSharp
 		{
 			List<Powerup> randomList = new List<Powerup>();
 			
-			System.Random r = new System.Random();
 		    int randomIndex = 0;
 		    while (sortedList.Count > 0)
 		    {
-		    	randomIndex = r.Next(0, sortedList.Count);
+		    	randomIndex = Random.Range(0, sortedList.Count);
 		    	randomList.Add(sortedList[randomIndex]);
 				sortedList.RemoveAt(randomIndex);
 			}

@@ -16,40 +16,45 @@ public class Menu : MonoBehaviour {
 
 	private string nickname = "Player ";
 	private static Color playerColor;
+	private int expDetail = 5; // 1-10
 	private string chat = "";
 	
-	private Dictionary<NetworkPlayer,string> playerList = new Dictionary<NetworkPlayer, string>();
+	private static Dictionary<NetworkPlayer,string> playerList = new Dictionary<NetworkPlayer, string>();
+	private static Dictionary<NetworkPlayer,Color> playerColorList = new Dictionary<NetworkPlayer, Color>();
 	public static bool showGUI = true;
 	
-	public Transform playerPrefab;
-	
-	// CJs stuff
-	private GameObject obj_gameController;
-	private NET_Client scr_netClient;
-	private NET_Server scr_netServer;
-	
-	
-	private static bool created = false;
+	public static Menu instance = null;
 	public void Awake() {
-	    if (!created) {
+	    if (instance == null) {
 			DontDestroyOnLoad(transform.gameObject);
+<<<<<<< HEAD
 	        created = true;
+||||||| merged common ancestors
+			DontDestroyOnLoad(colorPicker.transform.gameObject);
+	        created = true;
+=======
+	        instance = this;
+>>>>>>> b2aadccf061629298696c53aaaaec5470f597779
 	    } else {
 	        Destroy(transform.gameObject);
+<<<<<<< HEAD
 	    } 
+||||||| merged common ancestors
+			Destroy(colorPicker.transform.gameObject);
+	    } 
+=======
+	    }
+>>>>>>> b2aadccf061629298696c53aaaaec5470f597779
 	}
 	
 	public void Start () {
 		nickname += Mathf.Floor(Random.value*1000);
 		
-		obj_gameController = GameObject.FindGameObjectWithTag("GameController");
-		scr_netClient = obj_gameController.GetComponent<NET_Client>();
-        scr_netServer = obj_gameController.GetComponent<NET_Server>();
-		
 		// load settings
 		nickname = PlayerPrefs.GetString("Player Name", nickname);
 		serverName = PlayerPrefs.GetString("Server Name", serverName);
 		maxPlayers = PlayerPrefs.GetInt("Server MaxPlayers", maxPlayers);
+<<<<<<< HEAD
 		playerColor.r = PlayerPrefs.GetFloat("PlayerRed", 0);
 		playerColor.g = PlayerPrefs.GetFloat("PlayerGreen", 0);
 		playerColor.b = PlayerPrefs.GetFloat("PlayerBlue", 1);
@@ -58,6 +63,16 @@ public class Menu : MonoBehaviour {
 	}
 
 	public void Update () {
+||||||| merged common ancestors
+	}
+
+	public void Update () {
+=======
+		playerColor.r = PlayerPrefs.GetFloat("PlayerRed", 0);
+		playerColor.g = PlayerPrefs.GetFloat("PlayerGreen", 1);
+		playerColor.b = PlayerPrefs.GetFloat("PlayerBlue", 0);
+		playerColor.a = 1f;
+>>>>>>> b2aadccf061629298696c53aaaaec5470f597779
 	}
 
 
@@ -100,38 +115,49 @@ public class Menu : MonoBehaviour {
 	void OnConnectedToServer() {
 		
 		chat = "Welcome to Bomberman Galaxy.";
-		// tell the others my nick
-		networkView.RPC("newPlayer", RPCMode.OthersBuffered, nickname, Network.player);
+		// tell the others my nick and color
+		networkView.RPC("newPlayer", RPCMode.OthersBuffered, Network.player, nickname, playerColor.r, playerColor.g, playerColor.b);
 		playerList.Add(Network.player, nickname+" (me)");
-		networkView.RPC("incommingChatMessage", RPCMode.All, nickname + " joined");
+		playerColorList.Add(Network.player, playerColor);
+		networkView.RPC("incommingChatMessage", RPCMode.Others, nickname + " joined");
 		screen = "waitingForStart";
 	}
 	void OnDisconnectedFromServer(NetworkDisconnection info) {
         if (Network.isServer) {
+			MasterServer.UnregisterHost();
             Debug.Log("Local server connection disconnected");
+			screen = "start";
 		} else {
             if (info == NetworkDisconnection.LostConnection) {
                 Debug.Log("Lost connection to the server");
 			} else {
                 Debug.Log("Successfully diconnected from the server");
 			}
-			scr_netClient.clearClients();
-			Application.LoadLevel(0);
-			screen = "kicked";
+			if (screen == "disconnected")
+				screen = "start";
+			else
+				screen = "kicked";
 		}
+		Application.LoadLevel(0);
+		showGUI = true;
 		playerList = new Dictionary<NetworkPlayer,string>();
+		playerColorList = new Dictionary<NetworkPlayer,Color>();
+		// delete all Players
+		foreach (var p in GameObject.FindGameObjectsWithTag("Player")) {
+			Destroy(p);
+		}
     }
 	
 	
 	// SERVER SIDE ONLY
 	void OnPlayerDisconnected(NetworkPlayer p) {
 		Network.RemoveRPCs(p);
-		//Network.DestroyPlayerObjects(p);
-		int pid = scr_netServer.removeClient(p);
-		if (pid != -1) {
-			networkView.RPC("removePlayer", RPCMode.OthersBuffered, p, pid);
+		Network.DestroyPlayerObjects(p);
+		if (playerList.ContainsKey(p)) {
+			networkView.RPC("removePlayer", RPCMode.OthersBuffered, p);
 			networkView.RPC("incommingChatMessage", RPCMode.All, playerList[p] + " leaved");
 			playerList.Remove(p);
+			playerColorList.Remove(p);
 		}
 	}
 	
@@ -152,32 +178,55 @@ public class Menu : MonoBehaviour {
 		nickname = GUI.TextField(new Rect(0,70,width,20), nickname, 30);
 	
 		// COLOR
-		if (GUI.Button (new Rect(0,92, width,20), "choose Color")) {
+		Color c = GUI.color;
+		GUI.color = playerColor;
+		if (GUI.Button (new Rect(0,92, width,20), "Illumination Color")) {
 			colorPicker.SetActive(!colorPicker.activeSelf);
 		}
-	
+		GUI.color = c;
+		
+		// GRAPHIC-DETAILS
 		if (!colorPicker.activeSelf) {
+				
+			GUI.Label(new Rect(0,120,width,20), "Effect Details:");
+			GUI.Label(new Rect(0,145,50,20), "Min");
+		    GUI.skin.label.alignment = TextAnchor.MiddleRight;
+			GUI.Label(new Rect(width-40,145,40,20), "Max");
+		    GUI.skin.label.alignment = TextAnchor.MiddleLeft;
+			expDetail = (int)GUI.HorizontalSlider (new Rect (0, 140, width, 20), (float)expDetail, 1.0f, 10.0f);
+			Preferences.setExplosionDetail(11-expDetail);
+	
 			// SERVER LIST
 			HostData[] servers = MasterServer.PollHostList();
 			int i = 1;
 			foreach (HostData srv in servers) {
 				var name = srv.gameName + " " + srv.connectedPlayers + "/" + srv.playerLimit;
-				GUI.Label(new Rect(0,100+25*i,width,20), name);
+				GUI.Label(new Rect(0,170+25*i,width,20), name);
 				/*var hostInfo : String = "[";
 				for (var host in srv.ip)
 					hostInfo = hostInfo + host + ":" + srv.port + " ";
 				hostInfo = hostInfo + "]";
 				GUILayout.Label(hostInfo);
 				//GUILayout.Label(srv.comment);*/
-				if (GUI.Button(new Rect(width,100+25*i,75,20), "Connect")) {
+				if (GUI.Button(new Rect(width,170+25*i,75,20), "Connect")) {
 					if (nickname.Length > 0) {
 						PlayerPrefs.SetString("Player Name", nickname);
+<<<<<<< HEAD
 						PlayerPrefs.SetFloat("PlayerRed", playerColor.r);
 						PlayerPrefs.SetFloat("PlayerGreen", playerColor.g);
 						PlayerPrefs.SetFloat("PlayerBlue", playerColor.b);
 						
 						// instantiate CJs Client
 						scr_netClient.StartClient(nickname, null, 0);
+||||||| merged common ancestors
+							
+						// instantiate CJs Client
+						scr_netClient.StartClient(nickname, null, 0);
+=======
+						PlayerPrefs.SetFloat("PlayerRed", playerColor.r);
+						PlayerPrefs.SetFloat("PlayerGreen", playerColor.g);
+						PlayerPrefs.SetFloat("PlayerBlue", playerColor.b);
+>>>>>>> b2aadccf061629298696c53aaaaec5470f597779
 						
 						Network.Connect(srv);
 					}
@@ -198,35 +247,53 @@ public class Menu : MonoBehaviour {
 		// display a chat and the list of currently conntected players
 		GUI.BeginGroup(new Rect(10, 100, 200, 400));
 		GUILayout.Label("Connected Players:");
-		foreach (var p in playerList) //scr_netClient.AnnotatedClientNames()
+		Color c = GUI.contentColor;
+		foreach (var p in playerList) {
+			GUI.contentColor = playerColorList[p.Key];
             GUILayout.Label(p.Value);
+		}
+		GUI.contentColor = c;
 		GUI.EndGroup();
 		
 		GUI.Box(new Rect(Screen.width/2-100, 50, 200, 24), "Waiting for server to start game");
-		chatArea(Screen.width-220, 100);
+		chatArea();
 	}
 
 
 	private bool showMaxPlayers = false;
 	void serverScreen() {
-	
-		GUI.BeginGroup (new Rect(Screen.width/2-100, Screen.height/2-250, 200, 500));
+		int width = 150;
+		GUI.BeginGroup (new Rect(Screen.width/2-100, 50, 200, 500));
 		// NICK
-		GUI.Label(new Rect(25,10,150,20), "Nickname:");
-		nickname = GUI.TextField(new Rect(25,30,150,20), nickname, 30);
+		GUI.Label(new Rect(25,10,width,20), "Nickname:");
+		nickname = GUI.TextField(new Rect(25,30,width,20), nickname, 30);
 		
 		// COLOR
-		if (GUI.Button (new Rect(25,52, 150,20), "choose Color")) {
+		Color c = GUI.color;
+		GUI.color = playerColor;
+		if (GUI.Button (new Rect(25,52, width,20), "Illumination Color")) {
 			colorPicker.SetActive(!colorPicker.activeSelf);
 		}
-		
+		GUI.color = c;
+
+
 		if (!colorPicker.activeSelf) {
+		
+			// GRAPHIC-DETAILS
+			GUI.Label(new Rect(25,80,width,20), "Effect-Details:");
+			GUI.Label(new Rect(25,105,50,20), "Min");
+		    GUI.skin.label.alignment = TextAnchor.MiddleRight;
+			GUI.Label(new Rect(width-15,105,50,20), "Max");
+		    GUI.skin.label.alignment = TextAnchor.MiddleLeft;
+			expDetail = (int)GUI.HorizontalSlider (new Rect (25, 100, width, 20), (float)expDetail, 1.0f, 10.0f);
+			Preferences.setExplosionDetail(11-expDetail);
+		
 			// SERVER NAME
-			GUI.Label(new Rect(25,110,150,20), "Server Name:");
-			serverName = GUI.TextField(new Rect(25,130,150,20), serverName, 30);
+			GUI.Label(new Rect(25,150,width,20), "Server Name:");
+			serverName = GUI.TextField(new Rect(25,170,width,20), serverName, 30);
 			
 			// MAX PLAYERS
-			if (GUI.Button(new Rect(25, 150, 150, 20), "Max. Players: "+maxPlayers)) {
+			if (GUI.Button(new Rect(25, 190, width, 20), "Max. Players: "+maxPlayers)) {
 				showMaxPlayers = !showMaxPlayers;
 		    }
 		    if (showMaxPlayers) {
@@ -235,7 +302,7 @@ public class Menu : MonoBehaviour {
 					int p = (int)Mathf.Pow(2,i);
 					if (Network.connections.Length+1 > p)
 						continue;
-					if (GUI.Button(new Rect(25, 150+(20*i), 150, 20), p.ToString())) {
+					if (GUI.Button(new Rect(25, 190+(20*i), width, 20), p.ToString())) {
 						showMaxPlayers = false;
 						maxPlayers = p;
 						Network.maxConnections = maxPlayers-1;
@@ -244,21 +311,21 @@ public class Menu : MonoBehaviour {
 		    } else {
 				// SOME SETTINGS
 				bool pe = Preferences.getNegativePowerups();
-				if (pe != GUI.Toggle(new Rect(25,180,150,20), pe, "negative Powerups")) {
+				if (pe != GUI.Toggle(new Rect(25,220,width,20), pe, "negative Powerups")) {
 					Preferences.setNegative(!pe);
 				}
 				pe = Preferences.getDestroyablePowerups();
-				if (pe != GUI.Toggle(new Rect(25,200,150,20), pe, "destroyable Powerups")) {
+				if (pe != GUI.Toggle(new Rect(25,240,width,20), pe, "destroyable Powerups")) {
 					Preferences.setDestroyablePowerups(!pe);
 				}
 				bool pee = Preferences.getExplodingPowerups();
-				if (pe && pee != GUI.Toggle(new Rect(25,220,150,20), pee, "exploding Powerups")) {
+				if (pe && pee != GUI.Toggle(new Rect(25,260,width,20), pee, "exploding Powerups")) {
 					Preferences.setExplodingPowerups(!pee);
 				}
 			}
 			
 		    // START GAME
-			if (GUI.Button(new Rect(50,300,100,30),"Start Game")) {
+			if (GUI.Button(new Rect(50,340,100,30),"Start Game")) {
 				// save settings
 				PlayerPrefs.SetInt("Server MaxPlayers", maxPlayers);
 				PlayerPrefs.SetString("Server Name", serverName);
@@ -269,11 +336,22 @@ public class Menu : MonoBehaviour {
 				
 				showGUI = false;
 				
+<<<<<<< HEAD
 				// change State
 				MenuState m = MenuState.instance;
 				m.startGameServer();
 				
 				// networkView.RPC("startGame",RPCMode.AllBuffered, (int)Random.value*100000);
+||||||| merged common ancestors
+				// change State
+				//MenuState m = MenuState.instance;
+				//m.startGameServer();
+				
+				networkView.RPC("startGame",RPCMode.AllBuffered, (int)Random.value*100000);
+=======
+				CancelInvoke("refreshServerName");
+				networkView.RPC("startGame",RPCMode.AllBuffered, Mathf.FloorToInt(Random.value*100000));
+>>>>>>> b2aadccf061629298696c53aaaaec5470f597779
 			}
 		}
 		GUI.EndGroup();
@@ -287,14 +365,17 @@ public class Menu : MonoBehaviour {
 		int j = 0;
 		Dictionary<NetworkPlayer,string> tpl = playerList;
 		foreach (var p in tpl) {
+			
+			GUI.color = playerColorList[p.Key];
 			GUI.Label(new Rect(20,j*24+20,200,24), p.Value);
-			GUI.color = new Color(255,0,0);
-			if (GUI.Button(new Rect(0,j*24+21,18,15), "x")) {
+ 
+			GUI.color = Color.red;
+			if (p.Key != Network.player && GUI.Button(new Rect(0,j*24+21,18,15), "x")) {
 				Network.CloseConnection(p.Key, true);
-				int pid = scr_netServer.removeClient(p.Key);
-				networkView.RPC("removePlayer", RPCMode.OthersBuffered, p.Key, pid);
+				networkView.RPC("removePlayer", RPCMode.OthersBuffered, p.Key);
 				networkView.RPC("incommingChatMessage", RPCMode.All, p.Value + " was kicked");
 				playerList.Remove(p.Key);
+				playerColorList.Remove(p.Key);
 			}
 			GUI.color = Color.white;
 			j++;
@@ -302,7 +383,7 @@ public class Menu : MonoBehaviour {
 		GUI.EndGroup();
 		
 		// CHAT
-		chatArea(Screen.width-220, 10);
+		chatArea();
 	}
 	
 	void kickedScreen() {
@@ -310,8 +391,10 @@ public class Menu : MonoBehaviour {
 		GUIStyle s = new GUIStyle();
 	    s.fontSize = 50;
 		s.alignment = TextAnchor.MiddleCenter;
+		s.normal.textColor = Color.white;
 		GUI.Label(new Rect(Screen.width/2-150, 100, 300, 100), "Server disconnected!", s);
 		playerList = new Dictionary<NetworkPlayer,string>();
+		playerColorList = new Dictionary<NetworkPlayer,Color>();
 		
 		if (GUI.Button(new Rect(Screen.width/2-50,270,100,30), "continue")) {
 			screen = "start";
@@ -328,11 +411,7 @@ public class Menu : MonoBehaviour {
 			// we are ingame!
 			if (GUI.Button(new Rect(x,y,width,height), "Disconnect")) {
 				Network.Disconnect();
-				if (Network.isServer) {
-					MasterServer.UnregisterHost();
-					CancelInvoke("refreshServerName");
-				}
-				Application.LoadLevel(0);
+				screen = "disconnect";
 			}
 		} else {
 			if (GUI.Button(new Rect(x,y,width,height), "Join Server")) {
@@ -358,10 +437,7 @@ public class Menu : MonoBehaviour {
 				
 				chat = "Welcome to Bomberman Galaxy.";
 				// and add myself to the list of players
-				//playerList.Add(nickname);
-				
-				// CJ
-				scr_netServer.StartServer();
+				networkView.RPC("newPlayer", RPCMode.AllBuffered, Network.player, nickname, playerColor.r, playerColor.g, playerColor.b);
 			}
 		}
 		if (GUI.Button(new Rect(x,y+2*height,width,height), "How to Play")) {
@@ -393,60 +469,96 @@ public class Menu : MonoBehaviour {
 
 	
 	// check if serverName changed
-	private string regServerName;
+	private string regServerName, regNick;
 	void refreshServerName() {
 		if (serverName != regServerName) {
 		    MasterServer.RegisterHost("BomberManUniTrier", serverName, "a comment!");
 		    regServerName = serverName;
 		}
+		if (nickname != regNick && nickname.Trim().Length > 1) {
+			playerList[Network.player] = nickname;
+			regNick = nickname;
+			networkView.RPC("newPlayer", RPCMode.AllBuffered, Network.player, nickname, playerColor.r, playerColor.g, playerColor.b);
+		}
 	}
 	
 	private string chatMsg = "";
-	public void chatArea(int x, int y) {
-		int height = Screen.height-100;
+	public void chatArea() {
+		int x = Screen.width - 230;
 		
-		chatMsg = GUI.TextField(new Rect(x,y,150,20), chatMsg);
-		if ((GUI.Button(new Rect(x+160,y,50,20), "Send")
-				|| Event.current.keyCode == KeyCode.Return)
-				&& chatMsg.Length > 0) {
+	    GUI.skin.label.alignment = TextAnchor.LowerLeft;
+		GUI.Label(new Rect(x,30,150,Screen.height-70), chat);
+	    GUI.skin.label.alignment = TextAnchor.MiddleLeft;
+
+		GUI.SetNextControlName("chat");
+		chatMsg = GUI.TextField(new Rect(x,Screen.height-40,150,20), chatMsg);
+		if (((GUI.Button(new Rect(x+160,Screen.height-40,50,20), "Send")
+				|| Event.current.keyCode == KeyCode.Return))
+				&& chatMsg.Trim().Length > 0 && nickname.Trim().Length > 0) {
 			networkView.RPC("incommingChatMessage", RPCMode.All, nickname + ": " + chatMsg);
 			chatMsg = "";
+			inGame.focusToChat = true;
 		}
-		GUI.Label(new Rect(x,y+22,150,height), chat);
 	}
 	
 	public static void setPlayerColor(Color color) {
         playerColor = color;
+		if (playerColorList.ContainsKey(Network.player))
+			playerColorList[Network.player] = color;
 	}
-	public static Color getPlayerColor() {
-        return playerColor;
+	public static Color getPlayerColor(NetworkPlayer p) {
+		if (playerList.ContainsKey(p))
+	        return playerColorList[p];
+		return Color.white;
+	}
+	public static bool isInGame() {
+		return !showGUI;
 	}
 	
 	
 	[RPC]
 	public void incommingChatMessage(string text, NetworkMessageInfo info) {
+		chat += "\n" + text;
 		// max x lines
-		if (chat.Replace("\n","").Length + 32 <= chat.Length) {
-			chat = chat.Substring(0,chat.LastIndexOf('\n'));
+		if (chat.Replace("\n","").Length + 100 <= chat.Length) {
+			chat = chat.Substring(chat.IndexOf('\n'));
 		}
-		chat = text + "\n" + chat;
+		if (!showGUI)
+			Invoke("removeChatLine", 4f);
+	}
+	public void removeChatLine() {
+		if (chat.IndexOf('\n',1) > 0) {
+			chat = chat.Substring(chat.IndexOf('\n',1));
+		} else {
+			chat = "";
+		}
 	}
 
 	[RPC]
-	public void newPlayer(string nick, NetworkPlayer p) {
-		playerList.Add(p, nick);
+	public void newPlayer(NetworkPlayer p, string nick, float r, float g, float b) {
+		if (playerList.ContainsKey(p))
+			playerList[p] = nick;
+		else
+			playerList.Add(p, nick);
+		
+		if (playerColorList.ContainsKey(p))
+			playerColorList[p] = new Color(r,g,b);
+		else
+			playerColorList.Add(p, new Color(r,g,b));
 	}
 	[RPC]
-	public void removePlayer(NetworkPlayer p, int pid) {
+	public void removePlayer(NetworkPlayer p) {
 		playerList.Remove(p);
-		scr_netClient.removeClient(pid);
-	}	
+		playerColorList.Remove(p);
+	}
 	
 	[RPC]
-	void startGame(int seed) {
-		Random.seed = seed;
+	public void startGame(int seed) {
 		Application.LoadLevel(1);
+		Random.seed = seed;
 		showGUI = false;
+		chat = "";
+		incommingChatMessage("Game started. Have Fun!", new NetworkMessageInfo());
 	}
-
+	
 }

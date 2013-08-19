@@ -5,7 +5,7 @@ namespace AssemblyCSharp
 {
 	// <summary>
 	// Klasse zum Handeln jeweiliger Parzellen, insbesondere der Höhe
-	// und etwaiger GameObjects, die starr auf dieser Parzelle liegen ( etwa Upgrades)
+	// und etwaiger GameObjects, die starr auf dieser Parzelle liegen (etwa Upgrades)
 	// </summary>
 	public class Parcel
 	{
@@ -41,6 +41,7 @@ namespace AssemblyCSharp
 		private Explosion explosion;
 		private bool exploding;
 		private int powerupExplodingValue;
+		private AudioClip powerupAudio;
 		
 		private PowerupType powerupType;
 		
@@ -117,13 +118,13 @@ namespace AssemblyCSharp
 		
 		public void setType(int type){
 		
-			//if ( type == parcelType) return;
+			//if (type == parcelType) return;
 			
 			parcelType = type;
-			if ( parcelType == 0){
+			if (parcelType == 0){
 				height = 1.0f;	
 				//color = Color.green;
-			} else if ( parcelType == 1){
+			} else if (parcelType == 1){
 				height = upperLevel;	
 				//color = new Color(0.5f,0.5f,0.0f,1.0f);
 			} else {
@@ -145,7 +146,7 @@ namespace AssemblyCSharp
 		
 		public void setGameObjectPosition(Vector3 v){
 		
-			if ( obj == null) return;
+			if (obj == null) return;
 			
 			obj.transform.position = v;
 		}
@@ -164,7 +165,8 @@ namespace AssemblyCSharp
 		
 		public void destroyGameObject(){
 			//GameObject.Destroy(obj);
-			SplitMeshIntoTriangles.createMeshExplosion(obj, getCenterPos(), Preferences.getExplosionDetail()); // Zerbersten lassen
+			if (obj != null)
+				SplitMeshIntoTriangles.createMeshExplosion(obj, getCenterPos(), Preferences.getExplosionDetail()); // Zerbersten lassen
 			obj = null;
 		}
 		
@@ -200,18 +202,41 @@ namespace AssemblyCSharp
             mesh manipulator, since the server doesn't have any
             
 			getMeshManipulator().liftObject(1.05f); // Sonst ist das Powerup halb im Boden
+<<<<<<< HEAD
 			obj = GameObject.Instantiate(Static.powerupPrefab, getCenterPos(), Quaternion.identity) as GameObject;
              */
             powerupType = powerup.getType();
             powerupExplodingValue = powerup.getValue();
             powerupOnCell = true;
+||||||| merged common ancestors
+			obj = GameObject.Instantiate(Static.powerupPrefab, getCenterPos(), Quaternion.identity) as GameObject;
+			powerupType = powerup.getType();
+			obj.GetComponent<PowerupTexture>().setType(powerupType);
+			powerupExplodingValue = powerup.getValue();
+			powerupOnCell = true;
+=======
+			obj = GameObject.Instantiate(Static.powerupPrefab, getCenterPos(), Quaternion.identity) as GameObject;
+			powerupType = powerup.getType();
+			obj.transform.Find("powerup").gameObject.GetComponent<PowerupTexture>().setType(powerupType);
+			powerupExplodingValue = powerup.getValue();
+			powerupAudio = powerup.getAudioClip();
+			powerupOnCell = true;
+			
+>>>>>>> b2aadccf061629298696c53aaaaec5470f597779
 		}
 
 		public PowerupType destroyPowerup() {
 			obj = null;
 			powerupOnCell = false;
 			powerupExplodingValue = 0;
+<<<<<<< HEAD
 			// getMeshManipulator().liftObject(0.0f); ignore this in server code, too
+||||||| merged common ancestors
+			getMeshManipulator().liftObject(0.0f);
+=======
+			getMeshManipulator().liftObject(0.0f);
+			Static.inputHandler.playSound(powerupAudio);
+>>>>>>> b2aadccf061629298696c53aaaaec5470f597779
 			return powerupType;
 		}
 		

@@ -26,7 +26,7 @@ namespace AssemblyCSharp
 			float val;
 			using(StreamReader reader = new StreamReader(fName))
 			{
-				while( !reader.EndOfStream){
+				while(!reader.EndOfStream){
 						
 					line = reader.ReadLine();
 					line2 = line.Substring(line.IndexOf('=') + 2);

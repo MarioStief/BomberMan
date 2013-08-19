@@ -3,39 +3,34 @@ using System.Collections;
 
 public class inGame : MonoBehaviour {
 	
-	void Start () {
-	}
-	
 	void Update () {
-		if (Input.GetKeyDown(KeyCode.Escape) && Application.loadedLevel != 0) //MenuState.instance.Update() == GM_State.UpdateRet.NEXT_STATE
+		if (Application.loadedLevel == 0)
+			return;
+		
+		if (Input.GetKeyDown(KeyCode.Escape))
 			Menu.showGUI = !Menu.showGUI;
 	}
 	
-	bool showSure = false;
+	public static bool focusToChat = true;
 	void OnGUI () {
-		//if (MenuState.instance.Update() == GM_State.UpdateRet.CONTINUE) // we are not ingame!
 		if (Application.loadedLevel == 0)
 			return;
 		
 		if (GUI.Button(new Rect(10,10,80,20), "MENU")) {
-			//showSure = !showSure;
 			Menu.showGUI = !Menu.showGUI;
 		}
-		if (showSure) {
-			GUI.Box(new Rect(10,32,100,20), "Disconnect?");
-			if (GUI.Button(new Rect(63,55,47,20),"NO")) {
-				showSure = false;
+		
+		if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Return) {
+			if (focusToChat) {
+				GUI.FocusControl("chat");
+			} else {
+				GUI.SetNextControlName("game");
+            	GUI.Label(new Rect(-100, -100, 1, 1), "");
+            	GUI.FocusControl("game");
 			}
-			if (GUI.Button(new Rect(10,55,50,20),"YES")) {
-				//Application.LoadLevel(0);
-				Menu.showGUI = true;
-				showSure = false;
-			}
+			focusToChat = !focusToChat;
 		}
 		
-		// List of all Players
-		for (int i=0; i < Network.connections.Length; i++) {
-			//Debug.Log(cons[i].externalIP.ToString());
-		}
+		Menu.instance.chatArea();
 	}
 }
