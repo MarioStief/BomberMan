@@ -77,7 +77,6 @@ public class InputHandler : MonoBehaviour {
 		}
 		
 		Static.sphereHandler.move(0.000001f); // CK, fixed color on startup :)
-		moveAlongEquator(0.000001f);
 		
 		createTime = Time.time;
 		
@@ -211,15 +210,16 @@ public class InputHandler : MonoBehaviour {
 			
 			if (vertAngleM != 0) { // an Wänden hängen bleiben..
 				float vm;
-				if (Static.player.isDead())
-					vm = Static.player.getSpeed() * this.verticalMovement * -1 * Time.deltaTime;
-				else {
+				if (Static.player.isDead()) {
+					vm = vertAngleM;
+					vertAngleM = 0;
+				} else {
 					vm = Static.player.getSpeed() * Input.GetAxis("Vertical") * Time.deltaTime;
 					vm = determineVerticalParcelPosition(Input.GetAxis("Vertical"), vm);
 				}
 				verticalAngle += vm;
 				//verticalAngle = verticalAngle % (Mathf.PI*2);
-				
+
 				Vector3 axis = Vector3.Cross(Vector3.forward, transform.position);
 				transform.RotateAround(Vector3.zero, axis, vm * Mathf.Rad2Deg);
 			}
@@ -235,14 +235,14 @@ public class InputHandler : MonoBehaviour {
 			// -----------------------------------------------------------
 			moveCharacter();
 			currCell = Static.rink.gameArea[lpos][bpos];
-			currCell.colorCell(Color.cyan);
+			//currCell.colorCell(Color.cyan);
 			
 			if (currCell.hasContactMine()) {
-				currCell.getExplosion().startExplosion();
+				networkView.RPC("startEvent", RPCMode.All, currCell.getLpos(), currCell.getBpos(), 3);
 			}
 				
 			if (currCell.isExploding()) {
-				Static.player.setDead(true);
+				Static.player.setDead(true, networkView);
 				renderer.material.color = Color.black;
 				StartCoroutine(deadPlayer());
 				networkView.RPC("removePlayer", RPCMode.OthersBuffered, Network.player);
@@ -251,20 +251,20 @@ public class InputHandler : MonoBehaviour {
 			
 			// Falls die Zelle ein Powerup enthält -> aufsammeln
 			if (currCell.hasPowerup()) {
-				networkView.RPC("destroyPowerup", RPCMode.Others, currCell.getLpos(), currCell.getBpos(), false);
+				networkView.RPC("startEvent", RPCMode.Others, currCell.getLpos(), currCell.getBpos(), 0);
 				Static.player.powerupCollected(currCell.destroyPowerup(false));
 			}
 			
 			// Leertaste -> Bombe legen
 			if (Input.GetKeyDown(KeyCode.Space)) {
 				if (!currCell.hasBomb() && !currCell.hasContactMine()) {
-					//Static.player.addBomb();
-					
 					int extra = Static.player.addBomb();
 					if (extra > -1) {
 						GameObject ex = Network.Instantiate(Resources.Load("Prefabs/Bombe"), currCell.getCenterPos(), Quaternion.identity, 0) as GameObject;
 						ex.networkView.RPC("createExplosionOnCell", RPCMode.All, currCell.getLpos(), currCell.getBpos(), 
 					    	               Static.player.getFlamePower(), Static.player.getDelay(), Static.player.getSuperbomb(), extra, true, true);
+						if (extra == 1)
+							Static.player.addTriggerBomb(ex, currCell);
 						playSound(Static.bombDropSoundEffect);
 					}
 				}
@@ -293,9 +293,24 @@ public class InputHandler : MonoBehaviour {
 	}
 	
 	[RPC]
-	public void destroyPowerup(int lpos, int bpos, bool shatter) {
+	public void startEvent(int lpos, int bpos, int mode) {
 		Parcel cell = Static.rink.gameArea[lpos][bpos];
-		cell.destroyPowerup(shatter);
+		switch (mode) {
+			case 0: // destroy powerup
+				cell.destroyPowerup(false);
+				break;
+			case 1: // destroy powerup
+				cell.destroyPowerup(true);
+				break;
+			case 3: // explding contact-mine
+				cell.getExplosion().startExplosion();
+				break;
+		}
+	}
+	[RPC]
+	public void addPowerup(int lpos, int bpos, int type) {
+		Parcel cell = Static.rink.gameArea[lpos][bpos];
+		cell.addPowerup(new Powerup((PowerupType) type));
 	}
 	[RPC]
 	public void removePlayer(NetworkPlayer p) {

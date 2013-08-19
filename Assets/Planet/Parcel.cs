@@ -151,7 +151,8 @@ namespace AssemblyCSharp
 		
 		public void destroyGameObject(){
 			//GameObject.Destroy(obj);
-			SplitMeshIntoTriangles.createMeshExplosion(obj, getCenterPos(), Preferences.getExplosionDetail()); // Zerbersten lassen
+			if (obj != null)
+				SplitMeshIntoTriangles.createMeshExplosion(obj, getCenterPos(), Preferences.getExplosionDetail()); // Zerbersten lassen
 			obj = null;
 		}
 		

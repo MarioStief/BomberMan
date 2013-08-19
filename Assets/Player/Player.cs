@@ -35,7 +35,7 @@ namespace AssemblyCSharp
 		private UnityEngine.Object[] icons = new UnityEngine.Object[6];
 		private string[] iconText = new string[4];
 		
-		private List<Parcel> triggerbombList = new List<Parcel>();
+		private Dictionary<Parcel,GameObject> triggerbombList = new Dictionary<Parcel,GameObject>();
 		
 		public void updateMenuStats() {
 			
@@ -89,8 +89,9 @@ namespace AssemblyCSharp
 			return icons;
 		}
 
-		public void addTriggerBomb(Parcel cell) {
-			triggerbombList.Add(cell);
+		public void addTriggerBomb(GameObject bomb, Parcel cell) {
+			triggerbombsActive++;
+			triggerbombList.Add(cell, bomb);
 		}
 		
 		public void powerupCollected(PowerupType type)
@@ -161,8 +162,6 @@ namespace AssemblyCSharp
 		// return "extra"
 		public int addBomb() {
 			if (triggerbombs > triggerbombsActive) {
-				triggerbombsActive++;
-				addTriggerBomb(currentCell);
 				return 1;
 			} else if (bombsActive < bombs) {
 				bombsActive++;
@@ -204,10 +203,10 @@ namespace AssemblyCSharp
 		}
 		
 		public void releaseTriggerBombs() {
-			List<Parcel> triggerBombs = new List<Parcel>(triggerbombList);
-			foreach (Parcel cell in triggerBombs) {
-				cell.getExplosion().startExplosion();
-				removeTriggerBomb(cell);
+			Dictionary<Parcel,GameObject> triggerBombs = new Dictionary<Parcel,GameObject>(triggerbombList);
+			foreach (var bomb in triggerBombs) {
+				bomb.Value.networkView.RPC("startExplosion", RPCMode.All);
+				removeTriggerBomb(bomb.Key);
 			}
 		}
 		
@@ -216,7 +215,7 @@ namespace AssemblyCSharp
 			triggerbombList.Remove(cell);
 		}
 		
-		public List<Parcel> getTriggerBombs() {
+		public Dictionary<Parcel,GameObject> getTriggerBombs() {
 			return triggerbombList;
 		}
 		
@@ -255,7 +254,7 @@ namespace AssemblyCSharp
 			return speed;
 		}
 		
-		public void setDead(bool d) {
+		public void setDead(bool d, NetworkView nv) {
 			dead = d;
 			if (d) {
 				Static.inputHandler.playSound(Static.playerDeadSoundEffect);
@@ -271,6 +270,7 @@ namespace AssemblyCSharp
 				}
 				parcelPool = shuffleList(parcelPool);
 				if (SUPERBOMB) {
+					nv.RPC("addPowerup", RPCMode.Others, parcelPool[0].getLpos(), parcelPool[0].getBpos(), (int)PowerupType.SUPERBOMB);
 					parcelPool[0].addPowerup(new Powerup(PowerupType.SUPERBOMB));
 					parcelPool.RemoveAt(0);
 					SUPERBOMB = false;
@@ -278,6 +278,7 @@ namespace AssemblyCSharp
 					updateMenuStats();
 				}
 				if (flamePower == MAXFLAMEPOWER && parcelPool.Count > 0) {
+					nv.RPC("addPowerup", RPCMode.Others, parcelPool[0].getLpos(), parcelPool[0].getBpos(), (int)PowerupType.GOLDEN_FLAME);
 					parcelPool[0].addPowerup(new Powerup(PowerupType.GOLDEN_FLAME));
 					parcelPool.RemoveAt(0);
 					bombs = 1;
@@ -285,6 +286,7 @@ namespace AssemblyCSharp
 					updateMenuStats();
 				}
 				while (triggerbombs > 0) {
+					nv.RPC("addPowerup", RPCMode.Others, parcelPool[0].getLpos(), parcelPool[0].getBpos(), (int)PowerupType.TRIGGERBOMB);
 					parcelPool[0].addPowerup(new Powerup(PowerupType.TRIGGERBOMB));
 					parcelPool.RemoveAt(0);
 					triggerbombs--;
@@ -292,6 +294,7 @@ namespace AssemblyCSharp
 					updateMenuStats();
 				}
 				while (contactmines > 0) {
+					nv.RPC("addPowerup", RPCMode.Others, parcelPool[0].getLpos(), parcelPool[0].getBpos(), (int)PowerupType.CONTACTMINE);
 					parcelPool[0].addPowerup(new Powerup(PowerupType.CONTACTMINE));
 					parcelPool.RemoveAt(0);
 					contactmines--;
@@ -299,28 +302,32 @@ namespace AssemblyCSharp
 					updateMenuStats();
 				}
 				while (bombs > 1 && parcelPool.Count > 0) {
+					nv.RPC("addPowerup", RPCMode.Others, parcelPool[0].getLpos(), parcelPool[0].getBpos(), (int)PowerupType.BOMB_UP);
 					parcelPool[0].addPowerup(new Powerup(PowerupType.BOMB_UP));
 					parcelPool.RemoveAt(0);
 					bombs--;
 				}
 				while (flamePower > 1 && parcelPool.Count > 0) {
+					nv.RPC("addPowerup", RPCMode.Others, parcelPool[0].getLpos(), parcelPool[0].getBpos(), (int)PowerupType.FLAME_UP);
 					parcelPool[0].addPowerup(new Powerup(PowerupType.FLAME_UP));
 					parcelPool.RemoveAt(0);
 					flamePower--;
 				}
 				while (speed > 0.4f && parcelPool.Count > 0) {
+					nv.RPC("addPowerup", RPCMode.Others, parcelPool[0].getLpos(), parcelPool[0].getBpos(), (int)PowerupType.PLAYER_SPEED_UP);
 					parcelPool[0].addPowerup(new Powerup(PowerupType.PLAYER_SPEED_UP));
 					parcelPool.RemoveAt(0);
 					speed -= 0.05f;
 				}
 				while (delay < 0.2f && parcelPool.Count > 0) {
+					nv.RPC("addPowerup", RPCMode.Others, parcelPool[0].getLpos(), parcelPool[0].getBpos(), (int)PowerupType.DELAY_SPEED_UP);
 					parcelPool[0].addPowerup(new Powerup(PowerupType.DELAY_SPEED_UP));
 					parcelPool.RemoveAt(0);
 					delay += 0.02f;
 				}
 			}
 		}
-		
+				
 		public bool isDead() {
 			return dead;
 		}
