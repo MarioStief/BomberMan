@@ -257,7 +257,7 @@ namespace AssemblyCSharp
 		public void setDead(bool d, NetworkView nv) {
 			dead = d;
 			if (d) {
-				Static.inputHandler.playSound(Static.playerDeadSoundEffect);
+				Static.inputHandler.playSound(Static.playerDeadSoundEffect, false);
 				// Verteile Powerups über das Spielfeld
 				List<Parcel> parcelPool = new List<Parcel>();
 				Parcel[][] gameArea = Static.gameArea;

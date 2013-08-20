@@ -99,9 +99,12 @@ public class InputHandler : MonoBehaviour {
 		horizontalHelper = 0.0f;
 		
 		Static.player.setDead(false, networkView);
+		
+		if (Static.menuHandler.playMusic())
+			playSound(Static.selectRandomMusic(), true);
 	}
 	
-	public void playSound(AudioClip clip) {
+	public void playSound(AudioClip clip, bool loop) {
 		AudioSource audioSource = gameObject.GetComponent<AudioSource>();
 		if (audioSource.isPlaying) {
 			// neue Soundsource dazu
@@ -112,6 +115,7 @@ public class InputHandler : MonoBehaviour {
 			audioSource = gameObject.AddComponent<AudioSource>();
 		}
 		audioSource.clip = clip;
+		audioSource.loop = loop;
 		audioSource.Play();
 	}
 	
@@ -232,7 +236,27 @@ public class InputHandler : MonoBehaviour {
 			
 			return;
 		}
-
+		
+		if ((Input.GetKeyDown(KeyCode.Plus)) || (Input.GetKeyDown(KeyCode.KeypadPlus))) {
+			if (Static.menuHandler.playMusic()) {
+				AudioSource audioSource = gameObject.GetComponent<AudioSource>();
+				Debug.Log("old volume: " + audioSource.volume);
+				if (audioSource.volume < 1f) {
+					gameObject.GetComponent<AudioSource>().volume += 0.1f;
+				}
+				Debug.Log("Audio volume set to " + audioSource.volume);
+			}
+		}
+		
+		if ((Input.GetKeyDown(KeyCode.Minus)) || (Input.GetKeyDown(KeyCode.KeypadMinus))) {
+			if (Static.menuHandler.playMusic()) {
+				AudioSource audioSource = gameObject.GetComponent<AudioSource>();
+				if (audioSource.volume > 0f) {
+					gameObject.GetComponent<AudioSource>().volume -= 0.1f;
+				}
+				Debug.Log("Audio volume set to " + audioSource.volume);
+			}
+		}
 		
 		if (Static.rink != null && !Static.player.isDead()) {
 			
@@ -272,7 +296,7 @@ public class InputHandler : MonoBehaviour {
 					    	               Static.player.getFlamePower(), Static.player.getDelay(), Static.player.getSuperbomb(), extra, true, true);
 						if (extra == 1)
 							Static.player.addTriggerBomb(ex, currCell);
-						playSound(Static.bombDropSoundEffect);
+						playSound(Static.bombDropSoundEffect, false);
 					}
 				}
 			}
@@ -283,12 +307,11 @@ public class InputHandler : MonoBehaviour {
 						GameObject ex = Network.Instantiate(Resources.Load("Prefabs/Bombe"), currCell.getCenterPos(), Quaternion.identity, 0) as GameObject;
 						ex.networkView.RPC("createExplosionOnCell", RPCMode.All, currCell.getLpos(), currCell.getBpos(), 
 					     	              Static.player.getFlamePower(), Static.player.getDelay(), Static.player.getSuperbomb(), 2, true, true);
-						playSound(Static.contactMineDropSoundEffect);
+						playSound(Static.contactMineDropSoundEffect, false);
 					}
 				}
 				Static.player.releaseTriggerBombs();
 			}
-
 			
 			if ((Time.time - createTime) > 1.0f) {
 				createTime = Time.time;

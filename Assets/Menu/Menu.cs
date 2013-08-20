@@ -26,6 +26,8 @@ namespace AssemblyCSharp
 		private static Dictionary<NetworkPlayer,Color> playerColorList = new Dictionary<NetworkPlayer, Color>();
 		public static bool showGUI = true;
 		
+		private bool music = true;
+		
 		public static Menu instance = null;
 		public void Awake() {
 		    if (instance == null) {
@@ -47,6 +49,7 @@ namespace AssemblyCSharp
 			playerColor.g = PlayerPrefs.GetFloat("PlayerGreen", 1);
 			playerColor.b = PlayerPrefs.GetFloat("PlayerBlue", 0);
 			playerColor.a = 1f;
+			Static.setMenu(this);
 		}
 	
 	
@@ -93,7 +96,7 @@ namespace AssemblyCSharp
 			networkView.RPC("newPlayer", RPCMode.OthersBuffered, Network.player, nickname, playerColor.r, playerColor.g, playerColor.b);
 			playerList.Add(Network.player, nickname+" (me)");
 			playerColorList.Add(Network.player, playerColor);
-			networkView.RPC("incommingChatMessage", RPCMode.Others, nickname + " joined");
+			networkView.RPC("incomingChatMessage", RPCMode.Others, nickname + " joined");
 			screen = "waitingForStart";
 		}
 		void OnDisconnectedFromServer(NetworkDisconnection info) {
@@ -129,7 +132,7 @@ namespace AssemblyCSharp
 			Network.DestroyPlayerObjects(p);
 			if (playerList.ContainsKey(p)) {
 				networkView.RPC("removePlayer", RPCMode.OthersBuffered, p);
-				networkView.RPC("incommingChatMessage", RPCMode.All, playerList[p] + " leaved");
+				networkView.RPC("incomingChatMessage", RPCMode.All, playerList[p] + " leaved");
 				playerList.Remove(p);
 				playerColorList.Remove(p);
 			}
@@ -170,13 +173,19 @@ namespace AssemblyCSharp
 				expDetail = (int)GUI.HorizontalSlider (new Rect (0, 140, width, 20), (float)expDetail, 1.0f, 10.0f);
 				
 				Preferences.setExplosionDetail(expDetail);
-		
+				
+				// SOME SETTINGS
+				if (music != GUI.Toggle(new Rect(25,170,width,20), music, "play Music")) {
+					music = !music;
+				}
+
+				
 				// SERVER LIST
 				HostData[] servers = MasterServer.PollHostList();
 				int i = 1;
 				foreach (HostData srv in servers) {
 					var name = srv.gameName + " " + srv.connectedPlayers + "/" + srv.playerLimit;
-					GUI.Label(new Rect(0,170+25*i,width,20), name);
+					GUI.Label(new Rect(0,190+25*i,width,20), name);
 					/*var hostInfo : String = "[";
 					for (var host in srv.ip)
 						hostInfo = hostInfo + host + ":" + srv.port + " ";
@@ -291,10 +300,13 @@ namespace AssemblyCSharp
 					if (pe && pee != GUI.Toggle(new Rect(25,300,width,20), pee, "exploding Powerups")) {
 						Preferences.setExplodingPowerups(!pee);
 					}
+					if (music != GUI.Toggle(new Rect(25,320,width,20), music, "play Music")) {
+						music = !music;
+					}
 				}
 				
 			    // START GAME
-				if (GUI.Button(new Rect(50,340,100,30),"Start Game")) {
+				if (GUI.Button(new Rect(50,360,100,30),"Start Game")) {
 					// save settings
 					PlayerPrefs.SetInt("Server MaxPlayers", maxPlayers);
 					PlayerPrefs.SetString("Server Name", serverName);
@@ -328,7 +340,7 @@ namespace AssemblyCSharp
 				if (p.Key != Network.player && GUI.Button(new Rect(0,j*24+21,18,15), "x")) {
 					Network.CloseConnection(p.Key, true);
 					networkView.RPC("removePlayer", RPCMode.OthersBuffered, p.Key);
-					networkView.RPC("incommingChatMessage", RPCMode.All, p.Value + " was kicked");
+					networkView.RPC("incomingChatMessage", RPCMode.All, p.Value + " was kicked");
 					playerList.Remove(p.Key);
 					playerColorList.Remove(p.Key);
 				}
@@ -450,7 +462,7 @@ namespace AssemblyCSharp
 			if (((GUI.Button(new Rect(x+160,Screen.height-40,50,20), "Send")
 					|| Event.current.keyCode == KeyCode.Return))
 					&& chatMsg.Trim().Length > 0 && nickname.Trim().Length > 0) {
-				networkView.RPC("incommingChatMessage", RPCMode.All, nickname + ": " + chatMsg);
+				networkView.RPC("incomingChatMessage", RPCMode.All, nickname + ": " + chatMsg);
 				chatMsg = "";
 				inGame.focusToChat = true;
 			}
@@ -472,7 +484,7 @@ namespace AssemblyCSharp
 		
 		
 		[RPC]
-		public void incommingChatMessage(string text, NetworkMessageInfo info) {
+		public void incomingChatMessage(string text, NetworkMessageInfo info) {
 			chat += "\n" + text;
 			// max x lines
 			if (chat.Replace("\n","").Length + 100 <= chat.Length) {
@@ -513,7 +525,11 @@ namespace AssemblyCSharp
 			Random.seed = seed;
 			showGUI = false;
 			chat = "";
-			incommingChatMessage("Game started. Have Fun!", new NetworkMessageInfo());
+			incomingChatMessage("Game started. Have Fun!", new NetworkMessageInfo());
+		}
+		
+		public bool playMusic() {
+			return music;
 		}
 		
 	}

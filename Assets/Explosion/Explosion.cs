@@ -98,7 +98,7 @@ public class Explosion : MonoBehaviour
 			createTime = Time.time;
 			
 			if (contactMine) {
-				Static.inputHandler.playSound(Static.contactMineExplosionSoundEffect);
+				Static.inputHandler.playSound(Static.contactMineExplosionSoundEffect, false);
 				createTime += 0.5f;
 			}
 		}
@@ -185,9 +185,11 @@ public class Explosion : MonoBehaviour
 						
 						// Explosionslautstärke der Spielerentfernung anpassen:
 						float distance = Vector3.Distance (GameObject.FindGameObjectWithTag("Player").transform.position, position);
-						detonator.GetComponent<AudioSource>().volume /= 2*distance;
-						detonator.GetComponent<AudioSource>().Play();
+						AudioSource audioSource = detonator.GetComponent<AudioSource>();
+						audioSource.volume /= 3*distance;
+						audioSource.Play();
 						//Debug.Log ("Explosion Volume: " + (100/(2*distance)) + " %");
+						Debug.Log ("Distanz: " + distance + ", Explosion Volume: " + audioSource.volume);
 						
 						// Besonders hervorheben
 						if (superbomb) {

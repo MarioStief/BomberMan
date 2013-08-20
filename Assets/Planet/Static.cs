@@ -11,6 +11,7 @@ namespace AssemblyCSharp
 		public static Parcel[][] gameArea;
 		public static MeshManipulator[][] drawnArea;
         public static Player player = new Player();
+		public static Menu menuHandler;
 		
 		public static UnityEngine.Object bombPrefab;
 		public static UnityEngine.Object triggerbombPrefab;
@@ -110,6 +111,10 @@ namespace AssemblyCSharp
 			inputHandler = i;
 		}
 
+		public static void setMenu(Menu m) {
+			menuHandler = m;
+		}
+
 		public static void setExtra(int type) {
 			switch (type) {
 			case 0:
@@ -142,6 +147,13 @@ namespace AssemblyCSharp
 			rink = r;
 			gameArea = rink.getGameArea();
 			drawnArea = rink.drawnArea;
+		}
+		
+		public static AudioClip selectRandomMusic() {
+			UnityEngine.Object[] musicClips = Resources.LoadAll("Sounds/Music", typeof(AudioClip));
+			AudioClip clip = musicClips[UnityEngine.Random.Range(0, musicClips.Length)] as AudioClip;
+			Debug.Log("Playing background music \"" + clip.name + "\"");
+			return clip;
 		}
 	}
 }

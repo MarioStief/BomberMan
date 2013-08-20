@@ -196,14 +196,12 @@ namespace AssemblyCSharp
 		}
 
 		public PowerupType destroyPowerup(bool collected, bool shatter) {
-			if (shatter) {
+			if (shatter)
 				SplitMeshIntoTriangles.createMeshExplosion(obj, getCenterPos(), Preferences.getExplosionDetail()); // Zerbersten lassen
-			} else {
+			else
 				GameObject.Destroy(obj);
-				Static.inputHandler.playSound(powerupAudio);
-			}
 			if (collected)
-				Static.inputHandler.playSound(powerupAudio);
+				Static.inputHandler.playSound(powerupAudio, false);
 			obj = null;
 			powerupOnCell = false;
 			powerupExplodingValue = 0;
