@@ -32,9 +32,8 @@ public class SphereBuilder : MonoBehaviour {
 		Static.setSphereBuilder(this);
 		
 		adjSouthPole = n_L-2;
-		adjEast = 0;
 		
-		gameArea = new Rink(n_B, n_L, new Vector2(0,0));
+		gameArea = new Rink(n_B, n_L);
 		//GameObject.Find("Player").GetComponent<InputHandler>().rink = gameArea;
 		
 		// Berechne Punkte und erzeuge Kugel 
@@ -62,66 +61,22 @@ public class SphereBuilder : MonoBehaviour {
 		// Spawnpunkt freiräumen
 		gameArea.getGameArea()[B_pos][L_pos].setType(0);
 		
-		// shuffle directions
-		ArrayList list = new ArrayList();
-		list.Add(0);
-		list.Add(1);
-		list.Add(2);
-		list.Add(3);
-		int[] directions = new int[4];
-		for (int i = 0; i < 4; i++) {
-			int index = Random.Range(0, 4-i);
-			directions[i] = (int) list[index];
-			list.RemoveAt(index);
-		}
+		// zufällig 2 benachbarte Felder freiräumen
+		int d = Random.Range(0,4);
+		gameArea.getGameArea()[B_pos][L_pos].getNeighbour(d).setType(0);
+		gameArea.getGameArea()[B_pos][L_pos].getNeighbour((d + Random.Range(0,2)) % 4).setType(0);
+
+
 		
-		//Debug.Log("[" + directions[0] + " " + directions[1] + " " + directions[2] + " " + directions[3] + "]");
-		
-		// zufällig 2 benachbarte Felder freiräumen, die keine Steinblöcke sind
-		int hasDirections = 0;
-		for (int i = 0; hasDirections < 2; i++) {
-			int x = 0;
-			int y = 0;
-			switch (directions[i]) {
-			case 0:
-				if (B_pos == 0)
-					x = 18;
-				else
-					x = B_pos-1;
-				y = L_pos;
-				break;
-			case 1:
-				if (B_pos == 18)
-					x = 0;
-				else
-					x = B_pos+1;
-				y = L_pos;
-				break;
-			case 2:
-				x = B_pos;
-				if (L_pos == 0)
-					y = 29;
-				else
-					y = L_pos-1;
-				break;
-			case 3:
-				x = B_pos;
-				if (L_pos == 29)
-					y = 0;
-				else
-					y = L_pos+1;
-				break;
+		if (Application.loadedLevelName == "StartMenu") {
+			// alle nachbarfelder freiräumen
+			foreach (Parcel c in gameArea.getGameArea()[B_pos][L_pos].getNeighbours()) {
+				c.setType(0);
 			}
-			if (gameArea.getGameArea()[x][y].getType() != 2) {
-				gameArea.getGameArea()[x][y].setType(0);
-				hasDirections++;
-			}
-		}
-		
-		if (Network.peerType != NetworkPeerType.Disconnected)
-			Network.Instantiate(playerPrefab, pos, transform.rotation, 1);
-		else
 			Instantiate(playerPrefab, pos, transform.rotation);
+		} else {
+			Network.Instantiate(playerPrefab, pos, transform.rotation, 1);
+		}
 	}
 	
 	private void tesselateSphere(){
@@ -191,7 +146,7 @@ public class SphereBuilder : MonoBehaviour {
 	// </summary>
 	private Vector3 F(float u, float v){
 		
-		if (u < 0 || u > 2*Mathf.PI ||  v < (-1)*Mathf.PI/2 || v > Mathf.PI/2) {
+		if (u < 0 || u > Mathf.PI*2 ||  v < (-1)*Mathf.PI/2 || v > Mathf.PI/2) {
 			
 			return Vector3.zero;
 		}
@@ -213,12 +168,7 @@ public class SphereBuilder : MonoBehaviour {
 		// All Cubes in between
 		for(int l = 0; l < n_L-1; l++){
 
-			spCubes[l*n_B] = createSphereCube();
-			spCubes[l*n_B].name = "cube " + l + "," +0;
-			gameArea.drawnArea[l][0] = addMeshManipulator(spCubes[l*n_B],
-															new Vector3(1,l,1), new Vector3(1,l,0), new Vector3(0,l,1), new Vector3(0,l,0),
-															new Vector3(1,(l+1)%(n_L-1),1), new Vector3(1,(l+1)%(n_L-1),0), new Vector3(0,(l+1)%(n_L-1),1), new Vector3(0,(l+1)%(n_L-1),0));
-			for(int i = 1; i < n_B; i++){
+			for(int i = 0; i < n_B; i++){
 	
 				if (i == n_B-1){
 					spCubes[l*n_B+i] = createSphereCube();
@@ -279,25 +229,18 @@ public class SphereBuilder : MonoBehaviour {
 // 2. Würfel, die den östlichen Horizont erreichen, werden analog an den westlichen Horizont verschoben und stellen dort _andere_ Felder dar.
 	
 	
-	float speed = 0.3f;					// Rotationsgeschwindigkeit
-	
 	int vDirection = 0;					// vertikale Bewegungsrichtung
-	int hDirection = 0;					// hoizontale Bewegungsrichtung
 		
 	float [/*n_L*/][/*n_B*/] verticalOffset;	
 	float [/*n_L*/][/*n_B*/] horizontalOffset;	
 	
 	float offset = 0.0f;
-	float hOffset = 0.0f;
 	
 	float deltaOffset = 0.0f;
-	float hDeltaOffset = 0.0f;
 	
 	int adjSouthPole;
-	int adjEast;
 	
-	bool vChange = false;
-	
+
 	// <summary>
 	// Handling der Bewegung; Schnittstelle zu InputHandler
 	//
@@ -345,10 +288,6 @@ public class SphereBuilder : MonoBehaviour {
 		if (vDirection == -1){
 			//gameArea.decrPositionHeight();
 		
-			if (vChange){
-				//adjSouthPole = (adjSouthPole + n_L-2);
-				vChange = false;
-			}
 			//Debug.Log("harra");
 			// Verschiebe Würfel, die am Nordpol anliegen zum Südpol!
 			for(int i = 0; i <  n_B; i++){
@@ -357,7 +296,6 @@ public class SphereBuilder : MonoBehaviour {
 		
 				gameArea.updateHeight(adjSouthPole , i);
 			}
-			
 			
 			if (--adjSouthPole < 0) {
 				adjSouthPole = n_L-2;	
@@ -406,13 +344,12 @@ public class SphereBuilder : MonoBehaviour {
 					u = 0;	
 				}
 				
-				float vr,ur;
+				float vr;
 				
 				verticalOffset[j][i] = ((verticalOffset[j][i]  + deltaOffset) );
 				vr = v - verticalOffset[j][i];
 				
 				val = F(u,vr);					// berechne Punkt für Winkel u und v
-
 				if (val != Vector3.zero){
 					sphereVertices[0][j][i] = val * 1.7f;	
 					sphereVertices[1][j][i] = val * 2.0f;
@@ -421,18 +358,8 @@ public class SphereBuilder : MonoBehaviour {
 		}	
 		
 		gameArea.renderAll();
-	}	//*/
-	
-	void Update(){
-		/*
-		for (int i = 0; i < gameArea.Length; i++) {
-			for (int j = 0; j < gameArea[i].Length; j++) {
-				gameArea[i][j].updateHeight();
-			}
-		}
-		*/
-		//gameArea.updateHeight();
 	}
+
 	
 	public Rink getRink() {
 		return gameArea;

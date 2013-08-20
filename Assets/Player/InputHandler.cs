@@ -50,7 +50,8 @@ public class InputHandler : MonoBehaviour {
 		sun = GameObject.FindGameObjectWithTag("Sun");
 		cam = GameObject.FindGameObjectWithTag("MainCamera");
 		
-		DontDestroyOnLoad(gameObject);
+		if (Application.loadedLevelName != "StartMenu")
+			DontDestroyOnLoad(gameObject);
 	}
 
 	
@@ -71,12 +72,10 @@ public class InputHandler : MonoBehaviour {
 		
 		renderer.material.SetTexture("_SelfIllumin", illuminColor);
 		
-		if (!networkView.isMine) {
+		if (Network.peerType != NetworkPeerType.Disconnected && !networkView.isMine) {
 			verticalAngle = vertAngle;
 			return;
 		}
-		
-		Static.sphereHandler.move(0.000001f); // CK, fixed color on startup :)
 		
 		createTime = Time.time;
 		
@@ -98,26 +97,9 @@ public class InputHandler : MonoBehaviour {
 		verticalHelper = 0.0f;
 		horizontalHelper = 0.0f;
 		
-		Static.player.setDead(false, networkView);
-		
-		if (Static.menuHandler.playMusic())
-			playSound(Static.selectRandomMusic(), true);
+		//Static.player.setDead(false, networkView);
 	}
-	
-	public void playSound(AudioClip clip, bool loop) {
-		AudioSource audioSource = gameObject.GetComponent<AudioSource>();
-		if (audioSource.isPlaying) {
-			// neue Soundsource dazu
-			foreach (AudioSource audioIterator in GetComponents<AudioSource>()) {
-				if (!audioIterator.isPlaying) // entferne nicht mehr laufende
-					Destroy(audioIterator);
-			}
-			audioSource = gameObject.AddComponent<AudioSource>();
-		}
-		audioSource.clip = clip;
-		audioSource.loop = loop;
-		audioSource.Play();
-	}
+
 	
 	void OnSerializeNetworkView(BitStream stream, NetworkMessageInfo info) {
 		if (stream.isWriting) {
@@ -216,7 +198,7 @@ public class InputHandler : MonoBehaviour {
 		}
 		
 		// Gegner drehen mit dem Planeten..!
-		if (!networkView.isMine && Static.rink != null) {
+		if (Network.peerType != NetworkPeerType.Disconnected && !networkView.isMine && Static.rink != null) {
 			
 			if (vertAngleM != 0) { // an Wänden hängen bleiben..
 				float vm;
@@ -237,25 +219,63 @@ public class InputHandler : MonoBehaviour {
 			return;
 		}
 		
-		if ((Input.GetKeyDown(KeyCode.Plus)) || (Input.GetKeyDown(KeyCode.KeypadPlus))) {
-			if (Static.menuHandler.playMusic()) {
-				AudioSource audioSource = gameObject.GetComponent<AudioSource>();
-				Debug.Log("old volume: " + audioSource.volume);
-				if (audioSource.volume < 1f) {
-					gameObject.GetComponent<AudioSource>().volume += 0.1f;
+		// Menu
+		if (Application.loadedLevelName == "StartMenu") {
+			moveCharacter();
+			
+			// drehe Menüpunkte
+			GameObject.Find("Menu").transform.RotateAround(Vector3.zero, Vector3.right, -vertAngleM*Mathf.Rad2Deg);
+			vertAngleM = 0;
+			
+			// nöchsten Screen anzeigen
+			string s = "";
+			if (Input.GetMouseButtonDown(0)) {
+				RaycastHit hit;
+				Ray ray = cam.camera.ScreenPointToRay(Input.mousePosition);
+				if (Physics.Raycast(ray, out hit)) {
+					Debug.Log("HIT: "+hit.collider.gameObject.name);
+					if (hit.collider.gameObject.name == "create" || hit.collider.gameObject.name == "cServer")
+						s = "server";
+					else if (hit.collider.gameObject.name == "join" || hit.collider.gameObject.name == "jServer")
+						s = "join";
+					else if (hit.collider.gameObject.name == "help")
+						s = "help";
+					else if (hit.collider.gameObject.name == "exit")
+						Application.Quit();
 				}
-				Debug.Log("Audio volume set to " + audioSource.volume);
 			}
+			if (currCell != Static.rink.gameArea[lpos][bpos] || s != "") {
+				if (currCell.getBpos() > bpos)
+					s = "server";
+				else if (currCell.getBpos() < bpos)
+					s = "join";
+				else if (currCell.getLpos() < lpos)
+					s = "help";
+				else if (currCell.getLpos() > lpos)
+					Application.Quit();
+				if (s != "") {
+					GameObject.Find("Menu").GetComponent<Menu>().setScreen(s);
+					Application.LoadLevel("Menu");
+					GameObject.Find("Menu").transform.RotateAround(Vector3.zero, Vector3.right, verticalAngle*Mathf.Rad2Deg);
+				}
+			}
+			return;
+		}
+		
+		if ((Input.GetKeyDown(KeyCode.Plus)) || (Input.GetKeyDown(KeyCode.KeypadPlus))) {
+			AudioSource audioSource = gameObject.GetComponent<AudioSource>();
+			if (audioSource.volume < 1f) {
+				gameObject.GetComponent<AudioSource>().volume += 0.1f;
+			}
+			Debug.Log("Audio volume set to " + audioSource.volume);
 		}
 		
 		if ((Input.GetKeyDown(KeyCode.Minus)) || (Input.GetKeyDown(KeyCode.KeypadMinus))) {
-			if (Static.menuHandler.playMusic()) {
-				AudioSource audioSource = gameObject.GetComponent<AudioSource>();
-				if (audioSource.volume > 0f) {
-					gameObject.GetComponent<AudioSource>().volume -= 0.1f;
-				}
-				Debug.Log("Audio volume set to " + audioSource.volume);
+			AudioSource audioSource = gameObject.GetComponent<AudioSource>();
+			if (audioSource.volume > 0f) {
+				gameObject.GetComponent<AudioSource>().volume -= 0.1f;
 			}
+			Debug.Log("Audio volume set to " + audioSource.volume);
 		}
 		
 		if (Static.rink != null && !Static.player.isDead()) {
@@ -376,9 +396,9 @@ public class InputHandler : MonoBehaviour {
 			verticalAngle += vm;
 			//verticalAngle = verticalAngle % (Mathf.PI*2);
 			vertAngle = verticalAngle;
+			vertAngleM = vm;
 			
 			Static.sphereHandler.move(vm);
-			vertAngleM = vm;
 		}
 		
 		float horizontalMovement;
@@ -720,15 +740,20 @@ public class InputHandler : MonoBehaviour {
 		sun.transform.eulerAngles = new Vector3(0,90,0);
 	}
 	
-	/*
-	void OnParticleCollision(GameObject explosion) {
-		Static.player.decreaseHP();
-		if (Static.player.getHP() == 0) {
-			renderer.material.color = Color.black;
-			//moveDirection = new Vector3(0, 0, 0);
-			GameObject deadPlayer = GameObject.Instantiate(Static.explosionPrefab, new Vector3(transform.position.x, transform.position.y, transform.position.z), Quaternion.identity) as GameObject; 
+	public void playSound(AudioClip clip, bool loop) {
+		AudioSource audioSource = gameObject.GetComponent<AudioSource>();
+		if (audioSource.isPlaying) {
+			// neue Soundsource dazu
+			foreach (AudioSource audioIterator in GetComponents<AudioSource>()) {
+				if (!audioIterator.isPlaying) // entferne nicht mehr laufende
+					Destroy(audioIterator);
+			}
+			audioSource = gameObject.AddComponent<AudioSource>();
 		}
+		audioSource.clip = clip;
+		audioSource.loop = loop;
+		audioSource.Play();
+		audioSource.volume = Preferences.getVolume();
 	}
-	*/
 
 }

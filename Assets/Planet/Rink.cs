@@ -82,7 +82,7 @@ namespace AssemblyCSharp
 					Parcel left = gameArea[i][(j+1)%(width)];
 					Parcel up = gameArea[(i+1)%(height)][j];
 					Parcel down = gameArea[(i-1) < 0? height-1 : i-1][j];
-					gameArea[i][j].setNeightbours(right,left,up,down);		// Hoher Steinquader
+					gameArea[i][j].setNeighbours(right,left,up,down);		// Hoher Steinquader
 				}
 			}
 			
@@ -91,6 +91,8 @@ namespace AssemblyCSharp
 			for (int j = 0; j < height; j++) {
 				drawnArea[j] = new MeshManipulator[width];
 			}
+			
+			renderAll();
 		}
 		
 		// <summary>

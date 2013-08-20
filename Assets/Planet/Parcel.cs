@@ -123,11 +123,23 @@ namespace AssemblyCSharp
 			return parcelType;	
 		}
 		
-		public void setNeightbours(Parcel right, Parcel left, Parcel up, Parcel down){
+		public void setNeighbours(Parcel right, Parcel left, Parcel up, Parcel down){
 			this.right = right;
 			this.left = left;
 			this.up = up;
 			this.down = down;
+		}
+		public Parcel getNeighbour(int dir) {
+			switch (dir) {
+				case 0: return right;
+				case 1: return left;
+				case 2: return up;
+				case 3: return down;
+			}
+			return null;
+		}
+		public Parcel[] getNeighbours() {
+			return new Parcel[] { right,left,up,down };
 		}
 		
 		public void setGameObjectPosition(Vector3 v){

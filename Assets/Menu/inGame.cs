@@ -6,7 +6,7 @@ namespace AssemblyCSharp
 	public class inGame : MonoBehaviour {
 		
 		void Update () {
-			if (Application.loadedLevel == 0)
+			if (Application.loadedLevelName != "SphereCreate")
 				return;
 			
 			if (Input.GetKeyDown(KeyCode.Escape))
@@ -15,7 +15,7 @@ namespace AssemblyCSharp
 		
 		public static bool focusToChat = true;
 		void OnGUI () {
-			if (Application.loadedLevel == 0)
+			if (Application.loadedLevelName != "SphereCreate")
 				return;
 			
 			if (GUI.Button(new Rect(10,10,80,20), "MENU")) {
