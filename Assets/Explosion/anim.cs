@@ -19,10 +19,10 @@ public class anim : MonoBehaviour {
         t += Time.deltaTime;
         float s = Mathf.Abs(Mathf.Sin(2*t));
        	//float f = 0.2f + 0.25f*s;
-       	float f = 0.4f + 0.1f*s;
+       	float f = 0.4f + 0.15f*s;
        	f += (t/timer)/4;
 		f *= 0.3f; // Größenanpassung auf Sphere
         transform.localScale = new Vector3(f, f, f);
-		renderer.material.SetColor("_Color", new Color(t/2, 0f, 0f));
+		renderer.material.SetColor("_Color", new Color(t/1.5f, 0f, 0f));
 	}
 }
