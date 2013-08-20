@@ -58,6 +58,7 @@ namespace AssemblyCSharp
 		static Static() {
 			
 			bombPrefab = Resources.Load("Prefabs/bombPrefab");
+			bombPrefab = Resources.Load("Prefabs/bomb/bomb");
 			triggerbombPrefab = Resources.Load("Prefabs/triggerbomb/triggerbomb");
 			//contactMinePrefab = Resources.Load("Prefabs/contactMinePrefab");
 			contactMinePrefab = Resources.Load("Prefabs/contactmine/contactMine");

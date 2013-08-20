@@ -38,6 +38,8 @@ public class SplitMeshIntoTriangles : MonoBehaviour
 			gameObject = gameObject.transform.Find("child").gameObject;
 			if (gameObject.transform.Find("MineBody") != null)
 				gameObject = gameObject.transform.Find("MineBody").gameObject;
+			if (gameObject.transform.Find("default") != null)
+				gameObject = gameObject.transform.Find("default").gameObject;
 		}
         MeshFilter MF = gameObject.GetComponent<MeshFilter>();
         MeshRenderer MR = gameObject.GetComponent<MeshRenderer>();
