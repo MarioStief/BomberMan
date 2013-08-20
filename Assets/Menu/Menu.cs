@@ -18,7 +18,7 @@ namespace AssemblyCSharp
 	
 		private string nickname = "Player ";
 		private static Color playerColor;
-		private int expDetail = Preferences.getExplosionDetail(); // 1 - 10
+		private int expDetail = Preferences.getExplosionDetail(); // 0 (off) - 10 (max)
 		private int chestDensity = Preferences.getChestDensity(); // 5 - 50
 		private string chat = "";
 		
@@ -170,7 +170,12 @@ namespace AssemblyCSharp
 			    GUI.skin.label.alignment = TextAnchor.MiddleRight;
 				GUI.Label(new Rect(width-40,145,40,20), "Max");
 			    GUI.skin.label.alignment = TextAnchor.MiddleLeft;
-				expDetail = (int)GUI.HorizontalSlider (new Rect (0, 140, width, 20), (float)expDetail, 1.0f, 10.0f);
+				expDetail = (int)GUI.HorizontalSlider (new Rect (0, 140, width, 20), (float)expDetail, 0.0f, 10.0f);
+				if (expDetail == 0) {
+					GUI.skin.label.normal.textColor = Color.red;
+					GUI.Label(new Rect(width/2-20,145,50,20), "off");
+					GUI.skin.label.normal.textColor = Color.white;
+				}
 				
 				Preferences.setExplosionDetail(expDetail);
 				
@@ -256,7 +261,13 @@ namespace AssemblyCSharp
 			    GUI.skin.label.alignment = TextAnchor.MiddleRight;
 				GUI.Label(new Rect(width-15,105,50,20), "Max");
 			    GUI.skin.label.alignment = TextAnchor.MiddleLeft;
-				expDetail = (int)GUI.HorizontalSlider (new Rect (25, 100, width, 20), (float)expDetail, 1.0f, 10.0f);
+				expDetail = (int)GUI.HorizontalSlider (new Rect (25, 100, width, 20), (float)expDetail, 0.0f, 10.0f);
+				if (expDetail == 0) {
+					GUI.skin.label.normal.textColor = Color.red;
+					GUI.Label(new Rect(width/2+20,105,50,20), "off");
+					GUI.skin.label.normal.textColor = Color.white;
+				}
+
 				GUI.Label(new Rect(25,140,width,20), "Chest Density:");
 				GUI.Label(new Rect(25,165,50,20), "Min");
 			    GUI.skin.label.alignment = TextAnchor.MiddleRight;
