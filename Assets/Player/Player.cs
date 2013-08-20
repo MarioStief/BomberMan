@@ -19,7 +19,7 @@ namespace AssemblyCSharp
 		private int bombs = 1;
 		private int bombsActive = 0;
 
-		private int triggerbombs = 0;
+		private int triggerbombs = 1;
 		private int triggerbombsActive = 0;
 
 		private int contactmines = 0;

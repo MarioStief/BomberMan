@@ -77,9 +77,14 @@ public class Explosion : MonoBehaviour
 				bomb = GameObject.Instantiate(Static.contactMinePrefab, transform.position, Quaternion.identity) as GameObject;
 				EXPLOSIONTIMER = 0.5f;
 			} else {
-				bomb = GameObject.Instantiate(Static.bombPrefab, transform.position, Quaternion.identity) as GameObject;
-				EXPLOSIONTIMER = bomb.GetComponent<anim>().timer;
-				bomb.GetComponent<anim>().triggerBomb = triggerBomb;
+				if (triggerBomb) {
+					bomb = GameObject.Instantiate(Static.triggerbombPrefab, transform.position, Quaternion.identity) as GameObject;
+				} else {
+					bomb = GameObject.Instantiate(Static.bombPrefab, transform.position, Quaternion.identity) as GameObject;
+					EXPLOSIONTIMER = bomb.GetComponent<anim>().timer;
+				}
+				bomb.transform.up = transform.position;
+				bomb.transform.Rotate(0f, 0f, 0f, Space.Self);
 			}
 			cell.setGameObject(bomb);
 		}

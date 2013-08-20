@@ -34,8 +34,8 @@ public class SplitMeshIntoTriangles : MonoBehaviour
 	
     IEnumerator SplitMesh ()
     {
-		if (gameObject.transform.Find("powerup") != null)
-			gameObject = gameObject.transform.Find("powerup").gameObject;
+		if (gameObject.transform.Find("child") != null)
+			gameObject = gameObject.transform.Find("child").gameObject;
         MeshFilter MF = gameObject.GetComponent<MeshFilter>();
         MeshRenderer MR = gameObject.GetComponent<MeshRenderer>();
 		
