@@ -264,7 +264,7 @@ public class InputHandler : MonoBehaviour {
 			
 			// Leertaste -> Bombe legen
 			if (Input.GetKeyDown(KeyCode.Space)) {
-				if (!currCell.hasBomb() && !currCell.hasContactMine()) {
+				if (!currCell.hasExplosion()) {
 					int extra = Static.player.addBomb();
 					if (extra > -1) {
 						GameObject ex = Network.Instantiate(Resources.Load("Prefabs/Bombe"), currCell.getCenterPos(), Quaternion.identity, 0) as GameObject;
@@ -278,7 +278,7 @@ public class InputHandler : MonoBehaviour {
 			}
 			
 			if ((Input.GetKeyDown(KeyCode.LeftShift)) || (Input.GetKeyDown(KeyCode.RightShift))) {
-				if (!currCell.hasBomb() && !currCell.hasContactMine()) {
+				if (!currCell.hasExplosion()) {
 					if (Static.player.addContactMine()) {
 						GameObject ex = Network.Instantiate(Resources.Load("Prefabs/Bombe"), currCell.getCenterPos(), Quaternion.identity, 0) as GameObject;
 						ex.networkView.RPC("createExplosionOnCell", RPCMode.All, currCell.getLpos(), currCell.getBpos(), 

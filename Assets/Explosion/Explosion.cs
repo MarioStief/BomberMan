@@ -48,7 +48,8 @@ public class Explosion : MonoBehaviour
 		this.self = self;
 		
 		cell.setExplosion(this);
-		cell.setBomb(true);
+		if (extra != 2)
+			cell.setBomb(true);
 		
 		if (!self)
 			startExplosion();
@@ -117,7 +118,6 @@ public class Explosion : MonoBehaviour
 				waitingForBombExplosion = false;
 				createTime = Time.time;
 			} else if (elapsedTime > 3.0f && extra == 2 && !contactMineActive) {
-				cell.setBomb(false);
 				cell.setContactMine(true); // 3 s um in Deckung zu gehen ;)
 				contactMineActive = true;
 				//Debug.Log("Kontaktmine scharf");

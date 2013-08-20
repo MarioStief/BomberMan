@@ -141,6 +141,10 @@ namespace AssemblyCSharp
 			return (obj != null);	
 		}
 		
+		public bool hasExplosion(){
+			return (explosion != null);	
+		}
+		
 		public void setGameObject(GameObject obj){
 			this.obj = obj;
 		}
