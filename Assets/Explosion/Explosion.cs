@@ -10,8 +10,6 @@ public class Explosion : MonoBehaviour
 	public Parcel cell;
 	private float xpos, ypos, zpos;
 	
-	GameObject []explosion = new GameObject[5];
-	private int []reach = {0, 0, 0, 0, 0};
 	private int flamePower;
 	private float delay;
 	private int extra = 0;
@@ -28,9 +26,8 @@ public class Explosion : MonoBehaviour
 	
 	private List<ExplosionField> explosionChain = new List<ExplosionField>();
 	
-	private float timer;
 	private float createTime;
-	private bool powerupsPlaced = false;
+
 	
 	
 	// Factory-Klasse, um einen Konstruktor auf einem Monobehaviour-Objekt zu emulieren, der die Explosion auf einer Zelle startet
@@ -60,7 +57,6 @@ public class Explosion : MonoBehaviour
 	
 	GameObject bomb;
 	void Start() {
-		timer = 0.0f;
 		createTime = Time.time;
 		switch (extra) {
 		case 1:

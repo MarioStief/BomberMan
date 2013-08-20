@@ -19,12 +19,8 @@ namespace AssemblyCSharp
 	//
 	public class Rink
 	{
-		private bool DEBUG = true;					// Debug-Modus aktivieren/ deaktivieren (s.o.)
-		
 		public Parcel[][] gameArea;					// Gesamtspielfläche LOGIK
 		public MeshManipulator[][] drawnArea;		// Gesamtspielfläche WÜRFEL-Transform
-		
-		private Vector2 rinkPosition;				// Die Orientierungs-Parzelle (s.o.);
 		
 		public GameObject []players = new GameObject[1];
 		public GameObject player;
@@ -35,10 +31,9 @@ namespace AssemblyCSharp
 		
 		// KONSTRUKTOREN
 		
-		public Rink (int width, int height, Vector2 rinkPosition)
+		public Rink (int width, int height)
 		{
 			initializeRink(width, height);
-			this.rinkPosition = rinkPosition;
 			
 			// Erstelle Pool aus Powerups
 			// Mit dem Parameter lässt sich die Poolgröße variieren

@@ -65,8 +65,6 @@ namespace AssemblyCSharp
 		
 		public static PowerupType setPowerup(Parcel cell)
 		{
-			Vector3 cellCenter = Vector3.zero; //cell.getCenterPoint();
-			
 			Powerup p = pool[0];
 			PowerupType type = p.getType();
 

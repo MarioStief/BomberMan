@@ -5,12 +5,12 @@ public class anim : MonoBehaviour {
 
     float t = 0.0f;
 	public float timer = 3.0f;
-	Renderer renderer;
+	Renderer myRenderer;
 	
 	void Start() {
 		// Aufblinken beim Bombenlegen verbeiden
-		renderer = transform.Find("child").gameObject.transform.Find("default").gameObject.transform.renderer;
-		renderer.material.SetColor("_Color", Color.black);
+		myRenderer = transform.Find("child").gameObject.transform.Find("default").gameObject.transform.renderer;
+		myRenderer.material.SetColor("_Color", Color.black);
 		transform.localScale = Vector3.zero;
 	}
 	
@@ -23,6 +23,6 @@ public class anim : MonoBehaviour {
        	f += (t/timer)/4;
 		f *= 0.3f; // Größenanpassung auf Sphere
         transform.localScale = new Vector3(f, f, f);
-		renderer.material.SetColor("_Color", new Color(t/1.5f, 0f, 0f));
+		myRenderer.material.SetColor("_Color", new Color(t/1.5f, 0f, 0f));
 	}
 }

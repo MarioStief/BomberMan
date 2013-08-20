@@ -5,11 +5,10 @@ public class SplitMeshIntoTriangles : MonoBehaviour
 {
 	
 	private static GameObject guiObject;
-	private GameObject gameObject;
+	private GameObject gObject;
 	private Vector3 position;
 	private int simplify = 3;
 	private Vector3 scale;
-	private bool child = false;
 
 	
 	public static GameObject GUIObject {
@@ -24,7 +23,7 @@ public class SplitMeshIntoTriangles : MonoBehaviour
 	// Factory-Klasse, um einen Konstruktor auf einem Monobehaviour-Objekt zu emulieren
 	public static SplitMeshIntoTriangles createMeshExplosion(GameObject obj, Vector3 position, int simplify) {
 		SplitMeshIntoTriangles thisObj = GUIObject.AddComponent<SplitMeshIntoTriangles>();
-		thisObj.gameObject = obj;
+		thisObj.gObject = obj;
 		thisObj.position = position;
 		thisObj.simplify = 11-simplify;
 		//thisObj.child = child;
@@ -34,15 +33,15 @@ public class SplitMeshIntoTriangles : MonoBehaviour
 	
     IEnumerator SplitMesh ()
     {
-		if (gameObject.transform.Find("child") != null) {
-			gameObject = gameObject.transform.Find("child").gameObject;
-			if (gameObject.transform.Find("MineBody") != null)
-				gameObject = gameObject.transform.Find("MineBody").gameObject;
-			if (gameObject.transform.Find("default") != null)
-				gameObject = gameObject.transform.Find("default").gameObject;
+		if (gObject.transform.Find("child") != null) {
+			gObject = gameObject.transform.Find("child").gameObject;
+			if (gObject.transform.Find("MineBody") != null)
+				gObject = gameObject.transform.Find("MineBody").gameObject;
+			if (gObject.transform.Find("default") != null)
+				gObject = gameObject.transform.Find("default").gameObject;
 		}
-        MeshFilter MF = gameObject.GetComponent<MeshFilter>();
-        MeshRenderer MR = gameObject.GetComponent<MeshRenderer>();
+        MeshFilter MF = gObject.GetComponent<MeshFilter>();
+        MeshRenderer MR = gObject.GetComponent<MeshRenderer>();
 		
         Mesh M = MF.mesh;
         Vector3[] verts = M.vertices;
@@ -71,8 +70,8 @@ public class SplitMeshIntoTriangles : MonoBehaviour
                 mesh.triangles = new int[] { 0, 1, 2, 2, 1, 0 };
  
                 GameObject GO = new GameObject("Triangle " + (i / 3));
-                GO.transform.position = gameObject.transform.position;
-                GO.transform.rotation = gameObject.transform.rotation;
+                GO.transform.position = gObject.transform.position;
+                GO.transform.rotation = gObject.transform.rotation;
                 GO.AddComponent<MeshRenderer>().material = MR.materials[submesh];
                 GO.AddComponent<MeshFilter>().mesh = mesh;
                 GO.AddComponent<BoxCollider>();
