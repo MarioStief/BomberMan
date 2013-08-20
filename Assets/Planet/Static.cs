@@ -59,7 +59,8 @@ namespace AssemblyCSharp
 			
 			bombPrefab = Resources.Load("Prefabs/bombPrefab");
 			triggerbombPrefab = Resources.Load("Prefabs/triggerbomb/triggerbomb");
-			contactMinePrefab = Resources.Load("Prefabs/contactMinePrefab");
+			//contactMinePrefab = Resources.Load("Prefabs/contactMinePrefab");
+			contactMinePrefab = Resources.Load("Prefabs/contactmine/contactMine");
 			powerupPrefab = Resources.Load("Prefabs/powerupPrefab");
 			explosionPrefab = Resources.Load("Prefabs/explosionPrefab");
 			

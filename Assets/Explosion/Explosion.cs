@@ -83,8 +83,6 @@ public class Explosion : MonoBehaviour
 					bomb = GameObject.Instantiate(Static.bombPrefab, transform.position, Quaternion.identity) as GameObject;
 					EXPLOSIONTIMER = bomb.GetComponent<anim>().timer;
 				}
-				bomb.transform.up = transform.position;
-				bomb.transform.Rotate(0f, 0f, 0f, Space.Self);
 			}
 			cell.setGameObject(bomb);
 		}
@@ -109,6 +107,9 @@ public class Explosion : MonoBehaviour
 		
 		if (this.cell == null)
 			return;
+		
+		if (bomb != null)
+			bomb.transform.up = transform.position;
 		
 		float elapsedTime = Time.time - createTime;
 		if (waitingForBombExplosion) {
