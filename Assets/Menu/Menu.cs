@@ -49,9 +49,8 @@ public class Menu : MonoBehaviour {
 		playerColor.g = PlayerPrefs.GetFloat("PlayerGreen", 1);
 		playerColor.b = PlayerPrefs.GetFloat("PlayerBlue", 0);
 		playerColor.a = 1f;
-		Static.setMenu(this);
 		
-		Static.inputHandler.playSound(Static.selectRandomMusic(), true);
+		Static.setMenu(this);
 	}
 
 

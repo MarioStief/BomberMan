@@ -91,8 +91,6 @@ namespace AssemblyCSharp
 			for (int j = 0; j < height; j++) {
 				drawnArea[j] = new MeshManipulator[width];
 			}
-			
-			renderAll();
 		}
 		
 		// <summary>
@@ -105,7 +103,7 @@ namespace AssemblyCSharp
 		
 			for (int i = 0; i < drawnArea.Length; i++) {
 				for (int j = 0; j < drawnArea[i].Length; j++) {
-					drawnArea[i][j].updateCoordinates();	
+					drawnArea[i][j].updateCoordinates();
 				}
 			}
 			//highLightRinkPosition(true);

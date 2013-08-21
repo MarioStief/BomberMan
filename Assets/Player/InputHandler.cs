@@ -97,7 +97,9 @@ public class InputHandler : MonoBehaviour {
 		verticalHelper = 0.0f;
 		horizontalHelper = 0.0f;
 		
-		//Static.player.setDead(false, networkView);
+		playSound(Static.selectRandomMusic(), true);
+		
+		Static.rink.renderAll();
 	}
 
 	
