@@ -51,6 +51,9 @@ public class Menu : MonoBehaviour {
 		playerColor.a = 1f;
 		
 		Static.setMenu(this);
+		
+		// play bg-music
+		playSound(Static.selectRandomMusic(), true);
 	}
 	
 	public void playSound(AudioClip clip, bool loop) {

@@ -97,8 +97,6 @@ public class InputHandler : MonoBehaviour {
 		verticalHelper = 0.0f;
 		horizontalHelper = 0.0f;
 		
-		Static.menuHandler.playSound(Static.selectRandomMusic(), true);
-		
 		Static.rink.renderAll();
 	}
 
