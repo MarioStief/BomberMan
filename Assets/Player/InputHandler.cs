@@ -195,10 +195,6 @@ public class InputHandler : MonoBehaviour {
 	
 	void Update () {
 		
-		if (Static.player.isDead()) { // vor Scham im Boden versinken lassen ;)
-			transform.position -= 0.023f * transform.position.normalized * Time.deltaTime;
-		}
-		
 		// Gegner drehen mit dem Planeten..!
 		if (Network.peerType != NetworkPeerType.Disconnected && !networkView.isMine && Static.rink != null) {
 			
@@ -340,6 +336,8 @@ public class InputHandler : MonoBehaviour {
 				Static.player.increaseHP();
 			}
 		} else {
+			// vor Scham im Boden versinken lassen ;)
+			transform.position -= 0.023f * transform.position.normalized * Time.deltaTime;
 			moveCharacter();
 		}
 	}

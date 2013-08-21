@@ -34,11 +34,11 @@ public class SplitMeshIntoTriangles : MonoBehaviour
     IEnumerator SplitMesh ()
     {
 		if (gObject.transform.Find("child") != null) {
-			gObject = gameObject.transform.Find("child").gameObject;
+			gObject = gObject.transform.Find("child").gameObject;
 			if (gObject.transform.Find("MineBody") != null)
-				gObject = gameObject.transform.Find("MineBody").gameObject;
+				gObject = gObject.transform.Find("MineBody").gameObject;
 			if (gObject.transform.Find("default") != null)
-				gObject = gameObject.transform.Find("default").gameObject;
+				gObject = gObject.transform.Find("default").gameObject;
 		}
         MeshFilter MF = gObject.GetComponent<MeshFilter>();
         MeshRenderer MR = gObject.GetComponent<MeshRenderer>();
