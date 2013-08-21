@@ -58,7 +58,7 @@ public class Menu : MonoBehaviour {
 	
 	public void playSound(AudioClip clip, bool loop) {
 		AudioSource audioSource = gameObject.GetComponent<AudioSource>();
-		if (audioSource.isPlaying) {
+		if (audioSource.isPlaying && !loop) {
 			// neue Soundsource dazu
 			foreach (AudioSource audioIterator in GetComponents<AudioSource>()) {
 				if (!audioIterator.isPlaying) // entferne nicht mehr laufende

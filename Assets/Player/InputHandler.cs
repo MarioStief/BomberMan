@@ -98,6 +98,7 @@ public class InputHandler : MonoBehaviour {
 		horizontalHelper = 0.0f;
 		
 		Static.rink.renderAll();
+		Static.player.setDead(false, networkView);
 	}
 
 	
