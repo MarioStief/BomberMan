@@ -52,6 +52,23 @@ public class Menu : MonoBehaviour {
 		
 		Static.setMenu(this);
 	}
+	
+	public void playSound(AudioClip clip, bool loop) {
+		AudioSource audioSource = gameObject.GetComponent<AudioSource>();
+		if (audioSource.isPlaying) {
+			// neue Soundsource dazu
+			foreach (AudioSource audioIterator in GetComponents<AudioSource>()) {
+				if (!audioIterator.isPlaying) // entferne nicht mehr laufende
+					Destroy(audioIterator);
+			}
+			audioSource = gameObject.AddComponent<AudioSource>();
+		}
+		audioSource.clip = clip;
+		audioSource.loop = loop;
+		audioSource.Play();
+		audioSource.volume = Preferences.getVolume();
+	}
+
 
 
 	public void OnGUI () {
@@ -474,18 +491,18 @@ public class Menu : MonoBehaviour {
 		if (GUI.Button(new Rect(5, Screen.height-90, 20, 20), "-")) {
 			float v = Mathf.Max(Preferences.getVolume() - 0.1f, 0f);
 			if (v <= 0) {
-				Static.inputHandler.GetComponent<AudioSource>().Pause();
+				Static.menuHandler.GetComponent<AudioSource>().Pause();
 			} else {
-				Static.inputHandler.GetComponent<AudioSource>().volume = v;
+				Static.menuHandler.GetComponent<AudioSource>().volume = v;
 			}
 			Preferences.setVolume(v);
 		}
 		if (GUI.Button(new Rect(5,Screen.height-65, 20, 20), "+")) {
 			float v = Mathf.Min(Preferences.getVolume() + 0.1f, 1f);
-			if (!Static.inputHandler.GetComponent<AudioSource>().isPlaying) {
-				Static.inputHandler.GetComponent<AudioSource>().Play();
+			if (!Static.menuHandler.GetComponent<AudioSource>().isPlaying) {
+				Static.menuHandler.GetComponent<AudioSource>().Play();
 			}
-			Static.inputHandler.GetComponent<AudioSource>().volume = v;
+			Static.menuHandler.GetComponent<AudioSource>().volume = v;
 			Preferences.setVolume(v);
 		}
 	}

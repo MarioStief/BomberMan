@@ -97,7 +97,7 @@ public class InputHandler : MonoBehaviour {
 		verticalHelper = 0.0f;
 		horizontalHelper = 0.0f;
 		
-		playSound(Static.selectRandomMusic(), true);
+		Static.menuHandler.playSound(Static.selectRandomMusic(), true);
 		
 		Static.rink.renderAll();
 	}
@@ -265,17 +265,17 @@ public class InputHandler : MonoBehaviour {
 		}
 		
 		if ((Input.GetKeyDown(KeyCode.Plus)) || (Input.GetKeyDown(KeyCode.KeypadPlus))) {
-			AudioSource audioSource = gameObject.GetComponent<AudioSource>();
+			AudioSource audioSource = Static.menuHandler.gameObject.GetComponent<AudioSource>();
 			if (audioSource.volume < 1f) {
-				gameObject.GetComponent<AudioSource>().volume += 0.1f;
+				Static.menuHandler.gameObject.GetComponent<AudioSource>().volume += 0.1f;
 			}
 			Debug.Log("Audio volume set to " + audioSource.volume);
 		}
 		
 		if ((Input.GetKeyDown(KeyCode.Minus)) || (Input.GetKeyDown(KeyCode.KeypadMinus))) {
-			AudioSource audioSource = gameObject.GetComponent<AudioSource>();
+			AudioSource audioSource = Static.menuHandler.gameObject.GetComponent<AudioSource>();
 			if (audioSource.volume > 0f) {
-				gameObject.GetComponent<AudioSource>().volume -= 0.1f;
+				Static.menuHandler.gameObject.GetComponent<AudioSource>().volume -= 0.1f;
 			}
 			Debug.Log("Audio volume set to " + audioSource.volume);
 		}
@@ -318,7 +318,7 @@ public class InputHandler : MonoBehaviour {
 					    	               Static.player.getFlamePower(), Static.player.getDelay(), Static.player.getSuperbomb(), extra, true, true);
 						if (extra == 1)
 							Static.player.addTriggerBomb(ex, currCell);
-						playSound(Static.bombDropSoundEffect, false);
+						Static.menuHandler.playSound(Static.bombDropSoundEffect, false);
 					}
 				}
 			}
@@ -329,7 +329,7 @@ public class InputHandler : MonoBehaviour {
 						GameObject ex = Network.Instantiate(Resources.Load("Prefabs/Bombe"), currCell.getCenterPos(), Quaternion.identity, 0) as GameObject;
 						ex.networkView.RPC("createExplosionOnCell", RPCMode.All, currCell.getLpos(), currCell.getBpos(), 
 					     	              Static.player.getFlamePower(), Static.player.getDelay(), Static.player.getSuperbomb(), 2, true, true);
-						playSound(Static.contactMineDropSoundEffect, false);
+						Static.menuHandler.playSound(Static.contactMineDropSoundEffect, false);
 					}
 				}
 				Static.player.releaseTriggerBombs();
@@ -741,21 +741,4 @@ public class InputHandler : MonoBehaviour {
 		sun.transform.RotateAround(Vector3.zero, Vector3.forward, movement);
 		sun.transform.eulerAngles = new Vector3(0,90,0);
 	}
-	
-	public void playSound(AudioClip clip, bool loop) {
-		AudioSource audioSource = gameObject.GetComponent<AudioSource>();
-		if (audioSource.isPlaying) {
-			// neue Soundsource dazu
-			foreach (AudioSource audioIterator in GetComponents<AudioSource>()) {
-				if (!audioIterator.isPlaying) // entferne nicht mehr laufende
-					Destroy(audioIterator);
-			}
-			audioSource = gameObject.AddComponent<AudioSource>();
-		}
-		audioSource.clip = clip;
-		audioSource.loop = loop;
-		audioSource.Play();
-		audioSource.volume = Preferences.getVolume();
-	}
-
 }

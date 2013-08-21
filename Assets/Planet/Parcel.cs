@@ -129,11 +129,12 @@ namespace AssemblyCSharp
 			this.up = up;
 			this.down = down;
 		}
+		
 		public Parcel getNeighbour(int dir) {
 			switch (dir) {
 				case 0: return right;
-				case 1: return left;
 				case 2: return up;
+				case 1: return left;
 				case 3: return down;
 			}
 			return null;
@@ -221,7 +222,7 @@ namespace AssemblyCSharp
 			else
 				GameObject.Destroy(obj);
 			if (collected)
-				Static.inputHandler.playSound(powerupAudio, false);
+				Static.menuHandler.playSound(powerupAudio, false);
 			obj = null;
 			powerupOnCell = false;
 			powerupExplodingValue = 0;

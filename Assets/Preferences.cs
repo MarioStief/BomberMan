@@ -48,16 +48,18 @@ namespace AssemblyCSharp
 		public static int getExplosionDetail() {
 			return explosionDetail;
 		}
+		
 		public static void setExplosionDetail(int explosion) {
 			if (explosion != explosionDetail) {
 				explosionDetail = explosion;
 				PlayerPrefs.SetInt("Explosion Detail", explosionDetail);
 			}
 		}
-	
+		
 		public static int getChestDensity() {
 			return chestDensity;
 		}
+		
 		public static void setChestDensity(int chest) {
 			if (chest != chestDensity) {
 				chestDensity = chest;
@@ -68,11 +70,11 @@ namespace AssemblyCSharp
 		public static float getVolume() {
 			return volume;
 		}
+
 		public static void setVolume(float v) {
 			AudioListener.volume = v;
 			PlayerPrefs.SetFloat("Volume",v);
 			volume = v;
 		}
-		
 	}
 }

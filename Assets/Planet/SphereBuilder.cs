@@ -64,9 +64,7 @@ public class SphereBuilder : MonoBehaviour {
 		// zufällig 2 benachbarte Felder freiräumen
 		int d = Random.Range(0,4);
 		gameArea.getGameArea()[B_pos][L_pos].getNeighbour(d).setType(0);
-		gameArea.getGameArea()[B_pos][L_pos].getNeighbour((d + Random.Range(0,2)) % 4).setType(0);
-
-
+		gameArea.getGameArea()[B_pos][L_pos].getNeighbour((d + 1) % 4).setType(0);
 		
 		if (Application.loadedLevelName == "StartMenu") {
 			// alle nachbarfelder freiräumen

@@ -94,7 +94,7 @@ public class Explosion : MonoBehaviour
 			createTime = Time.time;
 			
 			if (contactMine) {
-				Static.inputHandler.playSound(Static.contactMineExplosionSoundEffect, false);
+				Static.menuHandler.playSound(Static.contactMineExplosionSoundEffect, false);
 				createTime += 0.5f;
 			}
 		}
