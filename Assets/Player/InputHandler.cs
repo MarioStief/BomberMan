@@ -98,7 +98,7 @@ public class InputHandler : MonoBehaviour {
 		horizontalHelper = 0.0f;
 		
 		Static.rink.renderAll();
-		Static.player.setDead(false, networkView);
+		Static.player.resetStats();
 	}
 
 	
@@ -330,10 +330,6 @@ public class InputHandler : MonoBehaviour {
 				Static.player.releaseTriggerBombs();
 			}
 			
-			if ((Time.time - createTime) > 1.0f) {
-				createTime = Time.time;
-				Static.player.increaseHP();
-			}
 		} else {
 			// vor Scham im Boden versinken lassen ;)
 			transform.position -= 0.023f * transform.position.normalized * Time.deltaTime;

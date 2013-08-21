@@ -13,7 +13,6 @@ namespace AssemblyCSharp
 		private const float MINDELAY = 0.04f;
 		private const float MAXDELAY = 0.28f;
 		private const int MAXFLAMEPOWER = 10;
-		private const int MAXHP = 100;
 		private bool SUPERBOMB = false;
 		
 		private int bombs = 1;
@@ -28,9 +27,10 @@ namespace AssemblyCSharp
 		private int flamePower = 1;
 		private float speed = 0.4f;
 		private float delay = 0.2f;
-		private int hp = MAXHP;
 		
 		private bool dead = false;
+		private int wins = 0;
+		private int deads = 0;
 		
 		private UnityEngine.Object[] icons = new UnityEngine.Object[6];
 		private string[] iconText = new string[4];
@@ -256,6 +256,7 @@ namespace AssemblyCSharp
 		
 		public void setDead(bool d, NetworkView nv) {
 			dead = d;
+			deads++;
 			if (d) {
 				Static.menuHandler.playSound(Static.playerDeadSoundEffect, false);
 				// Verteile Powerups über das Spielfeld
@@ -327,31 +328,9 @@ namespace AssemblyCSharp
 				}
 			}
 		}
-				
+		
 		public bool isDead() {
 			return dead;
-		}
-		
-		public void decreaseHP() {
-			hp--;
-			Debug.Log("Life: " + hp);
-			if (hp == 0)
-				dead = true;
-		}
-
-		public void increaseHP() {
-			if (hp < 100) {
-				hp++;
-				Debug.Log("Life: " + hp);
-			}
-		}
-		
-		public int getHP() {
-			return hp;
-		}
-
-		public int getMaxHP() {
-			return MAXHP;
 		}
 		
 		public void setCurrentParcel(Parcel parcel){
@@ -404,6 +383,38 @@ namespace AssemblyCSharp
 		
 		public int getMaxFlamePower() {
 			return MAXFLAMEPOWER;
+		}
+		
+		public void resetStats() {
+			SUPERBOMB = false;
+			bombs = 1;
+			bombsActive = 0;
+			triggerbombs = 0;
+			triggerbombsActive = 0;
+			contactmines = 0;
+			contactminesActive = 0;
+			flamePower = 1;
+			speed = 0.4f;
+			delay = 0.2f;
+			dead = false;
+		}
+		
+		public void increaseWins() {
+			wins++;
+		}
+		
+		public int getWins() {
+			return wins;
+		}
+		
+		public int getDeads() {
+			return deads;
+		}
+		
+		public void resetGame() {
+			resetStats();
+			wins = 0;
+			deads = 0;
 		}
 	}
 }
