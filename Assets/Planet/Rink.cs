@@ -58,7 +58,8 @@ namespace AssemblyCSharp
 			
 			for (int i = 0; i < height; i++) {
 				for (int j = 0; j < width; j++) {
-					if (i % 2 == 0 && j % 2 == 0) {
+					//if (i % 2 == 0 && j % 2 == 0) {
+					if (UnityEngine.Random.Range(0,4) == 0) {
 						gameArea[i][j] = new Parcel(2);	// Hoher Steinquader
 					} else {
 						gameArea[i][j] = new Parcel(0);	// Bodenfläche
@@ -68,7 +69,7 @@ namespace AssemblyCSharp
 				}
 			}
 			
-			for (int i = 0; i < Preferences.getChestDensity() * width; i++) {
+			for (int i = 0; i < 10 * Preferences.getChestDensity() * width; i++) {
 				//gameArea[(int)(UnityEngine.Random.value*height)][(int)(UnityEngine.Random.value*width)].setType(1);	
 				int a = (int)(UnityEngine.Random.value*height);
 				int b = (int)(UnityEngine.Random.value*width);

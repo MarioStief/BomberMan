@@ -9,7 +9,7 @@ namespace AssemblyCSharp
 		private static bool explodingPowerups = true;
 		private static bool negativePowerups = true;
 		private static int explosionDetail = 3; // 1 = very simple ... 10 = ultimate
-		private static int chestDensity = 30; // 10 = low ... 40 = high
+		private static int chestDensity = 5; // 10 = low ... 40 = high
 		private static float volume = 0.7f; // 0-1
 	
 		public static void load() {

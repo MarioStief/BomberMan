@@ -376,7 +376,7 @@ public class Menu : MonoBehaviour {
 		    GUI.skin.label.alignment = TextAnchor.MiddleRight;
 			GUI.Label(new Rect(width-15,165,50,20), "Max");
 		    GUI.skin.label.alignment = TextAnchor.MiddleLeft;
-			chestDensity = (int)GUI.HorizontalSlider (new Rect (25, 160, width, 20), (float)chestDensity, 5.0f, 50.0f);
+			chestDensity = (int)GUI.HorizontalSlider (new Rect (25, 160, width, 20), (float)chestDensity, 1.0f, 5.0f);
 			Preferences.setExplosionDetail(expDetail);
 			Preferences.setChestDensity(chestDensity);
 		
