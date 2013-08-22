@@ -49,7 +49,7 @@ public class Explosion : MonoBehaviour
 			cell.setBomb(true);
 		
 		if (!self)
-			startExplosion();
+			startExplosion(false);
 		
 		return this;
 	}
@@ -88,14 +88,18 @@ public class Explosion : MonoBehaviour
 	}
 	
 	[RPC]
-	public void startExplosion() {
+	public void startExplosion(bool instantly) {
+		if (instantly) {
+			EXPLOSIONTIMER = 0f;
+			waitingForBombExplosion = false;
+		}
 		if (waitingForBombExplosion) {
 			waitingForBombExplosion = false;
 			createTime = Time.time;
 			
 			if (contactMine) {
 				Static.menuHandler.playSound(Static.contactMineExplosionSoundEffect, false);
-				createTime += 0.5f;
+				createTime += EXPLOSIONTIMER;
 			}
 		}
 	}
@@ -204,7 +208,7 @@ public class Explosion : MonoBehaviour
 						explosionField.getCell().setExploding(true);
 						//explosionField.getCell().colorCell(Color.black);
 						
-						// Wand zerstören, ggfls. Powerup setzen
+						// Powerup hochjagen
 						if (PowerupPool.getDestroyable()) {
 							if (explosionField.getCell().hasPowerup()) {
 								if (Preferences.getExplodingPowerups() == true) {
@@ -219,7 +223,7 @@ public class Explosion : MonoBehaviour
 									GameObject ex = Network.Instantiate(Resources.Load("Prefabs/Bombe"), explosionField.getCell().getCenterPos(), Quaternion.identity, 0) as GameObject;
 									ex.networkView.RPC("createExplosionOnCell", RPCMode.All, explosionField.getCell().getLpos(), explosionField.getCell().getBpos(), 
 									                   flameReach, flameDelay, superPowerup, 0, false, false);
-									//ex.startExplosion();
+									//ex.startExplosion(false);
 								}
 								explosionField.getCell().destroyPowerup(false, true);
 							}
@@ -259,8 +263,8 @@ public class Explosion : MonoBehaviour
 						explodingCell.getMeshManipulator().updateCoordinates();
 
 						// Bomben jagen sich gegenseitig hoch:
-						if (explodingCell.hasBomb() || explodingCell.hasContactMine()) {
-							explodingCell.getExplosion().startExplosion();
+						if (explodingCell.hasExplosion()) {
+							explodingCell.getExplosion().startExplosion(true);
 							if (explodingCell.getExplosion().isTriggerBomb()) { // remove triggerBomb from list
 								Dictionary<Parcel,GameObject> triggerBombs = new Dictionary<Parcel,GameObject>(Static.player.getTriggerBombs());
 								foreach (var entry in triggerBombs) {

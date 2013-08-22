@@ -213,16 +213,14 @@ namespace AssemblyCSharp
 		}
 
 		public PowerupType destroyPowerup(bool collected, bool shatter) {
-			if (shatter) {
-				if (Preferences.getExplosionDetail() > 0)
-					SplitMeshIntoTriangles.createMeshExplosion(obj, getCenterPos(), Preferences.getExplosionDetail()); // Zerbersten lassen
-				else
-					GameObject.Destroy(obj);
-			}
+			if (shatter && Preferences.getExplosionDetail() > 0)
+				SplitMeshIntoTriangles.createMeshExplosion(obj, getCenterPos(), Preferences.getExplosionDetail()); // Zerbersten lassen
 			else
 				GameObject.Destroy(obj);
+			
 			if (collected)
 				Static.menuHandler.playSound(powerupAudio, false);
+			
 			obj = null;
 			powerupOnCell = false;
 			powerupExplodingValue = 0;

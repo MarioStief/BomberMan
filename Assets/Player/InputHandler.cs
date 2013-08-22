@@ -358,7 +358,7 @@ public class InputHandler : MonoBehaviour {
 				cell.destroyPowerup(false, true);
 				break;
 			case 3: // explding contact-mine
-				cell.getExplosion().startExplosion();
+				cell.getExplosion().startExplosion(false);
 				break;
 		}
 	}

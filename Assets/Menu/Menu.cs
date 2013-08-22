@@ -17,7 +17,7 @@ public class Menu : MonoBehaviour {
 
 	private string nickname = "Player ";
 	private static Color playerColor;
-	private int expDetail = Preferences.getExplosionDetail(); // 0 (off) - 10 (max)
+	private int expDetail = Preferences.getExplosionDetail(); // 0 (off) - 3 (max)
 	private int chestDensity = Preferences.getChestDensity(); // 5 - 50
 	private string chat = "";
 	
@@ -239,17 +239,34 @@ public class Menu : MonoBehaviour {
 		// GRAPHIC-DETAILS
 		if (!colorPicker.activeSelf) {
 				
-			GUI.Label(new Rect(0,120,width,20), "Effect Details:");
+			GUI.Label(new Rect(0,120,width,20), "Bomb Shatter Detail:");
 			GUI.Label(new Rect(0,145,50,20), "Min");
 		    GUI.skin.label.alignment = TextAnchor.MiddleRight;
 			GUI.Label(new Rect(width-40,145,40,20), "Max");
-		    GUI.skin.label.alignment = TextAnchor.MiddleLeft;
-			expDetail = (int)GUI.HorizontalSlider (new Rect (0, 140, width, 20), (float)expDetail, 0.0f, 10.0f);
-			if (expDetail == 0) {
+			expDetail = (int)GUI.HorizontalSlider (new Rect (0, 140, width, 20), (float)expDetail, 0.0f, 3.0f);
+			string detailLevel = "";
+			switch (expDetail) {
+			case 0:
+				GUI.skin.label.normal.textColor = Color.grey;
+				detailLevel = "off";
+				break;
+			case 1:
+				GUI.skin.label.normal.textColor = Color.green;
+				detailLevel = "low";
+				break;
+			case 2:
+				GUI.skin.label.normal.textColor = Color.yellow;
+				detailLevel = "moderate";
+				break;
+			case 3:
 				GUI.skin.label.normal.textColor = Color.red;
-				GUI.Label(new Rect(width/2-20,145,50,20), "off");
-				GUI.skin.label.normal.textColor = Color.white;
+				detailLevel = "high";
+				break;
 			}
+		    GUI.skin.label.alignment = TextAnchor.MiddleCenter;
+			GUI.Label(new Rect(width/2-30,145,60,20), detailLevel);
+			GUI.skin.label.normal.textColor = Color.white;
+		    GUI.skin.label.alignment = TextAnchor.MiddleLeft;
 			
 			Preferences.setExplosionDetail(expDetail);
 
@@ -325,17 +342,34 @@ public class Menu : MonoBehaviour {
 		if (!colorPicker.activeSelf) {
 		
 			// GRAPHIC-DETAILS
-			GUI.Label(new Rect(25,80,width,20), "Effect Details:");
+			GUI.Label(new Rect(25,80,width,20), "Bomb Shatter Detail:");
 			GUI.Label(new Rect(25,105,50,20), "Min");
 		    GUI.skin.label.alignment = TextAnchor.MiddleRight;
 			GUI.Label(new Rect(width-15,105,50,20), "Max");
-		    GUI.skin.label.alignment = TextAnchor.MiddleLeft;
-			expDetail = (int)GUI.HorizontalSlider (new Rect (25, 100, width, 20), (float)expDetail, 0.0f, 10.0f);
-			if (expDetail == 0) {
+			expDetail = (int)GUI.HorizontalSlider (new Rect (25, 100, width, 20), (float)expDetail, 0.0f, 3.0f);
+						string detailLevel = "";
+			switch (expDetail) {
+			case 0:
+				GUI.skin.label.normal.textColor = Color.grey;
+				detailLevel = "off";
+				break;
+			case 1:
+				GUI.skin.label.normal.textColor = Color.green;
+				detailLevel = "low";
+				break;
+			case 2:
+				GUI.skin.label.normal.textColor = Color.yellow;
+				detailLevel = "moderate";
+				break;
+			case 3:
 				GUI.skin.label.normal.textColor = Color.red;
-				GUI.Label(new Rect(width/2+20,105,50,20), "off");
-				GUI.skin.label.normal.textColor = Color.white;
+				detailLevel = "high";
+				break;
 			}
+		    GUI.skin.label.alignment = TextAnchor.MiddleCenter;
+			GUI.Label(new Rect(width/2,105,60,20), detailLevel);
+			GUI.skin.label.normal.textColor = Color.white;
+		    GUI.skin.label.alignment = TextAnchor.MiddleLeft;
 
 			GUI.Label(new Rect(25,140,width,20), "Chest Density:");
 			GUI.Label(new Rect(25,165,50,20), "Min");

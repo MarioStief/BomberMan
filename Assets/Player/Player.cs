@@ -30,7 +30,6 @@ namespace AssemblyCSharp
 		
 		private bool dead = false;
 		private int wins = 0;
-		private int deads = 0;
 		
 		private UnityEngine.Object[] icons = new UnityEngine.Object[6];
 		private string[] iconText = new string[4];
@@ -256,7 +255,6 @@ namespace AssemblyCSharp
 		
 		public void setDead(bool d, NetworkView nv) {
 			dead = d;
-			deads++;
 			if (d) {
 				Static.menuHandler.playSound(Static.playerDeadSoundEffect, false);
 				// Verteile Powerups über das Spielfeld
@@ -407,14 +405,9 @@ namespace AssemblyCSharp
 			return wins;
 		}
 		
-		public int getDeads() {
-			return deads;
-		}
-		
 		public void resetGame() {
 			resetStats();
 			wins = 0;
-			deads = 0;
 		}
 	}
 }
