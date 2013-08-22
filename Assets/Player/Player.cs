@@ -204,7 +204,7 @@ namespace AssemblyCSharp
 		public void releaseTriggerBombs() {
 			Dictionary<Parcel,GameObject> triggerBombs = new Dictionary<Parcel,GameObject>(triggerbombList);
 			foreach (var bomb in triggerBombs) {
-				bomb.Value.networkView.RPC("startExplosion", RPCMode.All);
+				bomb.Value.networkView.RPC("startExplosion", RPCMode.All, true);
 				removeTriggerBomb(bomb.Key);
 			}
 		}

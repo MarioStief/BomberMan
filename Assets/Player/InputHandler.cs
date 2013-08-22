@@ -99,6 +99,7 @@ public class InputHandler : MonoBehaviour {
 		
 		Static.rink.renderAll();
 		Static.player.resetStats();
+		Static.player.powerupCollected(PowerupType.TRIGGERBOMB);
 	}
 
 	

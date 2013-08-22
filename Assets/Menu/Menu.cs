@@ -17,8 +17,8 @@ public class Menu : MonoBehaviour {
 
 	private string nickname = "Player ";
 	private static Color playerColor;
-	private int expDetail = Preferences.getExplosionDetail(); // 0 (off) - 3 (max)
-	private int chestDensity = Preferences.getChestDensity(); // 5 - 50
+	private int expDetail;
+	private int chestDensity;
 	private string chat = "";
 	
 	private static Dictionary<NetworkPlayer,string> playerList = new Dictionary<NetworkPlayer, string>();
@@ -41,6 +41,9 @@ public class Menu : MonoBehaviour {
 		
 		// load settings
 		Preferences.load();
+		expDetail = Preferences.getExplosionDetail(); // 0 (off) - 3 (max)
+		chestDensity = Preferences.getChestDensity(); // 5 - 50
+
 
 		nickname = PlayerPrefs.GetString("Player Name", nickname);
 		serverName = PlayerPrefs.GetString("Server Name", serverName);

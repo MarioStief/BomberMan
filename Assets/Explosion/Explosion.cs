@@ -89,15 +89,15 @@ public class Explosion : MonoBehaviour
 	
 	[RPC]
 	public void startExplosion(bool instantly) {
-		if (instantly) {
-			EXPLOSIONTIMER = 0f;
-			waitingForBombExplosion = false;
-		}
 		if (waitingForBombExplosion) {
 			waitingForBombExplosion = false;
 			createTime = Time.time;
 			
 			if (contactMine) {
+				if (instantly) {
+					EXPLOSIONTIMER = 0f;
+					waitingForBombExplosion = false;
+				}
 				Static.menuHandler.playSound(Static.contactMineExplosionSoundEffect, false);
 				createTime += EXPLOSIONTIMER;
 			}

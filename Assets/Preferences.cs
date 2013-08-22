@@ -8,9 +8,9 @@ namespace AssemblyCSharp
 		private static bool destroyablePowerups = true;
 		private static bool explodingPowerups = true;
 		private static bool negativePowerups = true;
-		private static int explosionDetail = 3; // 1 = very simple ... 10 = ultimate
-		private static int chestDensity = 5; // 10 = low ... 40 = high
-		private static float volume = 0.7f; // 0-1
+		private static int explosionDetail = 1; // 0 = off, 1 = low ... 3 = high
+		private static int chestDensity = 5; // 1 = low ... 5 = high
+		private static float volume = 0.7f; // 0f - 1f
 	
 		public static void load() {
 			destroyablePowerups = (PlayerPrefs.GetInt("Destroyable Powerups",(destroyablePowerups ? 1 : 0)) == 1 ? true : false);
@@ -24,6 +24,7 @@ namespace AssemblyCSharp
 		public static bool getDestroyablePowerups() {
 			return destroyablePowerups;
 		}
+		
 		public static void setDestroyablePowerups(bool destroyable) {
 			destroyablePowerups = destroyable;
 			PlayerPrefs.SetInt("Destroyable Powerups", (destroyable == true ? 1 : 0));
@@ -32,6 +33,7 @@ namespace AssemblyCSharp
 		public static bool getExplodingPowerups() {
 			return explodingPowerups;
 		}
+		
 		public static void setExplodingPowerups(bool exploding) {
 			explodingPowerups = exploding;
 			PlayerPrefs.SetInt("Exploding Powerups", (exploding == true ? 1 : 0));
@@ -40,6 +42,7 @@ namespace AssemblyCSharp
 		public static bool getNegativePowerups() {
 			return negativePowerups;
 		}
+		
 		public static void setNegative(bool negative) {
 			negativePowerups = negative;
 			PlayerPrefs.SetInt("Negative Powerups", (negative == true ? 1 : 0));
@@ -73,7 +76,7 @@ namespace AssemblyCSharp
 
 		public static void setVolume(float v) {
 			AudioListener.volume = v;
-			PlayerPrefs.SetFloat("Volume",v);
+			PlayerPrefs.SetFloat("Volume", v);
 			volume = v;
 		}
 	}
