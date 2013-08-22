@@ -246,8 +246,8 @@ public class Explosion : MonoBehaviour
 							break;
 						case 2:
 							// Steinblock explodieren lassen
-							obj = GameObject.Instantiate(Static.stoneCube2Prefab, explodingCell.getCenterPos(), Quaternion.identity) as GameObject;
-							SplitMeshIntoTriangles.createMeshExplosion(obj, cell.getCenterPos(), 1);
+							//obj = GameObject.Instantiate(Static.stoneCube2Prefab, explodingCell.getCenterPos(), Quaternion.identity) as GameObject;
+							//SplitMeshIntoTriangles.createMeshExplosion(obj, cell.getCenterPos(), 1);
 							
 							if (explodingCell.getHeight() == 1f) {
 								explodingCell.setType(0);
