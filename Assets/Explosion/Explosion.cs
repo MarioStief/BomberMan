@@ -182,7 +182,7 @@ public class Explosion : MonoBehaviour
 						// Explosionslautstärke der Spielerentfernung anpassen:
 						float distance = Vector3.Distance (GameObject.FindGameObjectWithTag("Player").transform.position, position);
 						AudioSource audioSource = detonator.GetComponent<AudioSource>();
-						audioSource.volume /= 3*distance;
+						audioSource.volume /= 6*distance;
 						audioSource.Play();
 						//Debug.Log ("Explosion Volume: " + (100/(2*distance)) + " %");
 						Debug.Log ("Distanz: " + distance + ", Explosion Volume: " + audioSource.volume);

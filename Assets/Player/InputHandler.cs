@@ -170,24 +170,32 @@ public class InputHandler : MonoBehaviour {
 		transform.localScale = Vector3.zero;
 		GetComponent<CapsuleCollider>().enabled = false;
 		while (Static.player.isDead()) {
-			do {			
+			Debug.Log("old Vertical: " + verticalMovement + " old Horizontal: " + horizontalMovement);
+			float v;
+			float h;
+			do {
+				v = verticalMovement;
+				h = horizontalMovement;
 				switch (Random.Range(0, 2)) {
 				case 0:
-					if (verticalMovement != 0f) {
-						verticalMovement = 0f;
+					if (v != 0f) {
+						v = 0f;
 					} else {
-						verticalMovement = (Random.Range(0, 2) == 0 ? 0.1f : -0.1f);
+						v = (Random.Range(0, 2) == 0 ? 0.1f : -0.1f);
 					}
 					break;
 				case 1:
-					if (horizontalMovement != 0f) {
-						horizontalMovement = 0f;
+					if (h != 0f) {
+						h = 0f;
 					} else {
-						horizontalMovement = (Random.Range(0, 2) == 0 ? 0.1f : -0.1f);
+						h = (Random.Range(0, 2) == 0 ? 0.1f : -0.1f);
 					}
 					break;
 				}
-			} while (verticalMovement == 0f && horizontalMovement == 0f);
+			} while (v == 0f && h == 0f);
+			verticalMovement = v;
+			horizontalMovement = h;
+			Debug.Log("new Vertical: " + verticalMovement + " new Horizontal: " + horizontalMovement);
 			yield return new WaitForSeconds(Random.value*5 + 5f);
 		}
 	}
@@ -263,6 +271,7 @@ public class InputHandler : MonoBehaviour {
 			AudioSource audioSource = Static.menuHandler.gameObject.GetComponent<AudioSource>();
 			if (audioSource.volume < 1f) {
 				Static.menuHandler.gameObject.GetComponent<AudioSource>().volume += 0.1f;
+				Preferences.setVolume(Static.menuHandler.gameObject.GetComponent<AudioSource>().volume);
 			}
 			Debug.Log("Audio volume set to " + audioSource.volume);
 		}
@@ -271,6 +280,7 @@ public class InputHandler : MonoBehaviour {
 			AudioSource audioSource = Static.menuHandler.gameObject.GetComponent<AudioSource>();
 			if (audioSource.volume > 0f) {
 				Static.menuHandler.gameObject.GetComponent<AudioSource>().volume -= 0.1f;
+				Preferences.setVolume(Static.menuHandler.gameObject.GetComponent<AudioSource>().volume);
 			}
 			Debug.Log("Audio volume set to " + audioSource.volume);
 		}
