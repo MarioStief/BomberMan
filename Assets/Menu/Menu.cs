@@ -75,7 +75,26 @@ public class Menu : MonoBehaviour {
 		audioSource.volume = Preferences.getVolume();
 	}
 
-
+	
+	void Update() {
+		if ((Input.GetKeyDown(KeyCode.Plus)) || (Input.GetKeyDown(KeyCode.KeypadPlus))) {
+			AudioSource audioSource = gameObject.GetComponent<AudioSource>();
+			if (audioSource.volume < 1f) {
+				audioSource.volume += 0.1f;
+				Preferences.setVolume(audioSource.volume);
+			}
+			Debug.Log("Audio volume set to " + audioSource.volume);
+		}
+		
+		if ((Input.GetKeyDown(KeyCode.Minus)) || (Input.GetKeyDown(KeyCode.KeypadMinus))) {
+			AudioSource audioSource = gameObject.GetComponent<AudioSource>();
+			if (audioSource.volume > 0f) {
+				audioSource.volume -= 0.1f;
+				Preferences.setVolume(audioSource.volume);
+			}
+			Debug.Log("Audio volume set to " + audioSource.volume);
+		}
+	}
 
 	public void OnGUI () {
 		
@@ -83,8 +102,6 @@ public class Menu : MonoBehaviour {
 			screen = "overlay";
 			return;
 		}
-
-		volumeButtons();
 
 		switch (screen) {
 			case "join":
@@ -525,25 +542,6 @@ public class Menu : MonoBehaviour {
 				Network.Disconnect();
 			}
 			screen = "start";
-		}
-	}
-	void volumeButtons() {
-		if (GUI.Button(new Rect(5, Screen.height-90, 20, 20), "-")) {
-			float v = Mathf.Max(Preferences.getVolume() - 0.1f, 0f);
-			if (v <= 0) {
-				Static.menuHandler.GetComponent<AudioSource>().Pause();
-			} else {
-				Static.menuHandler.GetComponent<AudioSource>().volume = v;
-			}
-			Preferences.setVolume(v);
-		}
-		if (GUI.Button(new Rect(5,Screen.height-65, 20, 20), "+")) {
-			float v = Mathf.Min(Preferences.getVolume() + 0.1f, 1f);
-			if (!Static.menuHandler.GetComponent<AudioSource>().isPlaying) {
-				Static.menuHandler.GetComponent<AudioSource>().Play();
-			}
-			Static.menuHandler.GetComponent<AudioSource>().volume = v;
-			Preferences.setVolume(v);
 		}
 	}
 

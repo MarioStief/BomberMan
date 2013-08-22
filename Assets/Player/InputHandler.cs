@@ -266,24 +266,7 @@ public class InputHandler : MonoBehaviour {
 			}
 			return;
 		}
-		
-		if ((Input.GetKeyDown(KeyCode.Plus)) || (Input.GetKeyDown(KeyCode.KeypadPlus))) {
-			AudioSource audioSource = Static.menuHandler.gameObject.GetComponent<AudioSource>();
-			if (audioSource.volume < 1f) {
-				Static.menuHandler.gameObject.GetComponent<AudioSource>().volume += 0.1f;
-				Preferences.setVolume(Static.menuHandler.gameObject.GetComponent<AudioSource>().volume);
-			}
-			Debug.Log("Audio volume set to " + audioSource.volume);
-		}
-		
-		if ((Input.GetKeyDown(KeyCode.Minus)) || (Input.GetKeyDown(KeyCode.KeypadMinus))) {
-			AudioSource audioSource = Static.menuHandler.gameObject.GetComponent<AudioSource>();
-			if (audioSource.volume > 0f) {
-				Static.menuHandler.gameObject.GetComponent<AudioSource>().volume -= 0.1f;
-				Preferences.setVolume(Static.menuHandler.gameObject.GetComponent<AudioSource>().volume);
-			}
-			Debug.Log("Audio volume set to " + audioSource.volume);
-		}
+
 		
 		if (Static.rink != null && !Static.player.isDead()) {
 			
@@ -476,8 +459,11 @@ public class InputHandler : MonoBehaviour {
 		else
 			angle = (angle + newAngle) / 2;
 		
-		transform.up = transform.position;
-		transform.Rotate(0f, angle, 0f, Space.Self);
+		if (angle != newAngle || Application.loadedLevelName != "StartMenu") {
+			transform.up = transform.position;
+			transform.Rotate(0f, angle, 0f, Space.Self);
+		}
+		
 		
 		// Animate Player
 		if (!Static.player.isDead()) {
