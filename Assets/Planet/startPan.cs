@@ -60,6 +60,5 @@ public class startPan : MonoBehaviour {
 			transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(targetRot), Time.deltaTime * 2);
 			transform.position = targetPos;
 		}
-
 	}
 }
