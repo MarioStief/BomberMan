@@ -571,7 +571,7 @@ public class Menu : MonoBehaviour {
 		GUI.SetNextControlName("chat");
 		chatMsg = GUI.TextField(new Rect(x,Screen.height-40,150,20), chatMsg);
 		if (((GUI.Button(new Rect(x+160,Screen.height-40,50,20), "Send")
-				|| Event.current.keyCode == KeyCode.Return))
+				|| Event.current.keyCode == KeyCode.Return || Event.current.keyCode == KeyCode.KeypadEnter))
 				&& chatMsg.Trim().Length > 0 && nickname.Trim().Length > 0) {
 			networkView.RPC("incomingChatMessage", RPCMode.All, nickname + ": " + chatMsg);
 			chatMsg = "";

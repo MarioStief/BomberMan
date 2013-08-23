@@ -22,7 +22,8 @@ namespace AssemblyCSharp
 				Menu.showGUI = !Menu.showGUI;
 			}
 			
-			if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Return) {
+			if (Event.current.type == EventType.KeyDown && (
+					Event.current.keyCode == KeyCode.Return || Event.current.keyCode == KeyCode.KeypadEnter)) {
 				if (focusToChat) {
 					GUI.FocusControl("chat");
 				} else {
