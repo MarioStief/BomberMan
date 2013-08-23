@@ -58,7 +58,7 @@ namespace AssemblyCSharp
 			}
 			
 			// keine abrupten Kameraübergänge
-			if (transform.localPosition != position) {
+			if (birdview && transform.localPosition != position) {
 				transform.localPosition = position + (transform.localPosition + position)/2; 
 			}
 		}
