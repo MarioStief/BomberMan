@@ -303,7 +303,7 @@ public class InputHandler : MonoBehaviour {
 				dropBomb();
 			
 			if ((Input.GetKeyDown(KeyCode.LeftShift)) || (Input.GetKeyDown(KeyCode.RightShift)))
-				dropContactMine();
+				extra();
 			
 		} else {
 			// vor Scham im Boden versinken lassen ;)
@@ -326,18 +326,16 @@ public class InputHandler : MonoBehaviour {
 		}
 	}
 	
-	public void dropContactMine() {
-		if ((Input.GetKeyDown(KeyCode.LeftShift)) || (Input.GetKeyDown(KeyCode.RightShift))) {
-			if (!currCell.hasExplosion()) {
-				if (Static.player.addContactMine()) {
-					GameObject ex = Network.Instantiate(Resources.Load("Prefabs/Bombe"), currCell.getCenterPos(), Quaternion.identity, 0) as GameObject;
-					ex.networkView.RPC("createExplosionOnCell", RPCMode.All, currCell.getLpos(), currCell.getBpos(), 
-				     	              Static.player.getFlamePower(), Static.player.getDelay(), Static.player.getSuperbomb(), 2, true, true);
-					Static.menuHandler.playSound(Static.contactMineDropSoundEffect, false);
-				}
+	public void extra() {
+		if (!currCell.hasExplosion()) {
+			if (Static.player.addContactMine()) {
+				GameObject ex = Network.Instantiate(Resources.Load("Prefabs/Bombe"), currCell.getCenterPos(), Quaternion.identity, 0) as GameObject;
+				ex.networkView.RPC("createExplosionOnCell", RPCMode.All, currCell.getLpos(), currCell.getBpos(), 
+			     	              Static.player.getFlamePower(), Static.player.getDelay(), Static.player.getSuperbomb(), 2, true, true);
+				Static.menuHandler.playSound(Static.contactMineDropSoundEffect, false);
 			}
-			Static.player.releaseTriggerBombs();
 		}
+		Static.player.releaseTriggerBombs();
 	}
 	
 	[RPC]

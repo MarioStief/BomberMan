@@ -34,7 +34,7 @@ namespace AssemblyCSharp
 			
 			// right click
 			if (Input.GetButton ("Fire2")) {
-				Static.inputHandler.dropContactMine();
+				Static.inputHandler.extra();
 			}
 			
 			// middle click
