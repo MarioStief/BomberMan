@@ -11,13 +11,15 @@ namespace AssemblyCSharp
 		private static int explosionDetail = 1; // 0 = off, 1 = low ... 3 = high
 		private static int chestDensity = 5; // 1 = low ... 5 = high
 		private static float volume = 0.7f; // 0f - 1f
+		private static float mouseSensitivity = 0.5f; // 0f - 1f
 	
 		public static void load() {
 			destroyablePowerups = (PlayerPrefs.GetInt("Destroyable Powerups",(destroyablePowerups ? 1 : 0)) == 1 ? true : false);
 			explodingPowerups = (PlayerPrefs.GetInt("Exploding Powerups",(explodingPowerups ? 1 : 0)) == 1 ? true : false);
 			negativePowerups = (PlayerPrefs.GetInt("Negative Powerups",(negativePowerups ? 1 : 0)) == 1 ? true : false);
-			explosionDetail = PlayerPrefs.GetInt("Explosion Detail",explosionDetail);
-			chestDensity = PlayerPrefs.GetInt("Chest Density",chestDensity);
+			explosionDetail = PlayerPrefs.GetInt("Explosion Detail", explosionDetail);
+			chestDensity = PlayerPrefs.GetInt("Chest Density", chestDensity);
+			mouseSensitivity = PlayerPrefs.GetFloat("Mouse Sensitivity", mouseSensitivity);
 			volume = PlayerPrefs.GetFloat("Volume",volume);
 		}
 		
@@ -67,6 +69,17 @@ namespace AssemblyCSharp
 			if (chest != chestDensity) {
 				chestDensity = chest;
 				PlayerPrefs.SetInt("Chest Density", chestDensity);
+			}
+		}
+		
+		public static float getMouseSensitivity() {
+			return mouseSensitivity;
+		}
+		
+		public static void setMouseSensitivity(float md) {
+			if (md != mouseSensitivity) {
+				mouseSensitivity = md;
+				PlayerPrefs.SetFloat("Mouse Sensitivity", mouseSensitivity);
 			}
 		}
 		

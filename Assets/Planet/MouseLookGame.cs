@@ -9,20 +9,33 @@ namespace AssemblyCSharp
 		private GameObject player;
 		private bool rotatable = true;
 		public bool birdview = true;
+		private float mouseSensitivity;
 		
 		void Start() {
 			Static.setCamera(this.camera);
 			player = GameObject.FindGameObjectWithTag("Player");
 			transform.localPosition = new Vector3(-0.02f, -0.02f, 0f);
 			position = Vector3.zero;
+			mouseSensitivity = Preferences.getMouseSensitivity();
 		}
 	
 		void Update () {
 			
 			if (!birdview) {
-				float h = Input.GetAxis ("Mouse Y") / 2;
-			    float v = Input.GetAxis ("Mouse X") / 2;
-			    transform.Translate(v, h, 0);
+				float h = mouseSensitivity * Input.GetAxis ("Mouse Y") / 2;
+			    float v = mouseSensitivity * Input.GetAxis ("Mouse X") / 2;
+				float x = transform.localPosition.x + h;
+				if (x < -2f)
+					x = -2f;
+				else if (x > 2f)
+					x = 2f;
+				float y = transform.localPosition.y + v;
+				if (y < -2f)
+					y = -2f;
+				else if (y > 2f)
+					y = 2f;
+				transform.localPosition = new Vector3(x, y, transform.localPosition.z);
+			    //transform.Translate(v, h, 0);
 				transform.LookAt(player.transform.position);
 			}
 			
@@ -42,7 +55,7 @@ namespace AssemblyCSharp
 				birdview = !birdview;
 				if (birdview) {
 					position = Vector3.zero;
-					transform.Rotate(Vector3.zero);
+					transform.rotation = Quaternion.Euler(new Vector3(81,0,0));
 					//transform.LookAt(player.transform.position);
 				}
 			}
