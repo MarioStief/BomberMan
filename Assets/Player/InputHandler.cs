@@ -313,7 +313,7 @@ public class InputHandler : MonoBehaviour {
 	}
 	
 	public void dropBomb() {
-		if (!currCell.hasExplosion()) {
+		if (!currCell.hasExplosion() && !Static.player.isDead()) {
 			int extra = Static.player.addBomb();
 			if (extra > -1) {
 				GameObject ex = Network.Instantiate(Resources.Load("Prefabs/Bombe"), currCell.getCenterPos(), Quaternion.identity, 0) as GameObject;
@@ -327,7 +327,7 @@ public class InputHandler : MonoBehaviour {
 	}
 	
 	public void extra() {
-		if (!currCell.hasExplosion()) {
+		if (!currCell.hasExplosion() && !Static.player.isDead()) {
 			if (Static.player.addContactMine()) {
 				GameObject ex = Network.Instantiate(Resources.Load("Prefabs/Bombe"), currCell.getCenterPos(), Quaternion.identity, 0) as GameObject;
 				ex.networkView.RPC("createExplosionOnCell", RPCMode.All, currCell.getLpos(), currCell.getBpos(), 

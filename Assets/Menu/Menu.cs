@@ -19,6 +19,7 @@ public class Menu : MonoBehaviour {
 	private static Color playerColor;
 	private int expDetail;
 	private int chestDensity;
+	private float mouseSensitivity;
 	private string chat = "";
 	
 	private static Dictionary<NetworkPlayer,string> playerList = new Dictionary<NetworkPlayer, string>();
@@ -43,6 +44,7 @@ public class Menu : MonoBehaviour {
 		Preferences.load();
 		expDetail = Preferences.getExplosionDetail(); // 0 (off) - 3 (max)
 		chestDensity = Preferences.getChestDensity(); // 5 - 50
+		mouseSensitivity = Preferences.getMouseSensitivity(); // 0f - 1f
 
 
 		nickname = PlayerPrefs.GetString("Player Name", nickname);
@@ -288,7 +290,15 @@ public class Menu : MonoBehaviour {
 			GUI.skin.label.normal.textColor = Color.white;
 		    GUI.skin.label.alignment = TextAnchor.MiddleLeft;
 			
+			GUI.Label(new Rect(0,180,width,20), "Mouse Sensitivity:");
+			GUI.Label(new Rect(0,205,50,20), "Min");
+		    GUI.skin.label.alignment = TextAnchor.MiddleRight;
+			GUI.Label(new Rect(width-40,205,50,20), "Max");
+		    GUI.skin.label.alignment = TextAnchor.MiddleLeft;
+			mouseSensitivity = GUI.HorizontalSlider (new Rect (0, 200, width, 20), mouseSensitivity, 0.1f, 1.0f);
+			
 			Preferences.setExplosionDetail(expDetail);
+			Preferences.setMouseSensitivity(mouseSensitivity);
 
 			
 			// SERVER LIST
@@ -296,14 +306,14 @@ public class Menu : MonoBehaviour {
 			int i = 1;
 			foreach (HostData srv in servers) {
 				var name = srv.gameName + " " + srv.connectedPlayers + "/" + srv.playerLimit;
-				GUI.Label(new Rect(0,190+25*i,width,20), name);
+				GUI.Label(new Rect(0,250+25*i,width,20), name);
 				/*var hostInfo : String = "[";
 				for (var host in srv.ip)
 					hostInfo = hostInfo + host + ":" + srv.port + " ";
 				hostInfo = hostInfo + "]";
 				GUILayout.Label(hostInfo);
 				//GUILayout.Label(srv.comment);*/
-				if (GUI.Button(new Rect(width,170+25*i,75,20), "Connect")) {
+				if (GUI.Button(new Rect(width,230+25*i,75,20), "Connect")) {
 					if (nickname.Length > 0) {
 						PlayerPrefs.SetString("Player Name", nickname);
 						PlayerPrefs.SetFloat("PlayerRed", playerColor.r);
@@ -318,7 +328,7 @@ public class Menu : MonoBehaviour {
 			
 			// NO SERVERS
 			if (i == 1) {
-				GUI.Box(new Rect(0,200,width,24), "no servers found");
+				GUI.Box(new Rect(0,260,width,24), "no servers found");
 			}
 		}
 		
@@ -397,15 +407,24 @@ public class Menu : MonoBehaviour {
 			GUI.Label(new Rect(width-15,165,50,20), "Max");
 		    GUI.skin.label.alignment = TextAnchor.MiddleLeft;
 			chestDensity = (int)GUI.HorizontalSlider (new Rect (25, 160, width, 20), (float)chestDensity, 1.0f, 5.0f);
+
+			GUI.Label(new Rect(25,200,width,20), "Mouse Sensitivity:");
+			GUI.Label(new Rect(25,225,50,20), "Min");
+		    GUI.skin.label.alignment = TextAnchor.MiddleRight;
+			GUI.Label(new Rect(width-15,225,50,20), "Max");
+		    GUI.skin.label.alignment = TextAnchor.MiddleLeft;
+			mouseSensitivity = GUI.HorizontalSlider (new Rect (25, 220, width, 20), mouseSensitivity, 0.1f, 1.0f);
+			
 			Preferences.setExplosionDetail(expDetail);
 			Preferences.setChestDensity(chestDensity);
+			Preferences.setMouseSensitivity(mouseSensitivity);
 		
 			// SERVER NAME
-			GUI.Label(new Rect(25,190,width,20), "Server Name:");
-			serverName = GUI.TextField(new Rect(25,210,width,20), serverName, 30);
+			GUI.Label(new Rect(25,250,width,20), "Server Name:");
+			serverName = GUI.TextField(new Rect(25,270,width,20), serverName, 30);
 			
 			// MAX PLAYERS
-			if (GUI.Button(new Rect(25, 230, width, 20), "Max. Players: "+maxPlayers)) {
+			if (GUI.Button(new Rect(25, 290, width, 20), "Max. Players: "+maxPlayers)) {
 				showMaxPlayers = !showMaxPlayers;
 		    }
 		    if (showMaxPlayers) {
@@ -414,7 +433,7 @@ public class Menu : MonoBehaviour {
 					int p = (int)Mathf.Pow(2,i);
 					if (Network.connections.Length+1 > p)
 						continue;
-					if (GUI.Button(new Rect(25, 230+(20*i), width, 20), p.ToString())) {
+					if (GUI.Button(new Rect(25, 290+(20*i), width, 20), p.ToString())) {
 						showMaxPlayers = false;
 						maxPlayers = p;
 						Network.maxConnections = maxPlayers-1;
@@ -423,21 +442,21 @@ public class Menu : MonoBehaviour {
 		    } else {
 				// SOME SETTINGS
 				bool pe = Preferences.getNegativePowerups();
-				if (pe != GUI.Toggle(new Rect(25,260,width,20), pe, "negative Powerups")) {
+				if (pe != GUI.Toggle(new Rect(25,320,width,20), pe, "negative Powerups")) {
 					Preferences.setNegative(!pe);
 				}
 				pe = Preferences.getDestroyablePowerups();
-				if (pe != GUI.Toggle(new Rect(25,280,width,20), pe, "destroyable Powerups")) {
+				if (pe != GUI.Toggle(new Rect(25,340,width,20), pe, "destroyable Powerups")) {
 					Preferences.setDestroyablePowerups(!pe);
 				}
 				bool pee = Preferences.getExplodingPowerups();
-				if (pe && pee != GUI.Toggle(new Rect(25,300,width,20), pee, "exploding Powerups")) {
+				if (pe && pee != GUI.Toggle(new Rect(25,360,width,20), pee, "exploding Powerups")) {
 					Preferences.setExplodingPowerups(!pee);
 				}
 			}
 			
 		    // START GAME
-			if (GUI.Button(new Rect(50,360,100,30),"Start Game")) {
+			if (GUI.Button(new Rect(50,420,100,30),"Start Game")) {
 				// save settings
 				PlayerPrefs.SetInt("Server MaxPlayers", maxPlayers);
 				PlayerPrefs.SetString("Server Name", serverName);
