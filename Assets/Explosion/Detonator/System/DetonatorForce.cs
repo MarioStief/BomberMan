@@ -1,109 +1,111 @@
 using UnityEngine;
 using System.Collections;
 
-[RequireComponent (typeof (Detonator))]
-[AddComponentMenu("Detonator/Force")]
-public class DetonatorForce : DetonatorComponent {
-
-	private float _baseRadius = 50.0f;
-	private float _basePower = 4000.0f;
-	private float _scaledRange;
-	private float _scaledIntensity;
-	private bool _delayedExplosionStarted = false;
-	private float _explodeDelay;
+namespace AssemblyCSharp
+{
+	[RequireComponent (typeof (Detonator))]
+	[AddComponentMenu("Detonator/Force")]
+	public class DetonatorForce : DetonatorComponent {
 	
-	public float radius;
-	public float power;
-	public GameObject fireObject;
-	public float fireObjectLife;
-	
-	private Collider[] _colliders;
-	private GameObject _tempFireObject;
-	
-	override public void Init()
-	{
-		//unused
-	}
-
-	void Update()
-	{
-		if (_delayedExplosionStarted)
+		private float _baseRadius = 50.0f;
+		private float _basePower = 4000.0f;
+		private float _scaledRange;
+		private float _scaledIntensity;
+		private bool _delayedExplosionStarted = false;
+		private float _explodeDelay;
+		
+		public float radius;
+		public float power;
+		public GameObject fireObject;
+		public float fireObjectLife;
+		
+		private Collider[] _colliders;
+		private GameObject _tempFireObject;
+		
+		override public void Init()
 		{
-			_explodeDelay = (_explodeDelay - Time.deltaTime);
-			if (_explodeDelay <= 0f)
+			//unused
+		}
+	
+		void Update()
+		{
+			if (_delayedExplosionStarted)
 			{
-				Explode();
+				_explodeDelay = (_explodeDelay - Time.deltaTime);
+				if (_explodeDelay <= 0f)
+				{
+					Explode();
+				}
 			}
 		}
-	}
-	
-	private Vector3 _explosionPosition;
-	
-	override public void Explode()
-	{
-		if (!on) return;
-		if (detailThreshold > detail) return;	
 		
-		if (!_delayedExplosionStarted)
+		private Vector3 _explosionPosition;
+		
+		override public void Explode()
 		{
-			_explodeDelay = explodeDelayMin + (Random.value * (explodeDelayMax - explodeDelayMin));
-		}
-		if (_explodeDelay <= 0) //if the delayTime is zero
-		{
-			//tweak the position such that the explosion center is related to the explosion's direction
-			_explosionPosition = transform.position; //- Vector3.Normalize(MyDetonator().direction);
-			_colliders = Physics.OverlapSphere (_explosionPosition, radius);
+			if (!on) return;
+			if (detailThreshold > detail) return;	
 			
-			foreach (Collider hit in _colliders) 
+			if (!_delayedExplosionStarted)
 			{
-				if (!hit)
-				{
-					continue;
-				}
+				_explodeDelay = explodeDelayMin + (Random.value * (explodeDelayMax - explodeDelayMin));
+			}
+			if (_explodeDelay <= 0) //if the delayTime is zero
+			{
+				//tweak the position such that the explosion center is related to the explosion's direction
+				_explosionPosition = transform.position; //- Vector3.Normalize(MyDetonator().direction);
+				_colliders = Physics.OverlapSphere (_explosionPosition, radius);
 				
-				if (hit.rigidbody)
+				foreach (Collider hit in _colliders) 
 				{
-					//align the force along the object's rotation
-					//this is wrong - need to attenuate the velocity according to distance from the explosion center			
-					//offsetting the explosion force position by the negative of the explosion's direction may help
-					hit.rigidbody.AddExplosionForce((power * size), _explosionPosition, (radius * size), (4f * MyDetonator().upwardsBias * size));
-					
-					SendMessage("OnDetonatorForceHit", null, SendMessageOptions.DontRequireReceiver);
-					
-					//and light them on fire for Rune
-					if (fireObject)
+					if (!hit)
 					{
-						//check to see if the object already is on fire. being on fire twice is silly
-						if (hit.transform.Find(fireObject.name+"(Clone)"))
-						{
-							return;
-						}
+						continue;
+					}
+					
+					if (hit.rigidbody)
+					{
+						//align the force along the object's rotation
+						//this is wrong - need to attenuate the velocity according to distance from the explosion center			
+						//offsetting the explosion force position by the negative of the explosion's direction may help
+						hit.rigidbody.AddExplosionForce((power * size), _explosionPosition, (radius * size), (4f * MyDetonator().upwardsBias * size));
 						
-						_tempFireObject = (Instantiate(fireObject, this.transform.position, this.transform.rotation)) as GameObject;
-						_tempFireObject.transform.parent = hit.transform;
-						_tempFireObject.transform.localPosition = new Vector3(0f,0f,0f);
-						if (_tempFireObject.particleEmitter)
+						SendMessage("OnDetonatorForceHit", null, SendMessageOptions.DontRequireReceiver);
+						
+						//and light them on fire for Rune
+						if (fireObject)
 						{
-							_tempFireObject.particleEmitter.emit = true;
-							Destroy(_tempFireObject,fireObjectLife);
+							//check to see if the object already is on fire. being on fire twice is silly
+							if (hit.transform.Find(fireObject.name+"(Clone)"))
+							{
+								return;
+							}
+							
+							_tempFireObject = (Instantiate(fireObject, this.transform.position, this.transform.rotation)) as GameObject;
+							_tempFireObject.transform.parent = hit.transform;
+							_tempFireObject.transform.localPosition = new Vector3(0f,0f,0f);
+							if (_tempFireObject.particleEmitter)
+							{
+								_tempFireObject.particleEmitter.emit = true;
+								Destroy(_tempFireObject,fireObjectLife);
+							}
 						}
 					}
 				}
+				_delayedExplosionStarted = false;
+				_explodeDelay = 0f;
 			}
-			_delayedExplosionStarted = false;
-			_explodeDelay = 0f;
+			else
+			{
+				//tell update to start reducing the start delay and call explode again when it's zero
+				_delayedExplosionStarted = true;
+			}
 		}
-		else
+		
+		public void Reset()
 		{
-			//tell update to start reducing the start delay and call explode again when it's zero
-			_delayedExplosionStarted = true;
+			radius = _baseRadius;
+			power = _basePower;
 		}
-	}
-	
-	public void Reset()
-	{
-		radius = _baseRadius;
-		power = _basePower;
 	}
 }
-

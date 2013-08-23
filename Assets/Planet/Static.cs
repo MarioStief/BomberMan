@@ -12,6 +12,7 @@ namespace AssemblyCSharp
 		public static MeshManipulator[][] drawnArea;
         public static Player player = new Player();
 		public static Menu menuHandler;
+		public static Camera camera;
 		
 		public static UnityEngine.Object bombPrefab;
 		public static UnityEngine.Object triggerbombPrefab;
@@ -113,6 +114,10 @@ namespace AssemblyCSharp
 
 		public static void setMenu(Menu m) {
 			menuHandler = m;
+		}
+		
+		public static void setCamera(Camera c) {
+			camera = c;
 		}
 
 		public static void setExtra(int type) {

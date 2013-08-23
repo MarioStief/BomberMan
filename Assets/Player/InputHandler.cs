@@ -12,7 +12,7 @@ public class InputHandler : MonoBehaviour {
 	
 	bool DEBUGPLAYERPOSITION = false;
 	
-	int angle = 0;
+	float angle = 0f;
 	
 	private int n_L;				// Anzahl Längen und Breitengeraden
 	private int n_B;
@@ -96,6 +96,8 @@ public class InputHandler : MonoBehaviour {
 		
 		verticalHelper = 0.0f;
 		horizontalHelper = 0.0f;
+		
+		transform.up = transform.position;
 		
 		Static.rink.renderAll();
 		Static.player.resetStats();
@@ -359,111 +361,222 @@ public class InputHandler : MonoBehaviour {
 	
 	private void moveCharacter() {
 		
-		float verticalMovement, vm=0, m=0;
-		if (Static.player.isDead()) {
-			verticalMovement = this.verticalMovement;
-		} else {
+		float vm = 0, m = 0;
+		if (Input.GetAxis("Vertical") != 0 || Input.GetAxis("Horizontal") != 0) {
+		
+			float verticalMovement;
+			float horizontalMovement;
+	
 			verticalMovement = Input.GetAxis("Vertical");
-		}
-		if (verticalMovement != 0) {
-			vm = Static.player.getSpeed() * verticalMovement * Time.deltaTime;
-			if (vDirection == 0) {
+			horizontalMovement = Input.GetAxis("Horizontal");
+			
+			if (Static.camera != null) {
+			
+				/* Directions:
+				 * 0 hoch:			verticalMovement =  1, horizontalMovement =  0
+				 * 1 hoch rechts:	verticalMovement =  1, horizontalMovement =  1
+				 * 2 rechts:		verticalMovement =  0, horizontalMovement =  1
+				 * 3 runter rechts:	verticalMovement = -1, horizontalMovement =  1
+				 * 4 runter:			verticalMovement = -1, horizontalMovement =  0
+				 * 5 runter links:	verticalMovement = -1, horizontalMovement = -1
+				 * 6 links:			verticalMovement =  0, horizontalMovement = -1
+				 * 7 hoch links:	verticalMovement =  1, horizontalMovement = -1
+				 */
 				
-				vDirection = (int)Mathf.Sign(vm);
+				// Oktant, in den sich der Spieler bewegt
+				int moveDirection = 0;
+				float treshold = 0f;
+				//Debug.Log ("h: " + horizontalMovement + " v: " + verticalMovement);
 				
-				if (vDirection == 1) {
-					verticalHelper -= 	Mathf.PI/(2*(n_L-1));
+				if (horizontalMovement > treshold) {
+					if (verticalMovement > treshold)
+						moveDirection = 1;
+					else if (verticalMovement < -treshold)
+						moveDirection = 3;
+					else
+						moveDirection = 2;
+				} else if (horizontalMovement < -treshold) {
+					if (verticalMovement > treshold)
+						moveDirection = 7;
+					else if (verticalMovement < -treshold)
+						moveDirection = 5;
+					else
+						moveDirection = 6;
 				} else {
-					verticalHelper += 	Mathf.PI/(2*(n_L-1));
+					if (verticalMovement > treshold)
+						moveDirection = 0;
+					else if (verticalMovement < -treshold)
+						moveDirection = 4;
+				}
+				
+				// Oktantenausrichtung durch die Kamerarotation
+				int rotationOctant;
+				
+				float x = Static.camera.transform.localPosition.x;
+				float y = Static.camera.transform.localPosition.y;
+				
+				if (y > 0f) { // obere Hälfte
+					if (x/y < -2f) rotationOctant = 6; // links
+					else if (x/y < -0.5) rotationOctant = 7; // hoch links
+					else if (x/y < 0.5) rotationOctant = 0; // hoch
+					else if (x/y < 2) rotationOctant = 1; // hoch rechts
+					else rotationOctant = 2; // rechts
+				} else { // untere Hälfte
+					if (x/y < -2f) rotationOctant = 2; // rechts
+					else if (x/y < -0.5) rotationOctant = 3; // runter rechts
+					else if (x/y < 0.5) rotationOctant = 4; // runter
+					else if (x/y < 2) rotationOctant = 5; // runter links
+					else rotationOctant = 6; // links
+				}
+				
+				// So drehen, dass der der Kamera gegenüberliegende Oktant dort ist,
+				// wo der Spieler nach in Pfeilrichtung "hoch" läuft
+				moveDirection = (moveDirection + rotationOctant + 4) % 8;
+				
+				switch (moveDirection) {
+				case 0:
+					//Debug.Log("-> hoch");
+					verticalMovement =  1f;
+					horizontalMovement =  0f;
+					break;
+				case 1:
+					//Debug.Log("-> hoch rechts");
+					verticalMovement =  1f;
+					horizontalMovement =  1f;
+					break;
+				case 2:
+					//Debug.Log("-> rechts");
+					verticalMovement =  0f;
+					horizontalMovement =  1f;
+					break;
+				case 3:
+					//Debug.Log("-> runter rechts");
+					verticalMovement = -1f;
+					horizontalMovement =  1f;
+					break;
+				case 4:
+					//Debug.Log("-> runter");
+					verticalMovement = -1f;
+					horizontalMovement =  0f;
+					break;
+				case 5:
+					//Debug.Log("-> runter links");
+					verticalMovement = -1f;
+					horizontalMovement = -1f;
+					break;
+				case 6:
+					//Debug.Log("-> links");
+					verticalMovement =  0f;
+					horizontalMovement = -1f;
+					break;
+				case 7:
+					//Debug.Log("-> hoch links");
+					verticalMovement =  1f;
+					horizontalMovement = -1f;
+					break;
 				}
 			}
-		
-			if (!Static.player.isDead()) {
-				vm = determineVerticalParcelPosition(verticalMovement, vm);
-			}
-			verticalAngle += vm;
-			//verticalAngle = verticalAngle % (Mathf.PI*2);
-			vertAngle = verticalAngle;
-			vertAngleM = vm;
 			
-			Static.sphereHandler.move(vm);
-		}
-		
-		float horizontalMovement;
-		if (Static.player.isDead()) {
-			horizontalMovement = this.horizontalMovement;
-		} else {
-			horizontalMovement = Input.GetAxis("Horizontal") * Static.player.getSpeed();
-		}
-		if (horizontalMovement != 0) {
-			m = horizontalMovement*Time.deltaTime*Static.player.getSpeed()*(-2);
-			if (hDirection == 0) {
-				
-				hDirection = (int)Mathf.Sign(m);
-				
-				if (hDirection == 1) {
-					horizontalHelper += 	Mathf.PI/(n_B);
-				} else {
-					horizontalHelper -= 	Mathf.PI/(n_B);
+			horizontalMovement *= Static.player.getSpeed();
+			
+			if (Static.player.isDead()) {
+				verticalMovement = this.verticalMovement;
+				horizontalMovement = this.horizontalMovement;
+			}
+			
+			if (verticalMovement != 0) {
+				vm = Static.player.getSpeed() * verticalMovement * Time.deltaTime;
+				if (vDirection == 0) {
+					
+					vDirection = (int)Mathf.Sign(vm);
+					
+					if (vDirection == 1) {
+						verticalHelper -= 	Mathf.PI/(2*(n_L-1));
+					} else {
+						verticalHelper += 	Mathf.PI/(2*(n_L-1));
+					}
 				}
-				horizontalHelper += m;
-			}
-		 
-			if (!Static.player.isDead()) {
-				m = determineHorizontalParcelPosition(horizontalMovement, m);
-			}
-			horizontalAngle += m;
-			//horizontalAngle = horizontalAngle % (Mathf.PI*2);
 			
-			moveAlongEquator(m);
-		}
-		
-		// Spielerrotation
-		int newAngle = angle;
-		if (verticalMovement > 0) {
-			// nach oben schauen
-			if (horizontalMovement < 0) {
-				// nach links oben schauen
-				newAngle = 315;
-			} else if (horizontalMovement > 0) {
-				// nach rechts oben schauen
-				newAngle = 45;
+				if (!Static.player.isDead()) {
+					vm = determineVerticalParcelPosition(verticalMovement, vm);
+				}
+				verticalAngle += vm;
+				//verticalAngle = verticalAngle % (Mathf.PI*2);
+				vertAngle = verticalAngle;
+				vertAngleM = vm;
+				
+				Static.sphereHandler.move(vm);
+			}
+			
+			if (horizontalMovement != 0) {
+				m = horizontalMovement*Time.deltaTime*Static.player.getSpeed()*(-2);
+				if (hDirection == 0) {
+					
+					hDirection = (int)Mathf.Sign(m);
+					
+					if (hDirection == 1) {
+						horizontalHelper += 	Mathf.PI/(n_B);
+					} else {
+						horizontalHelper -= 	Mathf.PI/(n_B);
+					}
+					horizontalHelper += m;
+				}
+			 
+				if (!Static.player.isDead()) {
+					m = determineHorizontalParcelPosition(horizontalMovement, m);
+				}
+				horizontalAngle += m;
+				//horizontalAngle = horizontalAngle % (Mathf.PI*2);
+				
+				moveAlongEquator(m);
+			}
+			
+			// Spielerrotation
+			float newAngle = angle;
+			if (verticalMovement > 0) {
+				// nach hoch schauen
+				if (horizontalMovement < 0) {
+					// nach links hoch schauen
+					newAngle = 315f;
+				} else if (horizontalMovement > 0) {
+					// nach rechts hoch schauen
+					newAngle = 45f;
+				} else {
+					// nur nach hoch schauen
+					newAngle = 0f;
+				}
+			} else if (verticalMovement < 0) {
+				// nach runter schauen
+				if (horizontalMovement < 0) {
+					// nach links runter schauen
+					newAngle = 225f;
+				} else if (horizontalMovement > 0) {
+					// nach rechts runter schauen
+					newAngle = 135f;
+				} else {
+					// nur nach runter schauen
+					newAngle = 180f;
+				}
 			} else {
-				// nur nach oben schauen
-				newAngle = 0;
+				if (horizontalMovement < 0) {
+					// nur nach links schauen
+					newAngle = 270f;
+				} else if (horizontalMovement > 0) {
+					// nur nach rechts schauen
+					newAngle = 90f;
+				}
 			}
-		} else if (verticalMovement < 0) {
-			// nach unten schauen
-			if (horizontalMovement < 0) {
-				// nach links unten schauen
-				newAngle = 225;
-			} else if (horizontalMovement > 0) {
-				// nach rechts unten schauen
-				newAngle = 135;
-			} else {
-				// nur nach unten schauen
-				newAngle = 180;
-			}
-		} else {
-			if (horizontalMovement < 0) {
-				// nur nach links schauen
-				newAngle = 270;
-			} else if (horizontalMovement > 0) {
-				// nur nach rechts schauen
-				newAngle = 90;
+			
+			if (Mathf.Abs(angle - newAngle) > 180f)
+				angle = (angle + newAngle) / 2 + 180f;
+			else
+				angle = (angle + newAngle) / 2;
+			
+			if (angle != newAngle || Application.loadedLevelName != "StartMenu") {
+				transform.up = transform.position;
+				transform.Rotate(0f, angle, 0f, Space.Self);
 			}
 		}
-		
-		if (Mathf.Abs(angle - newAngle) > 180)
-			angle = (angle + newAngle) / 2 + 180;
-		else
-			angle = (angle + newAngle) / 2;
-		
-		if (angle != newAngle || Application.loadedLevelName != "StartMenu") {
-			transform.up = transform.position;
-			transform.Rotate(0f, angle, 0f, Space.Self);
-		}
-		
 		
 		// Animate Player
 		if (!Static.player.isDead()) {

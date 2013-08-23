@@ -6,79 +6,80 @@ using System.Collections;
 	inherit velocity
 */
 
-[RequireComponent (typeof (Detonator))]
-[AddComponentMenu("Detonator/Object Spray")]
-public class DetonatorSpray : DetonatorComponent {
-
-	public GameObject sprayObject;
-	public int count = 10;
-	public float startingRadius = 0f;
-	public float minScale = 1f;
-	public float maxScale = 1f;
+namespace AssemblyCSharp
+{
+	[RequireComponent (typeof (Detonator))]
+	[AddComponentMenu("Detonator/Object Spray")]
+	public class DetonatorSpray : DetonatorComponent {
 	
-	private bool _delayedExplosionStarted = false;
-	private float _explodeDelay;
-	
-	override public void Init()
-	{
-		//unused
-	}
-
-	void Update()
-	{
-		if (_delayedExplosionStarted)
+		public GameObject sprayObject;
+		public int count = 10;
+		public float startingRadius = 0f;
+		public float minScale = 1f;
+		public float maxScale = 1f;
+		
+		private bool _delayedExplosionStarted = false;
+		private float _explodeDelay;
+		
+		override public void Init()
 		{
-			_explodeDelay = (_explodeDelay - Time.deltaTime);
-			if (_explodeDelay <= 0f)
+			//unused
+		}
+	
+		void Update()
+		{
+			if (_delayedExplosionStarted)
 			{
-				Explode();
+				_explodeDelay = (_explodeDelay - Time.deltaTime);
+				if (_explodeDelay <= 0f)
+				{
+					Explode();
+				}
 			}
 		}
-	}
-	
-	private Vector3 _explosionPosition;
-	private float _tmpScale;
-	override public void Explode()
-	{
-		if (!_delayedExplosionStarted)
+		
+		private Vector3 _explosionPosition;
+		private float _tmpScale;
+		override public void Explode()
 		{
-			_explodeDelay = explodeDelayMin + (Random.value * (explodeDelayMax - explodeDelayMin));
-		}
-		if (_explodeDelay <= 0) //if the delayTime is zero
-		{
-			int detailCount = (int)(detail * count);
-			for (int i=0;i<detailCount;i++) 
+			if (!_delayedExplosionStarted)
 			{
-				Vector3 randVec = Random.onUnitSphere * (startingRadius * size);
-				Vector3 velocityVec = new Vector3((velocity.x*size),(velocity.y*size),(velocity.z*size));
-				GameObject chunk = Instantiate(sprayObject, (this.transform.position + randVec), this.transform.rotation) as GameObject;
-				chunk.transform.parent = this.transform;
-				
-				//calculate scale for this piece
-				_tmpScale = (minScale + (Random.value * (maxScale - minScale)));
-				_tmpScale = _tmpScale * size;
-
-				chunk.transform.localScale = new Vector3(_tmpScale,_tmpScale,_tmpScale);
-				chunk.rigidbody.velocity = Vector3.Scale(randVec.normalized,velocityVec);
-				Destroy(chunk, (duration * timeScale)); 
-
-				_delayedExplosionStarted = false;
-				_explodeDelay = 0f;
+				_explodeDelay = explodeDelayMin + (Random.value * (explodeDelayMax - explodeDelayMin));
+			}
+			if (_explodeDelay <= 0) //if the delayTime is zero
+			{
+				int detailCount = (int)(detail * count);
+				for (int i=0;i<detailCount;i++) 
+				{
+					Vector3 randVec = Random.onUnitSphere * (startingRadius * size);
+					Vector3 velocityVec = new Vector3((velocity.x*size),(velocity.y*size),(velocity.z*size));
+					GameObject chunk = Instantiate(sprayObject, (this.transform.position + randVec), this.transform.rotation) as GameObject;
+					chunk.transform.parent = this.transform;
+					
+					//calculate scale for this piece
+					_tmpScale = (minScale + (Random.value * (maxScale - minScale)));
+					_tmpScale = _tmpScale * size;
+	
+					chunk.transform.localScale = new Vector3(_tmpScale,_tmpScale,_tmpScale);
+					chunk.rigidbody.velocity = Vector3.Scale(randVec.normalized,velocityVec);
+					Destroy(chunk, (duration * timeScale)); 
+	
+					_delayedExplosionStarted = false;
+					_explodeDelay = 0f;
+				}
+			}
+			else
+			{
+				//tell update to start reducing the start delay and call explode again when it's zero
+				_delayedExplosionStarted = true;
 			}
 		}
-		else
+		
+		
+		
+		public void Reset()
 		{
-			//tell update to start reducing the start delay and call explode again when it's zero
-			_delayedExplosionStarted = true;
+			velocity = new Vector3(15f,15f,15f);
 		}
-	}
-	
-	
-	
-	public void Reset()
-	{
-		velocity = new Vector3(15f,15f,15f);
 	}
 }
-
-
