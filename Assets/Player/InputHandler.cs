@@ -937,7 +937,9 @@ public class InputHandler : MonoBehaviour {
 		
 		// Kamera drehen
 		cam.transform.RotateAround(Vector3.zero, Vector3.forward, movement);
-		Vector3 up = Static.camera.GetComponent<MouseLookGame>().birdview ? Vector3.forward : transform.position;
+		Vector3 up = Vector3.forward;
+		if (Application.loadedLevelName != "StartMenu" && !Static.camera.GetComponent<MouseLookGame>().birdview)
+			up = transform.position;
 		cam.transform.LookAt(transform.position, up);
 		
 		// Licht mitdrehen..
