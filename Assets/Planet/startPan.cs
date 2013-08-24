@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using AssemblyCSharp;
 
 public class startPan : MonoBehaviour {
 	
@@ -12,7 +13,11 @@ public class startPan : MonoBehaviour {
 	private int phase = 0;
 	
 	void Start () {
+		if (Application.loadedLevelName != "StartMenu")
+			return;
+
 		effect = Random.Range(0,3);
+		targetPos = Static.sphereHandler.getStartParcel().getCenterPos() * 1.5f;
 		
 		if (Application.loadedLevelName == "StartMenu") {
 			targetFoV = 45;
@@ -27,6 +32,9 @@ public class startPan : MonoBehaviour {
 	}
 	
 	void Update () {
+		if (Application.loadedLevelName != "StartMenu")
+			return;
+		
 		if (Input.anyKeyDown) {
 			transform.position = targetPos;
 			transform.rotation = Quaternion.Euler(targetRot);

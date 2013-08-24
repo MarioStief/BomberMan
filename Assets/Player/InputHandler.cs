@@ -369,10 +369,10 @@ public class InputHandler : MonoBehaviour {
 			}
 			
 			// Leertaste -> Bombe legen
-			if (Input.GetKeyDown(KeyCode.Space))
+			if (Input.GetKeyDown(KeyCode.Space) || Input.GetButtonDown("Fire1"))
 				dropBomb();
-			
-			if ((Input.GetKeyDown(KeyCode.LeftShift)) || (Input.GetKeyDown(KeyCode.RightShift)))
+
+			if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift) || Input.GetButtonDown("Fire2"))
 				extra();
 			
 		} else {
@@ -487,7 +487,6 @@ public class InputHandler : MonoBehaviour {
 				
 				// Oktantenausrichtung durch die Kamerarotation
 				int rotationOctant;
-				
 				float x = Static.camera.transform.localPosition.x;
 				float y = Static.camera.transform.localPosition.y;
 				
@@ -510,48 +509,72 @@ public class InputHandler : MonoBehaviour {
 				moveDirection = (moveDirection + rotationOctant + 4) % 8;
 				
 				switch (moveDirection) {
-				case 0:
-					//Debug.Log("-> hoch");
-					verticalMovement =  1f;
-					horizontalMovement =  0f;
-					break;
-				case 1:
-					//Debug.Log("-> hoch rechts");
-					verticalMovement =  1f;
-					horizontalMovement =  1f;
-					break;
-				case 2:
-					//Debug.Log("-> rechts");
-					verticalMovement =  0f;
-					horizontalMovement =  1f;
-					break;
-				case 3:
-					//Debug.Log("-> runter rechts");
-					verticalMovement = -1f;
-					horizontalMovement =  1f;
-					break;
-				case 4:
-					//Debug.Log("-> runter");
-					verticalMovement = -1f;
-					horizontalMovement =  0f;
-					break;
-				case 5:
-					//Debug.Log("-> runter links");
-					verticalMovement = -1f;
-					horizontalMovement = -1f;
-					break;
-				case 6:
-					//Debug.Log("-> links");
-					verticalMovement =  0f;
-					horizontalMovement = -1f;
-					break;
-				case 7:
-					//Debug.Log("-> hoch links");
-					verticalMovement =  1f;
-					horizontalMovement = -1f;
-					break;
+					case 0:
+						//Debug.Log("-> hoch");
+						verticalMovement =  1f;
+						horizontalMovement =  0f;
+						break;
+					case 1:
+						//Debug.Log("-> hoch rechts");
+						verticalMovement =  1f;
+						horizontalMovement =  1f;
+						break;
+					case 2:
+						//Debug.Log("-> rechts");
+						verticalMovement =  0f;
+						horizontalMovement =  1f;
+						break;
+					case 3:
+						//Debug.Log("-> runter rechts");
+						verticalMovement = -1f;
+						horizontalMovement =  1f;
+						break;
+					case 4:
+						//Debug.Log("-> runter");
+						verticalMovement = -1f;
+						horizontalMovement =  0f;
+						break;
+					case 5:
+						//Debug.Log("-> runter links");
+						verticalMovement = -1f;
+						horizontalMovement = -1f;
+						break;
+					case 6:
+						//Debug.Log("-> links");
+						verticalMovement =  0f;
+						horizontalMovement = -1f;
+						break;
+					case 7:
+						//Debug.Log("-> hoch links");
+						verticalMovement =  1f;
+						horizontalMovement = -1f;
+						break;
 				}
+				
+				/*if (!autoMove) {
+					
+					// Das müsste die Richtung sein, in der der Spieler "vorwärts" laufen soll
+					// Dieser Vektor muss mit der Tastatureingabe verrechnet werden, das Komplizierte
+					// daran ist die horizontale Bewegung - vertikal sollte der Z-Koord. entsprechen
+					Vector3 lookDir = Vector3.Cross(transform.up, cam.transform.right*-1);
+					
+					
+					if (Input.GetAxis("Vertical") != 0) {
+						Vector3 f = Vector3.Cross(transform.up, cam.transform.right*-1);
+						Debug.DrawRay(transform.position, f, Color.green, 2f);
+						verticalMovement = f.z * Input.GetAxis("Vertical");
+						horizontalMovement = Mathf.Abs(f.x + f.y) * Input.GetAxis("Vertical") * (horizontalMovement != 0 ? horizontalMovement : 1);
+						Debug.DrawRay(transform.position, new Vector3(verticalMovement, 0, horizontalMovement), Color.red, 2f);
+					}					
+					
+					if (Input.GetAxis("Horizontal") != 0) {
+						Vector3 f = Vector3.Cross(transform.up, cam.transform.right*-1);
+						verticalMovement = f.z * Input.GetAxis("Horizontal") * (verticalMovement != 0 ? verticalMovement : 1);
+						horizontalMovement = (f.x + f.y) * Input.GetAxis("Horizontal");
+					}
+				}*/
 			}
+			
 			
 			if (!autoMove)
 				horizontalMovement *= Static.player.getSpeed();
@@ -914,7 +937,8 @@ public class InputHandler : MonoBehaviour {
 		
 		// Kamera drehen
 		cam.transform.RotateAround(Vector3.zero, Vector3.forward, movement);
-		cam.transform.LookAt(Vector3.zero, Vector3.forward);
+		Vector3 up = Static.camera.GetComponent<MouseLookGame>().birdview ? Vector3.forward : transform.position;
+		cam.transform.LookAt(transform.position, up);
 		
 		// Licht mitdrehen..
 		sun.transform.RotateAround(Vector3.zero, Vector3.forward, movement);

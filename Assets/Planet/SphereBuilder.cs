@@ -55,6 +55,9 @@ public class SphereBuilder : MonoBehaviour {
 		} else {
 			L_Pos = Random.Range(0, 19);
 			B_Pos = Random.Range(0, 30);
+			//L_Pos = n_L/2-1;
+			//B_Pos = n_B/4;
+			
 			Debug.Log("Random spawn point: [" + L_Pos + "][" + B_Pos + "]");
 		}
 		
@@ -79,6 +82,9 @@ public class SphereBuilder : MonoBehaviour {
 	
 	public int[] getStartPos() {
 		return new int[] {L_Pos, B_Pos};
+	}
+	public Parcel getStartParcel() {
+		return gameArea.gameArea[L_Pos][B_Pos];
 	}
 	
 	private void tesselateSphere() {
