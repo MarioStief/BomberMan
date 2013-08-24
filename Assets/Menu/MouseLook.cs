@@ -18,9 +18,11 @@ public class MouseLook : MonoBehaviour {
 		// Camera Movement
 		// left click
 		if (Input.GetMouseButton(0)) {
+			/*
 			Vector3 a = player.transform.rotation.eulerAngles;
 			a.x = -45;
 			player.transform.rotation = Quaternion.Euler(a);
+			*/
 		}
 		
 		// right click

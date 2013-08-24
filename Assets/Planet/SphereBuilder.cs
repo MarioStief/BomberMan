@@ -27,6 +27,9 @@ public class SphereBuilder : MonoBehaviour {
 	
 	public Transform playerPrefab;
 	
+	private int L_Pos; // = n_L/2-1;
+	private int B_Pos; // = n_B/4;
+	
 	// Use this for initialization
 	void Start () {
 		Static.setSphereBuilder(this);
@@ -45,30 +48,27 @@ public class SphereBuilder : MonoBehaviour {
 		// instantiate the player
 		Vector3 pos = new Vector3(-1.41561e-07f, 2.080631f, 0.01059199f);
 		
-		int B_pos = n_L/2-1;
-		int L_pos = n_B/4;
-		
 		// get random spawn point
-		// in dem Fall muss die Kamera über den Spieler rotiert werden
-		/*
-		do {
-			B_pos = Random.Range(0, 19);
-			L_pos = Random.Range(0, 30);
-		} while (gameArea.getGameArea()[B_pos][L_pos].getType() == 2);
-		Vector3 pos = gameArea.getGameArea()[B_pos][L_pos].getCenterPos();
-		*/
+		if (Application.loadedLevelName == "StartMenu") {
+			L_Pos = n_L/2-1;
+			B_Pos = n_B/4;
+		} else {
+			L_Pos = Random.Range(0, 19);
+			B_Pos = Random.Range(0, 30);
+			Debug.Log("Random spawn point: [" + L_Pos + "][" + B_Pos + "]");
+		}
 		
 		// Spawnpunkt freiräumen
-		gameArea.getGameArea()[B_pos][L_pos].setType(0);
+		gameArea.getGameArea()[L_Pos][B_Pos].setType(0);
 		
 		// zufällig 2 benachbarte Felder freiräumen
 		int d = Random.Range(0,4);
-		gameArea.getGameArea()[B_pos][L_pos].getNeighbour(d).setType(0);
-		gameArea.getGameArea()[B_pos][L_pos].getNeighbour((d + 1) % 4).setType(0);
+		gameArea.getGameArea()[L_Pos][B_Pos].getNeighbour(d).setType(0);
+		gameArea.getGameArea()[L_Pos][B_Pos].getNeighbour((d + 1) % 4).setType(0);
 		
 		if (Application.loadedLevelName == "StartMenu") {
 			// alle nachbarfelder freiräumen
-			foreach (Parcel c in gameArea.getGameArea()[B_pos][L_pos].getNeighbours()) {
+			foreach (Parcel c in gameArea.getGameArea()[L_Pos][B_Pos].getNeighbours()) {
 				c.setType(0);
 			}
 			Instantiate(playerPrefab, pos, transform.rotation);
@@ -77,7 +77,11 @@ public class SphereBuilder : MonoBehaviour {
 		}
 	}
 	
-	private void tesselateSphere(){
+	public int[] getStartPos() {
+		return new int[] {L_Pos, B_Pos};
+	}
+	
+	private void tesselateSphere() {
 	
 		// Init des Vertex- Vectors
 		sphereVertices = new Vector3[2][][];

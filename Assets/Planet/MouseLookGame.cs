@@ -52,11 +52,13 @@ namespace AssemblyCSharp
 			
 			// middle click
 			if (Input.GetButton ("Fire3")) {
-				birdview = !birdview;
-				if (birdview) {
-					position = Vector3.zero;
-					transform.rotation = Quaternion.Euler(new Vector3(81,0,0));
-					//transform.LookAt(player.transform.position);
+				if (rotatable) {
+					birdview = !birdview;
+					if (birdview) {
+						position = Vector3.zero;
+						transform.rotation = Quaternion.Euler(new Vector3(81,0,0));
+						//transform.LookAt(player.transform.position);
+					}
 				}
 			}
 			
@@ -78,6 +80,8 @@ namespace AssemblyCSharp
 		
 		public void setRotatable(bool r) {
 			rotatable = r;
+			if (r)
+				birdview = false;
 		}
 		
 		public bool getRotation() {

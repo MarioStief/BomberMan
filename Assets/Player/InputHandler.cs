@@ -19,6 +19,8 @@ public class InputHandler : MonoBehaviour {
 	
 	private int lpos;				// Position der aktuellen Parzelle rink.gameArea ist [lpos][bpos]
 	private int bpos;
+	private int prevLpos;
+	private int prevBpos;
 	
 	private float verticalAngle;
 	private float horizontalAngle;
@@ -40,7 +42,12 @@ public class InputHandler : MonoBehaviour {
 	
 	float verticalMovement;
 	float horizontalMovement;
+	float deadVerticalMovement;
+	float deadHorizontalMovement;
+	int diffv = 0;
+	int diffh = 0;
 	
+	bool autoMove = false;
 	bool running = false;
 	
 	private float playerRadius = 3.5f * Mathf.Deg2Rad;
@@ -77,6 +84,7 @@ public class InputHandler : MonoBehaviour {
 			return;
 		}
 		
+		GetComponent<CapsuleCollider>().enabled = true;
 		createTime = Time.time;
 		
 		n_L = Static.sphereHandler.n_L;
@@ -101,6 +109,44 @@ public class InputHandler : MonoBehaviour {
 		
 		Static.rink.renderAll();
 		Static.player.resetStats();
+		
+		int startLpos = Static.sphereHandler.getStartPos()[0];
+		int startBpos = Static.sphereHandler.getStartPos()[1];
+		if (Application.loadedLevelName != "StartMenu")
+			moveToPosition(startLpos, startBpos);
+	}
+	
+	private void moveToPosition(int newLpos, int newBpos) {
+		const float SPEED = 1.5f;
+		prevLpos = lpos;
+		prevBpos = bpos;
+
+		diffv = newLpos - lpos;
+		diffh = newBpos - bpos;
+
+		// kürzesten Weg bestimmen
+		if (19 - Mathf.Abs(diffv) < Mathf.Abs(diffv))
+			diffv = (diffv < 0 ? 19 - Mathf.Abs(diffv) : Mathf.Abs(diffv) - 19);
+		if (30 - Mathf.Abs(diffh) < Mathf.Abs(diffh))
+			diffh = (diffh < 0 ? 30 - Mathf.Abs(diffh) : Mathf.Abs(diffh) - 30);
+		
+		transform.localScale = Vector3.zero;
+		//Static.rink.gameArea[newLpos][newBpos].hightlightColor(true);
+		
+		//GetComponent<CapsuleCollider>().enabled = false;
+		autoMove = true;
+		Static.camera.GetComponent<MouseLookGame>().setRotatable(false);
+		
+		if (diffh != 0) {
+			horizontalMovement = diffh < 0 ? SPEED : -SPEED;
+			horizontalMovement *= Static.player.getSpeed();
+		}
+		if (diffv != 0)
+			verticalMovement = diffv < 0 ? -SPEED : SPEED;
+		
+		diffv = Mathf.Abs(diffv);
+		diffh = Mathf.Abs(diffh);
+
 	}
 
 	
@@ -172,12 +218,12 @@ public class InputHandler : MonoBehaviour {
 		transform.localScale = Vector3.zero;
 		GetComponent<CapsuleCollider>().enabled = false;
 		while (Static.player.isDead()) {
-			Debug.Log("old Vertical: " + verticalMovement + " old Horizontal: " + horizontalMovement);
+			Debug.Log("old Vertical: " + deadVerticalMovement + " old Horizontal: " + deadHorizontalMovement);
 			float v;
 			float h;
 			do {
-				v = verticalMovement;
-				h = horizontalMovement;
+				v = deadVerticalMovement;
+				h = deadHorizontalMovement;
 				switch (Random.Range(0, 2)) {
 				case 0:
 					if (v != 0f) {
@@ -195,14 +241,38 @@ public class InputHandler : MonoBehaviour {
 					break;
 				}
 			} while (v == 0f && h == 0f);
-			verticalMovement = v;
-			horizontalMovement = h;
-			Debug.Log("new Vertical: " + verticalMovement + " new Horizontal: " + horizontalMovement);
+			deadVerticalMovement = v;
+			deadHorizontalMovement = h;
+			Debug.Log("new Vertical: " + deadVerticalMovement + " new Horizontal: " + deadHorizontalMovement);
 			yield return new WaitForSeconds(Random.value*5 + 5f);
 		}
 	}
 	
 	void Update () {
+		
+		if (autoMove) { // drehe Kamera auf Spawnposition
+			if (prevLpos != lpos) {
+				diffv--;
+				prevLpos = lpos;
+			}
+			
+			if (prevBpos != bpos) {
+				diffh--;
+				prevBpos = bpos;
+			}
+			
+			if (diffv == 0)
+				verticalMovement = 0f;
+			if (diffh == 0)
+				horizontalMovement = 0f;
+			
+			if (diffv == 0 && diffh == 0) {
+				autoMove = false;
+				Static.camera.GetComponent<MouseLookGame>().setRotatable(true);
+				transform.localScale = new Vector3(0.25f, 0.25f, 0.25f);
+				GetComponentInChildren<Animation>().CrossFade("land");
+			}
+		}
 		
 		// Gegner drehen mit dem Planeten..!
 		if (Network.peerType != NetworkPeerType.Disconnected && !networkView.isMine && Static.rink != null) {
@@ -313,7 +383,7 @@ public class InputHandler : MonoBehaviour {
 	}
 	
 	public void dropBomb() {
-		if (!currCell.hasExplosion() && !Static.player.isDead()) {
+		if (!currCell.hasExplosion() && !Static.player.isDead() && !autoMove) {
 			int extra = Static.player.addBomb();
 			if (extra > -1) {
 				GameObject ex = Network.Instantiate(Resources.Load("Prefabs/Bombe"), currCell.getCenterPos(), Quaternion.identity, 0) as GameObject;
@@ -327,7 +397,7 @@ public class InputHandler : MonoBehaviour {
 	}
 	
 	public void extra() {
-		if (!currCell.hasExplosion() && !Static.player.isDead()) {
+		if (!currCell.hasExplosion() && !Static.player.isDead() && !autoMove) {
 			if (Static.player.addContactMine()) {
 				GameObject ex = Network.Instantiate(Resources.Load("Prefabs/Bombe"), currCell.getCenterPos(), Quaternion.identity, 0) as GameObject;
 				ex.networkView.RPC("createExplosionOnCell", RPCMode.All, currCell.getLpos(), currCell.getBpos(), 
@@ -358,6 +428,7 @@ public class InputHandler : MonoBehaviour {
 		Parcel cell = Static.rink.gameArea[lpos][bpos];
 		cell.addPowerup(new Powerup((PowerupType) type));
 	}
+	
 	[RPC]
 	public void removePlayer(NetworkPlayer p) {
 		if (networkView.owner == p) {
@@ -368,13 +439,12 @@ public class InputHandler : MonoBehaviour {
 	private void moveCharacter() {
 		
 		float vm = 0, m = 0;
-		if (Input.GetAxis("Vertical") != 0 || Input.GetAxis("Horizontal") != 0) {
+		if (Input.GetAxis("Vertical") != 0 || Input.GetAxis("Horizontal") != 0 || autoMove) {
 		
-			float verticalMovement;
-			float horizontalMovement;
-	
-			verticalMovement = Input.GetAxis("Vertical");
-			horizontalMovement = Input.GetAxis("Horizontal");
+			if (!autoMove) {
+				verticalMovement = Input.GetAxis("Vertical");
+				horizontalMovement = Input.GetAxis("Horizontal");
+			}
 			
 			if (Static.camera != null && !Static.camera.GetComponent<MouseLookGame>().birdview) {
 			
@@ -383,7 +453,7 @@ public class InputHandler : MonoBehaviour {
 				 * 1 hoch rechts:	verticalMovement =  1, horizontalMovement =  1
 				 * 2 rechts:		verticalMovement =  0, horizontalMovement =  1
 				 * 3 runter rechts:	verticalMovement = -1, horizontalMovement =  1
-				 * 4 runter:			verticalMovement = -1, horizontalMovement =  0
+				 * 4 runter:		verticalMovement = -1, horizontalMovement =  0
 				 * 5 runter links:	verticalMovement = -1, horizontalMovement = -1
 				 * 6 links:			verticalMovement =  0, horizontalMovement = -1
 				 * 7 hoch links:	verticalMovement =  1, horizontalMovement = -1
@@ -483,11 +553,12 @@ public class InputHandler : MonoBehaviour {
 				}
 			}
 			
-			horizontalMovement *= Static.player.getSpeed();
+			if (!autoMove)
+				horizontalMovement *= Static.player.getSpeed();
 			
-			if (Static.player.isDead()) {
-				verticalMovement = this.verticalMovement;
-				horizontalMovement = this.horizontalMovement;
+			if (Static.player.isDead() && !autoMove) {
+				verticalMovement = deadVerticalMovement;
+				horizontalMovement = deadHorizontalMovement;
 			}
 			
 			if (verticalMovement != 0) {
@@ -614,7 +685,7 @@ public class InputHandler : MonoBehaviour {
 				
 					Parcel newCell = Static.rink.gameArea[lpos < n_L-2 ? lpos+1 : 0][bpos];
 					if (newCell.getType() != 0 || newCell.hasBomb()) {
-						return 0.0f;
+						if (!autoMove) return 0.0f;
 					}
 					if (Mathf.Abs(verticalAngle - verticalHelper) > Mathf.PI/(n_L-1)) {
 						//Static.player.setXPos(0);
@@ -639,7 +710,7 @@ public class InputHandler : MonoBehaviour {
 					
 					Parcel newCell = Static.rink.gameArea[lpos > 0 ? lpos-1 : n_L-2][bpos];
 					if (newCell.getType() != 0 || newCell.hasBomb()) {
-						return 0.0f;
+						if (!autoMove) return 0.0f;
 					}
 					if (Mathf.Abs(verticalAngle - verticalHelper) > Mathf.PI/(n_L-1)) {
 						verticalHelper -= Mathf.PI/(n_L-1);
@@ -661,7 +732,7 @@ public class InputHandler : MonoBehaviour {
 					
 					Parcel newCell = Static.rink.gameArea[lpos > 0 ? lpos-1 : n_L-2][bpos];
 					if (newCell.getType() != 0 || newCell.hasBomb()) {
-						return 0.0f;
+						if (!autoMove) return 0.0f;
 					}
 					if (Mathf.Abs(verticalAngle - verticalHelper) > Mathf.PI/(n_L-1)) {
 						verticalHelper -= Mathf.PI/(n_L-1);
@@ -685,7 +756,7 @@ public class InputHandler : MonoBehaviour {
 					
 					Parcel newCell = Static.rink.gameArea[lpos < n_L-2 ? lpos+1 : 0][bpos];
 					if (newCell.getType() != 0 || newCell.hasBomb()) {
-						return 0.0f;
+						if (!autoMove) return 0.0f;
 					}
 					if (Mathf.Abs(verticalAngle - verticalHelper) > Mathf.PI/(n_L-1)) {
 						verticalHelper += Mathf.PI/(n_L-1);
@@ -716,12 +787,12 @@ public class InputHandler : MonoBehaviour {
 					
 					if (bpos < n_B-1) {
 						if (Static.rink.gameArea[lpos][bpos+1].getType() != 0 || Static.rink.gameArea[lpos][bpos+1].hasBomb()) {
-							return 0.0f;
+							if (!autoMove) return 0.0f;
 						}
 						newCell = Static.rink.gameArea[lpos][bpos+1];
 					} else {
 						if (Static.rink.gameArea[lpos][0].getType() != 0 || Static.rink.gameArea[lpos][0].hasBomb()) {
-							return 0.0f;
+							if (!autoMove) return 0.0f;
 						}
 						newCell = Static.rink.gameArea[lpos][0];
 					}
@@ -751,12 +822,12 @@ public class InputHandler : MonoBehaviour {
 					
 					if (bpos > 0) {
 						if (Static.rink.gameArea[lpos][bpos-1].getType() != 0 || Static.rink.gameArea[lpos][bpos-1].hasBomb()) {
-							return 0.0f;
+							if (!autoMove) return 0.0f;
 						}
 						newCell = Static.rink.gameArea[lpos][bpos-1];
 					} else {
 						if (Static.rink.gameArea[lpos][n_B-1].getType() != 0 || Static.rink.gameArea[lpos][n_B-1].hasBomb()) {
-							return 0.0f;
+							if (!autoMove) return 0.0f;
 						}
 						newCell = Static.rink.gameArea[lpos][n_B-1];
 					}
@@ -782,7 +853,7 @@ public class InputHandler : MonoBehaviour {
 						
 					if (bpos > 0) {
 						if (Static.rink.gameArea[lpos][bpos-1].getType() != 0 || Static.rink.gameArea[lpos][bpos-1].hasBomb()) {
-							return 0.0f;
+							if (!autoMove) return 0.0f;
 						}
 						newCell = Static.rink.gameArea[lpos][bpos-1];
 					} else {
@@ -813,12 +884,12 @@ public class InputHandler : MonoBehaviour {
 					
 					if (bpos < n_B-1) {
 						if (Static.rink.gameArea[lpos][bpos+1].getType() != 0 || Static.rink.gameArea[lpos][bpos+1].hasBomb()) {
-							return 0.0f;
+							if (!autoMove) return 0.0f;
 						}
 						newCell = Static.rink.gameArea[lpos][bpos+1];
 					} else {
 						if (Static.rink.gameArea[lpos][0].getType() != 0 || Static.rink.gameArea[lpos][0].hasBomb()) {
-							return 0.0f;
+							if (!autoMove) return 0.0f;
 						}
 						newCell = Static.rink.gameArea[lpos][0];
 					}
