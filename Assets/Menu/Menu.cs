@@ -19,7 +19,7 @@ public class Menu : MonoBehaviour {
 	private static Color playerColor;
 	private int expDetail;
 	private int chestDensity;
-	private float mouseSensitivity;
+	private int mouseSensitivity;
 	private string chat = "";
 	
 	private static Dictionary<NetworkPlayer,string> playerList = new Dictionary<NetworkPlayer, string>();
@@ -295,7 +295,7 @@ public class Menu : MonoBehaviour {
 		    GUI.skin.label.alignment = TextAnchor.MiddleRight;
 			GUI.Label(new Rect(width-40,205,50,20), "Max");
 		    GUI.skin.label.alignment = TextAnchor.MiddleLeft;
-			mouseSensitivity = GUI.HorizontalSlider (new Rect (0, 200, width, 20), mouseSensitivity, 0.1f, 1.0f);
+			mouseSensitivity = (int) GUI.HorizontalSlider (new Rect (0, 200, width, 20), mouseSensitivity, 1, 10);
 			
 			Preferences.setExplosionDetail(expDetail);
 			Preferences.setMouseSensitivity(mouseSensitivity);
@@ -413,7 +413,7 @@ public class Menu : MonoBehaviour {
 		    GUI.skin.label.alignment = TextAnchor.MiddleRight;
 			GUI.Label(new Rect(width-15,225,50,20), "Max");
 		    GUI.skin.label.alignment = TextAnchor.MiddleLeft;
-			mouseSensitivity = GUI.HorizontalSlider (new Rect (25, 220, width, 20), mouseSensitivity, 0.1f, 1.0f);
+			mouseSensitivity = (int) GUI.HorizontalSlider (new Rect (25, 220, width, 20), mouseSensitivity, 1, 10);
 			
 			Preferences.setExplosionDetail(expDetail);
 			Preferences.setChestDensity(chestDensity);

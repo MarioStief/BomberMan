@@ -8,7 +8,7 @@ namespace AssemblyCSharp
 		private GameObject player;
 		private bool rotatable = true;
 		public bool birdview = true;
-		private float mouseSensitivity;
+		private int mouseSensitivity;
 		
 		void Start() {
 			Static.setCamera(this.camera);
