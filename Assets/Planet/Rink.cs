@@ -1,5 +1,5 @@
-using System;
 using UnityEngine;
+using System.Collections;
 
 namespace AssemblyCSharp
 {
@@ -24,6 +24,7 @@ namespace AssemblyCSharp
 		
 		public GameObject []players = new GameObject[1];
 		public GameObject player;
+		
 		
 		// Temporär, um das Überfluten der Console zu vermeiden
 		//private int oldX = 99999;
@@ -59,7 +60,7 @@ namespace AssemblyCSharp
 			for (int i = 0; i < height; i++) {
 				for (int j = 0; j < width; j++) {
 					//if (i % 2 == 0 && j % 2 == 0) {
-					if (UnityEngine.Random.Range(0,4) == 0) {
+					if (Random.Range(0,4) == 0) {
 						gameArea[i][j] = new Parcel(2);	// Hoher Steinquader
 					} else {
 						gameArea[i][j] = new Parcel(0);	// Bodenfläche
@@ -71,8 +72,8 @@ namespace AssemblyCSharp
 			
 			for (int i = 0; i < 10 * Preferences.getChestDensity() * width; i++) {
 				//gameArea[(int)(UnityEngine.Random.value*height)][(int)(UnityEngine.Random.value*width)].setType(1);	
-				int a = (int)(UnityEngine.Random.value*height);
-				int b = (int)(UnityEngine.Random.value*width);
+				int a = (int)(Random.value*height);
+				int b = (int)(Random.value*width);
 				if (gameArea[a][b].getType() == 0)
 					gameArea[a][b].setType(1);	
 			}
@@ -85,6 +86,18 @@ namespace AssemblyCSharp
 					Parcel down = gameArea[(i-1) < 0? height-1 : i-1][j];
 					gameArea[i][j].setNeighbours(right,left,up,down);		// Hoher Steinquader
 				}
+			}
+			
+			// Spawnpunkte freiräumen
+			foreach (var p in Menu.spawns) {
+				int l = p.Value[0];
+				int b = p.Value[1];
+				gameArea[l][b].setType(0);
+				
+				// zufällig 2 benachbarte Felder freiräumen
+				int d = Random.Range(0,4);
+				gameArea[l][b].getNeighbour(d).setType(0);
+				gameArea[l][b].getNeighbour((d + 1) % 4).setType(0);
 			}
 			
 			// Init der gezeichneten Fläche

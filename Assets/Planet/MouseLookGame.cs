@@ -45,7 +45,7 @@ namespace AssemblyCSharp
 			if (Input.GetButtonDown("Fire3")) {
 				birdview = !birdview;
 				if (birdview) {
-					transform.position = player.transform.position * 1.6f;
+					transform.position = player.transform.position * 1.7f;
 					transform.LookAt(player.transform.position, Vector3.forward);
 				} else {
 					transform.RotateAround(player.transform.position, transform.right, -45);

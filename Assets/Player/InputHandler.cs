@@ -38,8 +38,6 @@ public class InputHandler : MonoBehaviour {
 	
 	private Parcel currCell;
 	
-	private float createTime;
-	
 	float verticalMovement;
 	float horizontalMovement;
 	float deadVerticalMovement;
@@ -98,7 +96,6 @@ public class InputHandler : MonoBehaviour {
 		}
 		
 		GetComponent<CapsuleCollider>().enabled = true;
-		createTime = Time.time;
 		
 		n_L = Static.sphereHandler.n_L;
 		n_B = Static.sphereHandler.n_B;
@@ -123,10 +120,47 @@ public class InputHandler : MonoBehaviour {
 		Static.rink.renderAll();
 		Static.player.resetStats();
 		
-		int startLpos = Static.sphereHandler.getStartPos()[0];
-		int startBpos = Static.sphereHandler.getStartPos()[1];
-		if (Application.loadedLevelName != "StartMenu")
-			moveToPosition(startLpos, startBpos);
+		if (Application.loadedLevelName != "StartMenu") {
+			int startLpos = Menu.spawns[Network.player][0];
+			int startBpos = Menu.spawns[Network.player][1];
+			
+			// Planet ver. drehen
+			Vector3 target = Static.rink.gameArea[startLpos][startBpos].getCenterPos();
+			verticalAngle = Vector3.Angle(target, new Vector3(target.x, target.y, 0)) * Mathf.Deg2Rad;
+			if (target.z < 0)
+				verticalAngle *= -1;
+			vertAngle = verticalAngle;
+			//float maxA = Mathf.PI/(n_L-1);
+			float maxA = 0.01f; // Drehwinkel darf nicht größer sein!
+			float done = 0;
+			while (done < Mathf.Abs(verticalAngle)) {
+				if (Mathf.Abs(verticalAngle) - done > maxA) {
+					Static.sphereHandler.move(maxA * Mathf.Sign(verticalAngle)); //verticalAngle);
+					done += maxA;
+				} else {
+					Static.sphereHandler.move((Mathf.Abs(verticalAngle) - done) * Mathf.Sign(verticalAngle));
+					break;
+				}
+			}
+			
+			// Spieler hor. drehen
+			target.z = 0;
+			horizontalAngle = Vector3.Angle(target, Vector3.up);
+			if (target.x > 0)
+				horizontalAngle *= -1;
+			transform.RotateAround(Vector3.zero, Vector3.forward, horizontalAngle);
+			horizontalAngle *= Mathf.Deg2Rad;
+			
+			verticalHelper = (startLpos-lpos) * Mathf.PI/(n_L-1);
+			//horizontalHelper = (startBpos-bpos) * 2*Mathf.PI/n_B;
+			horizontalHelper = Mathf.Round(horizontalAngle / (2*Mathf.PI/n_B)) * (2*Mathf.PI/n_B);
+			
+			lpos = startLpos;
+			bpos = startBpos;
+			
+			currCell = Static.rink.gameArea[lpos][bpos];
+			Static.player.setCurrentParcel(currCell);
+		}
 	}
 	
 	private void moveToPosition(int newLpos, int newBpos) {
@@ -292,13 +326,13 @@ public class InputHandler : MonoBehaviour {
 			
 			if (vertAngleM != 0) { // an Wänden hängen bleiben..
 				float vm;
-				if (Static.player.isDead()) {
+				//if (Static.player.isDead()) {
 					vm = vertAngleM;
 					vertAngleM = 0;
-				} else {
+				/*} else {
 					vm = Static.player.getSpeed() * Input.GetAxis("Vertical") * Time.deltaTime;
 					vm = determineVerticalParcelPosition(Input.GetAxis("Vertical"), vm);
-				}
+				}*/
 				verticalAngle += vm;
 				//verticalAngle = verticalAngle % (Mathf.PI*2);
 
@@ -360,7 +394,8 @@ public class InputHandler : MonoBehaviour {
 			// -----------------------------------------------------------
 			moveCharacter();
 			currCell = Static.rink.gameArea[lpos][bpos];
-			//currCell.colorCell(Color.cyan);
+			if (DEBUGPLAYERPOSITION)
+				currCell.colorCell(Color.cyan);
 			//Debug.Log("[" + lpos + "][" + bpos + "]");
 			
 			if (currCell.hasContactMine()) {
@@ -454,7 +489,7 @@ public class InputHandler : MonoBehaviour {
 	private void moveCharacter() {
 		
 		float vm = 0, m = 0;
-		if (Input.GetAxis("Vertical") != 0 || Input.GetAxis("Horizontal") != 0 || autoMove) {
+		if (Input.GetAxis("Vertical") != 0 || Input.GetAxis("Horizontal") != 0 || autoMove || Static.player.isDead()) {
 		
 			if (!autoMove) {
 				verticalMovement = Input.GetAxis("Vertical");
@@ -872,6 +907,9 @@ public class InputHandler : MonoBehaviour {
 						}
 						newCell = Static.rink.gameArea[lpos][bpos-1];
 					} else {
+						if (Static.rink.gameArea[lpos][n_B-1].getType() != 0 || Static.rink.gameArea[lpos][n_B-1].hasBomb()) {
+							if (!autoMove) return 0.0f;
+						}
 						newCell = Static.rink.gameArea[lpos][n_B-1];
 					}
 					if (Mathf.Abs(horizontalAngle - horizontalHelper) > 2*Mathf.PI/n_B) {

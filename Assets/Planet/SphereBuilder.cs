@@ -27,9 +27,6 @@ public class SphereBuilder : MonoBehaviour {
 	
 	public Transform playerPrefab;
 	
-	private int L_Pos; // = n_L/2-1;
-	private int B_Pos; // = n_B/4;
-	
 	// Use this for initialization
 	void Start () {
 		Static.setSphereBuilder(this);
@@ -47,30 +44,11 @@ public class SphereBuilder : MonoBehaviour {
 		
 		// instantiate the player
 		Vector3 pos = new Vector3(-1.41561e-07f, 2.080631f, 0.01059199f);
-		
-		// get random spawn point
-		if (Application.loadedLevelName == "StartMenu") {
-			L_Pos = n_L/2-1;
-			B_Pos = n_B/4;
-		} else {
-			L_Pos = Random.Range(0, 19);
-			B_Pos = Random.Range(0, 30);
-			//L_Pos = n_L/2-1;
-			//B_Pos = n_B/4;
-			
-			Debug.Log("Random spawn point: [" + L_Pos + "][" + B_Pos + "]");
-		}
-		
-		// Spawnpunkt freiräumen
-		gameArea.getGameArea()[L_Pos][B_Pos].setType(0);
-		
-		// zufällig 2 benachbarte Felder freiräumen
-		int d = Random.Range(0,4);
-		gameArea.getGameArea()[L_Pos][B_Pos].getNeighbour(d).setType(0);
-		gameArea.getGameArea()[L_Pos][B_Pos].getNeighbour((d + 1) % 4).setType(0);
-		
 		if (Application.loadedLevelName == "StartMenu") {
 			// alle nachbarfelder freiräumen
+			int L_Pos = n_L/2-1;
+			int B_Pos = n_B/4;
+			gameArea.getGameArea()[L_Pos][B_Pos].setType(0);
 			foreach (Parcel c in gameArea.getGameArea()[L_Pos][B_Pos].getNeighbours()) {
 				c.setType(0);
 			}
@@ -79,13 +57,7 @@ public class SphereBuilder : MonoBehaviour {
 			Network.Instantiate(playerPrefab, pos, transform.rotation, 1);
 		}
 	}
-	
-	public int[] getStartPos() {
-		return new int[] {L_Pos, B_Pos};
-	}
-	public Parcel getStartParcel() {
-		return gameArea.gameArea[L_Pos][B_Pos];
-	}
+
 	
 	private void tesselateSphere() {
 	
@@ -122,7 +94,7 @@ public class SphereBuilder : MonoBehaviour {
 		float u,v;		
 		Vector3 val;
 
-		for(int j = 0; j < n_L; j++){		// Schleife über alle  Längengeraden
+		for(int j = 0; j < n_L-1; j++){		// Schleife über alle  Längengeraden
 			
 			v = (j*Mathf.PI/(n_L-1)) - Mathf.PI/2;
 			
@@ -259,6 +231,9 @@ public class SphereBuilder : MonoBehaviour {
 	public void move(float moveDirection){
 		
 		// Bestimme Bewegungsrichtungen und
+		if (moveDirection == 0)
+			return;
+		
 		vDirection = (int) Mathf.Sign(moveDirection);
 		
 		// Rotiere den Würfel 	
@@ -267,23 +242,14 @@ public class SphereBuilder : MonoBehaviour {
 		
 		//hDeltaOffset = speed * (-1)*moveDirection.y * Time.deltaTime;
 		//hOffset = hOffset + hDeltaOffset;
-		
-		rotateCubes	();
-		
+		rotateCubes();
 		
 		// Würfel-Shift an Darstellungsrändern
-		if (vDirection == 0) return;
-		if (vDirection == 1){
-			if (	Mathf.Abs(offset) >= Mathf.PI/(n_L-1) ){
-				offset -= Mathf.PI/(n_L-1);		// UPWARD MOVEMENT
-				churnOutCubesVertical();
-			}
-		} else{
-			if (	Mathf.Abs(offset) >= Mathf.PI/(n_L-1) ){
-				offset += Mathf.PI/(n_L-1);		// DOWNWARD MOVEMENT
-				churnOutCubesVertical();
-			}
+		while (	Mathf.Abs(offset) >= Mathf.PI/(n_L-1) ) {
+			offset -= Mathf.PI/(n_L-1) * vDirection;
+			churnOutCubesVertical();
 		}
+		gameArea.renderAll();
 	}
 	
 	// <summary>
@@ -340,7 +306,7 @@ public class SphereBuilder : MonoBehaviour {
 		float u,v;		
 		Vector3 val;
 
-		for(int j = 0; j < n_L; j++){		// Schleife über alle  Längengeraden
+		for(int j = 0; j < n_L-1; j++){		// Schleife über alle  Längengeraden
 			
 			v = (j*Mathf.PI/(n_L-1)) - Mathf.PI/2;
 			
@@ -365,7 +331,7 @@ public class SphereBuilder : MonoBehaviour {
 			}
 		}	
 		
-		gameArea.renderAll();
+		//gameArea.renderAll();
 	}
 
 	

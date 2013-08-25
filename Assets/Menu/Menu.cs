@@ -24,6 +24,8 @@ public class Menu : MonoBehaviour {
 	
 	private static Dictionary<NetworkPlayer,string> playerList = new Dictionary<NetworkPlayer, string>();
 	private static Dictionary<NetworkPlayer,Color> playerColorList = new Dictionary<NetworkPlayer, Color>();
+	public static Dictionary<NetworkPlayer,int[]> spawns = new Dictionary<NetworkPlayer, int[]>();
+	
 	public static bool showGUI = true;
 	
 	public static Menu instance = null;
@@ -313,7 +315,7 @@ public class Menu : MonoBehaviour {
 				hostInfo = hostInfo + "]";
 				GUILayout.Label(hostInfo);
 				//GUILayout.Label(srv.comment);*/
-				if (GUI.Button(new Rect(width,230+25*i,75,20), "Connect")) {
+				if (GUI.Button(new Rect(width,250+25*i,75,20), "Connect")) {
 					if (nickname.Length > 0) {
 						PlayerPrefs.SetString("Player Name", nickname);
 						PlayerPrefs.SetFloat("PlayerRed", playerColor.r);
@@ -468,7 +470,19 @@ public class Menu : MonoBehaviour {
 				showGUI = false;
 				
 				CancelInvoke("refreshServerName");
-				networkView.RPC("startGame",RPCMode.AllBuffered, Mathf.FloorToInt(Random.value*100000));
+				
+				MasterServer.UnregisterHost();
+				
+				// spawn-points
+				for (int i=-1; i<Network.connections.Length; i++) {
+					int L_pos = Random.Range(1, Static.sphereHandler.n_L-2);
+					int B_pos = Random.Range(1, Static.sphereHandler.n_B-1);
+					if (i == -1)
+						networkView.RPC("tellSpawnPoint", RPCMode.AllBuffered, L_pos, B_pos, Network.player);
+					else
+						networkView.RPC("tellSpawnPoint", RPCMode.AllBuffered, L_pos, B_pos, Network.connections[i]);
+				}
+				networkView.RPC("startGame",RPCMode.AllBuffered, Mathf.FloorToInt(Random.value*100000), Preferences.getChestDensity());
 			}
 		}
 		GUI.EndGroup();
@@ -552,7 +566,7 @@ public class Menu : MonoBehaviour {
 	}
 	
 	void backButton() {
-		if (GUI.Button(new Rect(10,Screen.height-40,80,30), "Back")) {
+		if (GUI.Button(new Rect(10,Screen.height-40,80,30), "Back") || Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Escape) {
 			if (screen == "server") { // cancel the server
 				Network.Disconnect();
 				MasterServer.UnregisterHost();
@@ -650,7 +664,8 @@ public class Menu : MonoBehaviour {
 	}
 	
 	[RPC]
-	public void startGame(int seed) {
+	public void startGame(int seed, int chestDensity) {
+		Preferences.setChestDensity(chestDensity);
 		Random.seed = seed;
 		Application.LoadLevel("SphereCreate");
 		Random.seed = seed;
@@ -659,6 +674,10 @@ public class Menu : MonoBehaviour {
 		incomingChatMessage("Game started. Have Fun!", new NetworkMessageInfo());
 	}
 	
+	[RPC]
+	public void tellSpawnPoint(int l, int b, NetworkPlayer p) {
+		spawns.Add(p, new int[] {l,b});
+	}
 
 
 }

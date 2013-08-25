@@ -13,11 +13,11 @@ public class startPan : MonoBehaviour {
 	private int phase = 0;
 	
 	void Start () {
-		if (Application.loadedLevelName != "StartMenu")
-			return;
+		//if (Application.loadedLevelName != "StartMenu")
+		//	return;
 
 		effect = Random.Range(0,3);
-		targetPos = Static.sphereHandler.getStartParcel().getCenterPos() * 1.5f;
+		//targetPos = Static.sphereHandler.getStartParcel().getCenterPos() * 1.5f;
 		
 		if (Application.loadedLevelName == "StartMenu") {
 			targetFoV = 45;
@@ -25,6 +25,24 @@ public class startPan : MonoBehaviour {
 			targetRot.x = 90;
 			if (effect == 1)
 				effect++;
+		} else {
+			Vector3 tmpP = transform.position;
+			Quaternion tmpR = transform.rotation;
+
+			// Spieler hor. drehen
+			targetPos = Static.rink.gameArea[Menu.spawns[Network.player][0]][Menu.spawns[Network.player][1]].getCenterPos() * 1.7f;
+			targetPos.z = 0;
+			float a = Vector3.Angle(targetPos, Vector3.up);
+			if (targetPos.x > 0)
+				a *= -1;
+			transform.RotateAround(Vector3.zero, Vector3.forward, a);
+			targetPos = transform.position;
+			
+			transform.LookAt(Vector3.zero, Vector3.forward);
+			targetRot = transform.rotation.eulerAngles;
+			
+			transform.position = tmpP;
+			transform.rotation = tmpR;
 		}
 		
 		if (effect == 1)
@@ -32,8 +50,8 @@ public class startPan : MonoBehaviour {
 	}
 	
 	void Update () {
-		if (Application.loadedLevelName != "StartMenu")
-			return;
+		//if (Application.loadedLevelName != "StartMenu")
+		//	return;
 		
 		if (Input.anyKeyDown) {
 			transform.position = targetPos;
