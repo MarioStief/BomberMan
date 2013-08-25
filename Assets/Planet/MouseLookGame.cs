@@ -36,7 +36,9 @@ namespace AssemblyCSharp
 				transform.RotateAround(player.transform.position, player.transform.position, v);
 				
 				float h = 2 * mouseSensitivity * Input.GetAxis ("Mouse Y");
-				transform.RotateAround(player.transform.position, transform.right, h);
+				float newA = Vector3.Angle(Vector3.Cross(player.transform.up, transform.right*-1), transform.forward) + h;
+				if (newA > 0 && newA <= 60)
+					transform.RotateAround(player.transform.position, transform.right, h);
 			}
 			
 			// middle click

@@ -565,29 +565,6 @@ public class InputHandler : MonoBehaviour {
 						horizontalMovement = -1f;
 						break;
 				}
-				
-				/*if (!autoMove) {
-					
-					// Das müsste die Richtung sein, in der der Spieler "vorwärts" laufen soll
-					// Dieser Vektor muss mit der Tastatureingabe verrechnet werden, das Komplizierte
-					// daran ist die horizontale Bewegung - vertikal sollte der Z-Koord. entsprechen
-					Vector3 lookDir = Vector3.Cross(transform.up, cam.transform.right*-1);
-					
-					
-					if (Input.GetAxis("Vertical") != 0) {
-						Vector3 f = Vector3.Cross(transform.up, cam.transform.right*-1);
-						Debug.DrawRay(transform.position, f, Color.green, 2f);
-						verticalMovement = f.z * Input.GetAxis("Vertical");
-						horizontalMovement = Mathf.Abs(f.x + f.y) * Input.GetAxis("Vertical") * (horizontalMovement != 0 ? horizontalMovement : 1);
-						Debug.DrawRay(transform.position, new Vector3(verticalMovement, 0, horizontalMovement), Color.red, 2f);
-					}					
-					
-					if (Input.GetAxis("Horizontal") != 0) {
-						Vector3 f = Vector3.Cross(transform.up, cam.transform.right*-1);
-						verticalMovement = f.z * Input.GetAxis("Horizontal") * (verticalMovement != 0 ? verticalMovement : 1);
-						horizontalMovement = (f.x + f.y) * Input.GetAxis("Horizontal");
-					}
-				}*/
 			}
 			
 			
