@@ -57,10 +57,23 @@ public class InputHandler : MonoBehaviour {
 		sun = GameObject.FindGameObjectWithTag("Sun");
 		cam = GameObject.FindGameObjectWithTag("MainCamera");
 		
-		if (Application.loadedLevelName != "StartMenu")
+		if (Application.loadedLevelName == "StartMenu") {
+			lockCursor(false);
+		} else { // Ingame
 			DontDestroyOnLoad(gameObject);
+			lockCursor(true);
+		}
 	}
-
+	
+	public void lockCursor(bool l) {
+		if (l) {
+			Screen.lockCursor = true;
+			Screen.showCursor = false;
+		} else {
+			Screen.lockCursor = false;
+			Screen.showCursor = true;
+		}
+	}
 	
 	// Use this for initialization
 	void Start () {
@@ -370,10 +383,12 @@ public class InputHandler : MonoBehaviour {
 			
 			// Leertaste -> Bombe legen
 			if (Input.GetKeyDown(KeyCode.Space) || Input.GetButtonDown("Fire1"))
-				dropBomb();
+				if (!Menu.showGUI)
+					dropBomb();
 
 			if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift) || Input.GetButtonDown("Fire2"))
-				extra();
+				if (!Menu.showGUI)
+					extra();
 			
 		} else {
 			// vor Scham im Boden versinken lassen ;)

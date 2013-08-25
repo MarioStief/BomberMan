@@ -9,8 +9,17 @@ namespace AssemblyCSharp
 			if (Application.loadedLevelName != "SphereCreate")
 				return;
 			
-			if (Input.GetKeyDown(KeyCode.Escape))
+			if (Input.GetKeyDown(KeyCode.Escape)) {
 				Menu.showGUI = !Menu.showGUI;
+				if (Menu.showGUI) {
+					Static.inputHandler.lockCursor(false);
+					Static.camera.GetComponent<MouseLookGame>().setRotatable(false);
+				}
+				else {
+					Static.inputHandler.lockCursor(true);
+					Static.camera.GetComponent<MouseLookGame>().setRotatable(true);
+				}
+			}
 		}
 		
 		public static bool focusToChat = true;

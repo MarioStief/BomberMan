@@ -32,10 +32,10 @@ namespace AssemblyCSharp
 				return;
 			
 			if (!birdview) {
-		    	float v = mouseSensitivity * Input.GetAxis ("Mouse X");
+		    	float v = 2 * mouseSensitivity * Input.GetAxis ("Mouse X");
 				transform.RotateAround(player.transform.position, player.transform.position, v);
 				
-				float h = mouseSensitivity * Input.GetAxis ("Mouse Y");
+				float h = 2 * mouseSensitivity * Input.GetAxis ("Mouse Y");
 				transform.RotateAround(player.transform.position, transform.right, h);
 			}
 			
@@ -49,7 +49,6 @@ namespace AssemblyCSharp
 					transform.RotateAround(player.transform.position, transform.right, -45);
 				}
 			}
-			
 		}
 		
 		public void setRotatable(bool r) {
