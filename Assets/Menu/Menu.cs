@@ -587,7 +587,7 @@ public class Menu : MonoBehaviour {
 		    regServerName = serverName;
 		}
 		if (nickname != regNick && nickname.Trim().Length > 1) {
-			playerList[Network.player] = nickname;
+			playerList[Network.player] = nickname + " (me)";
 			regNick = nickname;
 			networkView.RPC("newPlayer", RPCMode.AllBuffered, Network.player, nickname, playerColor.r, playerColor.g, playerColor.b);
 		}
@@ -622,13 +622,16 @@ public class Menu : MonoBehaviour {
 	        return playerColorList[p];
 		return Color.white;
 	}
+	public static string getPlayerNick(NetworkPlayer p) {
+		return playerList[p];
+	}
 	public static bool isInGame() {
 		return !showGUI;
 	}
 	
 	
 	[RPC]
-	public void incomingChatMessage(string text, NetworkMessageInfo info) {
+	public void incomingChatMessage(string text) {
 		chat += "\n" + text;
 		// max x lines
 		if (chat.Replace("\n","").Length + 100 <= chat.Length) {
@@ -650,7 +653,7 @@ public class Menu : MonoBehaviour {
 		if (playerList.ContainsKey(p))
 			playerList[p] = nick;
 		else
-			playerList.Add(p, nick);
+			playerList.Add(p, nick + (Network.player == p ? " (me)" : ""));
 		
 		if (playerColorList.ContainsKey(p))
 			playerColorList[p] = new Color(r,g,b);
@@ -665,13 +668,21 @@ public class Menu : MonoBehaviour {
 	
 	[RPC]
 	public void startGame(int seed, int chestDensity) {
-		Preferences.setChestDensity(chestDensity);
 		Random.seed = seed;
+		Static.player.setPlayers(new List<NetworkPlayer>(spawns.Keys));
+		Preferences.setChestDensity(chestDensity);
 		Application.LoadLevel("SphereCreate");
 		Random.seed = seed;
 		showGUI = false;
 		chat = "";
-		incomingChatMessage("Game started. Have Fun!", new NetworkMessageInfo());
+		incomingChatMessage("Game started. Have Fun!");
+	}
+	public void startRound() {
+		Static.player.setPlayers(new List<NetworkPlayer>(spawns.Keys));
+		foreach (var p in GameObject.FindGameObjectsWithTag("Player"))
+			Destroy(p);
+		Application.LoadLevel("SphereCreate");
+		Static.player.resetStats();
 	}
 	
 	[RPC]

@@ -407,6 +407,7 @@ public class InputHandler : MonoBehaviour {
 				//renderer.material.color = Color.black;
 				StartCoroutine(deadPlayer());
 				networkView.RPC("removePlayer", RPCMode.OthersBuffered, Network.player);
+				Static.player.imOut(Network.player);
 			}
 			
 			
@@ -483,6 +484,7 @@ public class InputHandler : MonoBehaviour {
 	public void removePlayer(NetworkPlayer p) {
 		if (networkView.owner == p) {
 			transform.localScale = Vector3.zero;
+			Static.player.imOut(p);
 		}
 	}
 	

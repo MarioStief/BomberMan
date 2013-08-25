@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace AssemblyCSharp
 {
@@ -29,12 +30,13 @@ namespace AssemblyCSharp
 		private float delay = 0.2f;
 		
 		private bool dead = false;
-		private int wins = 0;
 		
 		private UnityEngine.Object[] icons = new UnityEngine.Object[6];
 		private string[] iconText = new string[4];
 		
 		private Dictionary<Parcel,GameObject> triggerbombList = new Dictionary<Parcel,GameObject>();
+		private Dictionary<NetworkPlayer,int> playerWins = new Dictionary<NetworkPlayer, int>();
+		private List<NetworkPlayer> playerAlive = new List<NetworkPlayer>();
 		
 		public void updateMenuStats() {
 			
@@ -397,17 +399,42 @@ namespace AssemblyCSharp
 			dead = false;
 		}
 		
-		public void increaseWins() {
-			wins++;
+		public void setPlayers(List<NetworkPlayer> players) {
+			playerAlive = players;
+			if (playerWins.Count == 0)
+				foreach (NetworkPlayer p in players)
+					playerWins.Add(p,0);
 		}
 		
-		public int getWins() {
-			return wins;
+		public void imOut(NetworkPlayer p) {
+			playerAlive.Remove(p);
+			// round ended
+			if (playerAlive.Count <= 1) {
+				if (playerAlive.Count == 1) {
+					playerWins[playerAlive[0]]++;
+					Static.menuHandler.incomingChatMessage(Menu.getPlayerNick(playerAlive[0]) + " has won this round!");
+				}
+				Static.menuHandler.Invoke("startRound", 5);
+			}
+		}
+		
+		public List<NetworkPlayer> getPlayersAlive() {
+			return playerAlive;
+		}
+		
+		public List<string> getWins() {
+			List<KeyValuePair<NetworkPlayer,int>> pl = playerWins.ToList();
+			pl.Sort((firstPair,nextPair) => {
+        		return nextPair.Value.CompareTo(firstPair.Value);
+    		});
+			List<string> re = new List<string>();
+			foreach (var it in pl)
+				re.Add(Menu.getPlayerNick(it.Key) + ": " + it.Value);
+			return re;
 		}
 		
 		public void resetGame() {
 			resetStats();
-			wins = 0;
 		}
 	}
 }
