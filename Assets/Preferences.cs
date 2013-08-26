@@ -10,7 +10,7 @@ namespace AssemblyCSharp
 		private static bool negativePowerups = true;
 		private static int explosionDetail = 1; // 0 = off, 1 = low ... 3 = high
 		private static int chestDensity = 5; // 1 = low ... 5 = high
-		private static float volume = 0.7f; // 0f - 1f
+		private static bool backgroundMusic = true;
 		private static int mouseSensitivity = 5; // 0f - 1f
 		private static int roundsToWin = 3;
 	
@@ -22,7 +22,7 @@ namespace AssemblyCSharp
 			chestDensity = PlayerPrefs.GetInt("Chest Density", chestDensity);
 			mouseSensitivity = PlayerPrefs.GetInt("Mouse Sensitivity", mouseSensitivity);
 			roundsToWin = PlayerPrefs.GetInt("Rounds TO Win", roundsToWin);
-			volume = PlayerPrefs.GetFloat("Volume",volume);
+			backgroundMusic = (PlayerPrefs.GetInt("Background Music",(backgroundMusic ? 1 : 0)) == 1 ? true : false);
 		}
 		
 		public static bool getDestroyablePowerups() {
@@ -96,14 +96,15 @@ namespace AssemblyCSharp
 			}
 		}
 		
-		public static float getVolume() {
-			return volume;
+		public static bool getBackgroundMusic() {
+			return backgroundMusic;
 		}
 
-		public static void setVolume(float v) {
-			AudioListener.volume = v;
-			PlayerPrefs.SetFloat("Volume", v);
-			volume = v;
+		public static void setBackgroundMusic(bool b) {
+			if (b!= backgroundMusic) {
+				backgroundMusic = b;
+				PlayerPrefs.SetInt("Background Music", (backgroundMusic == true ? 1 : 0));
+			}
 		}
 	}
 }

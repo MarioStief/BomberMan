@@ -60,13 +60,14 @@ public class Menu : MonoBehaviour {
 		playerColor.a = 1f;
 		
 		Static.setMenu(this);
-		
 		// play bg-music
 		playSound(Static.selectRandomMusic(), true);
+		gameObject.GetComponent<AudioSource>().volume = 0.7f;
+		//gameObject.GetComponent<AudioSource>().volume = Preferences.getVolume();
 	}
 	
 	public void playSound(AudioClip clip, bool loop) {
-		AudioSource audioSource = gameObject.GetComponent<AudioSource>();
+		AudioSource audioSource = GetComponent<AudioSource>() != null ? GetComponent<AudioSource>() : gameObject.AddComponent<AudioSource>();
 		if (audioSource.isPlaying && !loop) {
 			// neue Soundsource dazu
 			foreach (AudioSource audioIterator in GetComponents<AudioSource>()) {
@@ -78,7 +79,7 @@ public class Menu : MonoBehaviour {
 		audioSource.clip = clip;
 		audioSource.loop = loop;
 		audioSource.Play();
-		audioSource.volume = Preferences.getVolume();
+		//audioSource.volume = Preferences.getVolume();
 	}
 
 	
@@ -87,7 +88,7 @@ public class Menu : MonoBehaviour {
 			AudioSource audioSource = gameObject.GetComponent<AudioSource>();
 			if (audioSource.volume < 1f) {
 				audioSource.volume += 0.1f;
-				Preferences.setVolume(audioSource.volume);
+				//Preferences.setVolume(audioSource.volume);
 			}
 			Debug.Log("Audio volume set to " + audioSource.volume);
 		}
@@ -96,7 +97,7 @@ public class Menu : MonoBehaviour {
 			AudioSource audioSource = gameObject.GetComponent<AudioSource>();
 			if (audioSource.volume > 0f) {
 				audioSource.volume -= 0.1f;
-				Preferences.setVolume(audioSource.volume);
+				//Preferences.setVolume(audioSource.volume);
 			}
 			Debug.Log("Audio volume set to " + audioSource.volume);
 		}
@@ -295,30 +296,34 @@ public class Menu : MonoBehaviour {
 			GUI.skin.label.normal.textColor = Color.white;
 		    GUI.skin.label.alignment = TextAnchor.MiddleLeft;
 			
-			GUI.Label(new Rect(0,180,width,20), "Mouse Sensitivity:");
-			GUI.Label(new Rect(0,205,50,20), "Min");
+			GUI.Label(new Rect(0,170,width,20), "Mouse Sensitivity:");
+			GUI.Label(new Rect(0,195,50,20), "Min");
 		    GUI.skin.label.alignment = TextAnchor.MiddleRight;
-			GUI.Label(new Rect(width-40,205,50,20), "Max");
+			GUI.Label(new Rect(width-40,195,50,20), "Max");
 		    GUI.skin.label.alignment = TextAnchor.MiddleLeft;
-			mouseSensitivity = (int) GUI.HorizontalSlider (new Rect (0, 200, width, 20), mouseSensitivity, 1, 10);
+			mouseSensitivity = (int) GUI.HorizontalSlider (new Rect (0, 190, width, 20), mouseSensitivity, 1, 10);
 			
 			Preferences.setExplosionDetail(expDetail);
 			Preferences.setMouseSensitivity(mouseSensitivity);
-
+			
+			bool pe = Preferences.getBackgroundMusic();
+			if (pe != GUI.Toggle(new Rect(0,230,width,20), pe, "Background Music")) {
+				Preferences.setBackgroundMusic(!pe);
+			}
 			
 			// SERVER LIST
 			HostData[] servers = MasterServer.PollHostList();
 			int i = 1;
 			foreach (HostData srv in servers) {
 				var name = srv.gameName + " " + srv.connectedPlayers + "/" + srv.playerLimit;
-				GUI.Label(new Rect(0,250+25*i,width,20), name);
+				GUI.Label(new Rect(0,260+25*i,width,20), name);
 				/*var hostInfo : String = "[";
 				for (var host in srv.ip)
 					hostInfo = hostInfo + host + ":" + srv.port + " ";
 				hostInfo = hostInfo + "]";
 				GUILayout.Label(hostInfo);
 				//GUILayout.Label(srv.comment);*/
-				if (GUI.Button(new Rect(width,250+25*i,75,20), "Connect")) {
+				if (GUI.Button(new Rect(width,260+25*i,75,20), "Connect")) {
 					if (nickname.Length > 0) {
 						PlayerPrefs.SetString("Player Name", nickname);
 						PlayerPrefs.SetFloat("PlayerRed", playerColor.r);
@@ -330,10 +335,9 @@ public class Menu : MonoBehaviour {
 				}
 				i++;
 			}
-			
 			// NO SERVERS
 			if (i == 1) {
-				GUI.Box(new Rect(0,260,width,24), "no servers found");
+				GUI.Box(new Rect(0,270,width,24), "no servers found");
 			}
 		}
 		
@@ -406,26 +410,26 @@ public class Menu : MonoBehaviour {
 			GUI.skin.label.normal.textColor = Color.white;
 		    GUI.skin.label.alignment = TextAnchor.MiddleLeft;
 
-			GUI.Label(new Rect(25,140,width,20), "Chest Density:");
-			GUI.Label(new Rect(25,165,50,20), "Min");
+			GUI.Label(new Rect(25,130,width,20), "Chest Density:");
+			GUI.Label(new Rect(25,155,50,20), "Min");
 		    GUI.skin.label.alignment = TextAnchor.MiddleRight;
-			GUI.Label(new Rect(width-15,165,50,20), "Max");
+			GUI.Label(new Rect(width-15,155,50,20), "Max");
 		    GUI.skin.label.alignment = TextAnchor.MiddleLeft;
-			chestDensity = (int)GUI.HorizontalSlider (new Rect (25, 160, width, 20), (float)chestDensity, 1.0f, 5.0f);
+			chestDensity = (int)GUI.HorizontalSlider (new Rect (25, 150, width, 20), (float)chestDensity, 1.0f, 5.0f);
 
-			GUI.Label(new Rect(25,200,width,20), "Mouse Sensitivity:");
-			GUI.Label(new Rect(25,225,50,20), "Min");
+			GUI.Label(new Rect(25,180,width,20), "Mouse Sensitivity:");
+			GUI.Label(new Rect(25,205,50,20), "Min");
 		    GUI.skin.label.alignment = TextAnchor.MiddleRight;
-			GUI.Label(new Rect(width-15,225,50,20), "Max");
+			GUI.Label(new Rect(width-15,205,50,20), "Max");
 		    GUI.skin.label.alignment = TextAnchor.MiddleLeft;
-			mouseSensitivity = (int) GUI.HorizontalSlider (new Rect (25, 220, width, 20), mouseSensitivity, 1, 10);
+			mouseSensitivity = (int) GUI.HorizontalSlider (new Rect (25, 200, width, 20), mouseSensitivity, 1, 10);
 			
-			GUI.Label(new Rect(25,260,width,20), "Rounds To Win: " + (roundsToWin == 0 ? "endless" : roundsToWin.ToString()));
-			GUI.Label(new Rect(25,285,50,20), "Min");
+			GUI.Label(new Rect(25,230,width,20), "Rounds To Win: " + (roundsToWin == 0 ? "endless" : roundsToWin.ToString()));
+			GUI.Label(new Rect(25,255,50,20), "Min");
 		    GUI.skin.label.alignment = TextAnchor.MiddleRight;
-			GUI.Label(new Rect(width-15,285,50,20), "Max");
+			GUI.Label(new Rect(width-15,255,50,20), "Max");
 		    GUI.skin.label.alignment = TextAnchor.MiddleLeft;
-			roundsToWin = (int) GUI.HorizontalSlider (new Rect (25, 280, width, 20), roundsToWin, 0, 10);
+			roundsToWin = (int) GUI.HorizontalSlider (new Rect (25, 250, width, 20), roundsToWin, 0, 10);
 			
 			Preferences.setExplosionDetail(expDetail);
 			Preferences.setChestDensity(chestDensity);
@@ -433,11 +437,11 @@ public class Menu : MonoBehaviour {
 			Preferences.setRoundsToWin(roundsToWin);
 		
 			// SERVER NAME
-			GUI.Label(new Rect(25,310,width,20), "Server Name:");
-			serverName = GUI.TextField(new Rect(25,330,width,20), serverName, 30);
+			GUI.Label(new Rect(25,280,width,20), "Server Name:");
+			serverName = GUI.TextField(new Rect(25,300,width,20), serverName, 30);
 			
 			// MAX PLAYERS
-			if (GUI.Button(new Rect(25, 350, width, 20), "Max. Players: "+maxPlayers)) {
+			if (GUI.Button(new Rect(25, 320, width, 20), "Max. Players: "+maxPlayers)) {
 				showMaxPlayers = !showMaxPlayers;
 		    }
 		    if (showMaxPlayers) {
@@ -446,7 +450,7 @@ public class Menu : MonoBehaviour {
 					int p = (int)Mathf.Pow(2,i);
 					if (Network.connections.Length+1 > p)
 						continue;
-					if (GUI.Button(new Rect(25, 350+(20*i), width, 20), p.ToString())) {
+					if (GUI.Button(new Rect(25, 320+(20*i), width, 20), p.ToString())) {
 						showMaxPlayers = false;
 						maxPlayers = p;
 						Network.maxConnections = maxPlayers-1;
@@ -455,21 +459,25 @@ public class Menu : MonoBehaviour {
 		    } else {
 				// SOME SETTINGS
 				bool pe = Preferences.getNegativePowerups();
-				if (pe != GUI.Toggle(new Rect(25,380,width,20), pe, "negative Powerups")) {
+				if (pe != GUI.Toggle(new Rect(25,350,width,20), pe, "negative Powerups")) {
 					Preferences.setNegative(!pe);
 				}
 				pe = Preferences.getDestroyablePowerups();
-				if (pe != GUI.Toggle(new Rect(25,400,width,20), pe, "destroyable Powerups")) {
+				if (pe != GUI.Toggle(new Rect(25,370,width,20), pe, "destroyable Powerups")) {
 					Preferences.setDestroyablePowerups(!pe);
 				}
 				bool pee = Preferences.getExplodingPowerups();
-				if (pe && pee != GUI.Toggle(new Rect(25,420,width,20), pee, "exploding Powerups")) {
+				if (pe && pee != GUI.Toggle(new Rect(25,390,width,20), pee, "exploding Powerups")) {
 					Preferences.setExplodingPowerups(!pee);
+				}
+				pe = Preferences.getBackgroundMusic();
+				if (pe != GUI.Toggle(new Rect(25,410,width,20), pe, "Background Music")) {
+					Preferences.setBackgroundMusic(!pe);
 				}
 			}
 			
 		    // START GAME
-			if (GUI.Button(new Rect(50,460,100,30),"Start Game")) {
+			if (GUI.Button(new Rect(50,470,100,30),"Start Game")) {
 				// save settings
 				PlayerPrefs.SetInt("Server MaxPlayers", maxPlayers);
 				PlayerPrefs.SetString("Server Name", serverName);
