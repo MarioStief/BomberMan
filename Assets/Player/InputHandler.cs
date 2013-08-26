@@ -36,7 +36,6 @@ public class InputHandler : MonoBehaviour {
 	private GameObject cam;
 	private GameObject sun;
 	
-	private Parcel oldCell;
 	private Parcel currCell;
 	
 	float verticalMovement;
@@ -160,9 +159,7 @@ public class InputHandler : MonoBehaviour {
 			bpos = startBpos;
 			
 			currCell = Static.rink.gameArea[lpos][bpos];
-			oldCell = currCell;
 			Static.player.setCurrentParcel(currCell);
-			oldCell = currCell;
 		}
 	}
 	
@@ -324,19 +321,6 @@ public class InputHandler : MonoBehaviour {
 			}
 		}
 		
-		if (oldCell != currCell) {
-			// Leertaste gedrückt halten -> Dauerfeuer
-			if (Input.GetKeyDown(KeyCode.Space) || Input.GetButtonDown("Fire1"))
-				if (!Menu.showGUI)
-					dropBomb();
-
-			if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift) || Input.GetButtonDown("Fire2"))
-				if (!Menu.showGUI)
-					extra();
-			
-			oldCell = currCell;
-		}
-		
 		// Gegner drehen mit dem Planeten..!
 		if (Network.peerType != NetworkPeerType.Disconnected && !networkView.isMine && Static.rink != null) {
 			
@@ -434,11 +418,11 @@ public class InputHandler : MonoBehaviour {
 			}
 			
 			// Leertaste -> Bombe legen
-			if (Input.GetKeyDown(KeyCode.Space) || Input.GetButtonDown("Fire1"))
+			if (Input.GetKey(KeyCode.Space) || Input.GetButton("Fire1"))
 				if (!Menu.showGUI)
 					dropBomb();
 
-			if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift) || Input.GetButtonDown("Fire2"))
+			if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift) || Input.GetButton("Fire2"))
 				if (!Menu.showGUI)
 					extra();
 			
