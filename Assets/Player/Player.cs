@@ -413,8 +413,15 @@ namespace AssemblyCSharp
 				if (playerAlive.Count == 1) {
 					playerWins[playerAlive[0]]++;
 					Static.menuHandler.incomingChatMessage(Menu.getPlayerNick(playerAlive[0]) + " has won this round!");
+				} else {
+					Static.menuHandler.incomingChatMessage("Round draw!");
 				}
-				Static.menuHandler.Invoke("startRound", 5);
+				if (playerWins.Values.Max() == 10) {
+					Static.menuHandler.setScreen("start");
+				} else {
+					inGame.startCounter(5);
+					Static.menuHandler.Invoke("startRound", 5);
+				}
 			}
 		}
 		

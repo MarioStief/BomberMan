@@ -186,6 +186,8 @@ public class Menu : MonoBehaviour {
 		bool state = Application.loadedLevelName == "StartMenu";
 		for (int i=1; i<transform.childCount; i++)
 			transform.GetChild(i).gameObject.SetActive(state);
+		if (Application.loadedLevelName == "SphereCreate" && !Network.isServer)
+			Network.SetReceivingEnabled(Network.player, 1, true);
 	}
 	
 	
@@ -238,6 +240,13 @@ public class Menu : MonoBehaviour {
 			playerList.Remove(p);
 			playerColorList.Remove(p);
 		}
+	}
+	void OnPlayerConnected(NetworkPlayer p) {
+		int L_pos = Random.Range(1, Static.sphereHandler.n_L-2);
+		int B_pos = Random.Range(1, Static.sphereHandler.n_B-1);
+		networkView.RPC("tellSpawnPoint", RPCMode.AllBuffered, L_pos, B_pos, p);
+		if (Application.loadedLevelName == "SphereCreate")
+			Network.SetReceivingEnabled(p, 1, false);
 	}
 	
 	
@@ -364,7 +373,7 @@ public class Menu : MonoBehaviour {
 	private bool showMaxPlayers = false;
 	void serverScreen() {
 		int width = 150;
-		GUI.BeginGroup (new Rect(Screen.width/2-100, 50, 200, 500));
+		GUI.BeginGroup (new Rect(Screen.width/2-100, 50, 200, 900));
 		// NICK
 		GUI.Label(new Rect(25,10,width,20), "Nickname:");
 		nickname = GUI.TextField(new Rect(25,30,width,20), nickname, 30);
@@ -490,18 +499,11 @@ public class Menu : MonoBehaviour {
 				
 				CancelInvoke("refreshServerName");
 				
-				MasterServer.UnregisterHost();
-				
 				// spawn-points
-				for (int i=-1; i<Network.connections.Length; i++) {
-					int L_pos = Random.Range(1, Static.sphereHandler.n_L-2);
-					int B_pos = Random.Range(1, Static.sphereHandler.n_B-1);
-					if (i == -1)
-						networkView.RPC("tellSpawnPoint", RPCMode.AllBuffered, L_pos, B_pos, Network.player);
-					else
-						networkView.RPC("tellSpawnPoint", RPCMode.AllBuffered, L_pos, B_pos, Network.connections[i]);
-				}
-				networkView.RPC("startGame",RPCMode.AllBuffered, Mathf.FloorToInt(Random.value*100000), Preferences.getChestDensity());
+				int L_pos = Random.Range(1, Static.sphereHandler.n_L-2);
+				int B_pos = Random.Range(1, Static.sphereHandler.n_B-1);
+				networkView.RPC("tellSpawnPoint", RPCMode.AllBuffered, L_pos, B_pos, Network.player);
+				networkView.RPC("startGame",RPCMode.All, Mathf.FloorToInt(Random.value*100000), Preferences.getChestDensity(), Preferences.getRoundsToWin());
 			}
 		}
 		GUI.EndGroup();
@@ -586,14 +588,18 @@ public class Menu : MonoBehaviour {
 	
 	void backButton() {
 		if (GUI.Button(new Rect(10,Screen.height-40,80,30), "Back") || Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Escape) {
-			if (screen == "server") { // cancel the server
-				Network.Disconnect();
-				MasterServer.UnregisterHost();
-				CancelInvoke("refreshServerName");
-			} else if (screen == "waitingForStart") {
-				Network.Disconnect();
+			if (colorPicker.activeSelf) {
+				colorPicker.SetActive(!colorPicker.activeSelf);
+			} else {
+				if (screen == "server") { // cancel the server
+					Network.Disconnect();
+					MasterServer.UnregisterHost();
+					CancelInvoke("refreshServerName");
+				} else if (screen == "waitingForStart") {
+					Network.Disconnect();
+				}
+				screen = "start";
 			}
-			screen = "start";
 		}
 	}
 
@@ -686,29 +692,31 @@ public class Menu : MonoBehaviour {
 	}
 
 	[RPC]
-	public void startGame(int seed, int chestDensity) {
+	public void startGame(int seed, int chestDensity, int rounds) {
 		rSeed = seed;
 		Random.seed = seed;
 		Static.player.setPlayers(new List<NetworkPlayer>(spawns.Keys));
 		Preferences.setChestDensity(chestDensity);
+		Preferences.setRoundsToWin(rounds);
 		Application.LoadLevel("SphereCreate");
 		showGUI = false;
 		chat = "";
 		incomingChatMessage("Game started. Have Fun!");
 	}
 	public void startRound() {
-		Random.seed = rSeed;
-		rSeed += (int) Random.Range(Mathf.NegativeInfinity, Mathf.Infinity);
-		Random.seed = rSeed;
-		Static.player.setPlayers(new List<NetworkPlayer>(spawns.Keys));
+		Static.player.resetStats();
 		foreach (var p in GameObject.FindGameObjectsWithTag("Player"))
 			Destroy(p);
-		Application.LoadLevel("SphereCreate");
-		Static.player.resetStats();
+		
+		if (Network.isServer) {
+			networkView.RPC("startGame", RPCMode.All, Mathf.FloorToInt(Random.value*100000), Preferences.getChestDensity(), Preferences.getRoundsToWin());
+		}
 	}
 	
 	[RPC]
 	public void tellSpawnPoint(int l, int b, NetworkPlayer p) {
+		if (spawns.ContainsKey(p))
+			spawns.Remove(p);
 		spawns.Add(p, new int[] {l,b});
 	}
 

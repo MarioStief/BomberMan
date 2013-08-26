@@ -4,6 +4,8 @@ using AssemblyCSharp;
 
 public class inGame : MonoBehaviour {
 	
+	public static int counter = -1;
+	
 	void Update () {
 		if (Application.loadedLevelName != "SphereCreate")
 			return;
@@ -35,8 +37,15 @@ public class inGame : MonoBehaviour {
 		}
 	    GUI.skin.label.alignment = TextAnchor.MiddleRight;
 		GUI.Label(new Rect(Screen.width-155,5,150,20), "remaining enemies: " + (Static.player.getPlayersAlive().Count-1));
-	    GUI.skin.label.alignment = TextAnchor.MiddleLeft;
 		
+		if (counter > 0) {
+	    	GUI.skin.label.alignment = TextAnchor.MiddleCenter;
+			int fs = GUI.skin.label.fontSize;
+			GUI.skin.label.fontSize = 40;
+			GUI.Label(new Rect(Screen.width/2-200,Screen.height/2-50,400,100), "Round starts in " + counter);
+			GUI.skin.label.fontSize = fs;
+		}
+	    GUI.skin.label.alignment = TextAnchor.MiddleLeft;
 		
 		if (GUI.Button(new Rect(10,10,80,20), "MENU")) {
 			Menu.showGUI = !Menu.showGUI;
@@ -54,6 +63,16 @@ public class inGame : MonoBehaviour {
 			focusToChat = !focusToChat;
 		}
 		Menu.instance.chatArea();
+	}
+	
+	public static void startCounter(int c) {
+		counter = c;
+		Static.menuHandler.GetComponent<inGame>().Invoke("decCounter",1);
+	}
+	private void decCounter() {
+		counter--;
+		if (counter > -1)
+			Invoke("decCounter", 1);
 	}
 
 }
