@@ -420,12 +420,12 @@ public class Menu : MonoBehaviour {
 		    GUI.skin.label.alignment = TextAnchor.MiddleLeft;
 			mouseSensitivity = (int) GUI.HorizontalSlider (new Rect (25, 220, width, 20), mouseSensitivity, 1, 10);
 			
-			GUI.Label(new Rect(25,260,width,20), "Rounds To Win: " + roundsToWin);
+			GUI.Label(new Rect(25,260,width,20), "Rounds To Win: " + (roundsToWin == 0 ? "endless" : roundsToWin.ToString()));
 			GUI.Label(new Rect(25,285,50,20), "Min");
 		    GUI.skin.label.alignment = TextAnchor.MiddleRight;
 			GUI.Label(new Rect(width-15,285,50,20), "Max");
 		    GUI.skin.label.alignment = TextAnchor.MiddleLeft;
-			roundsToWin = (int) GUI.HorizontalSlider (new Rect (25, 280, width, 20), roundsToWin, 1, 10);
+			roundsToWin = (int) GUI.HorizontalSlider (new Rect (25, 280, width, 20), roundsToWin, 0, 10);
 			
 			Preferences.setExplosionDetail(expDetail);
 			Preferences.setChestDensity(chestDensity);
@@ -469,7 +469,7 @@ public class Menu : MonoBehaviour {
 			}
 			
 		    // START GAME
-			if (GUI.Button(new Rect(50,480,100,30),"Start Game")) {
+			if (GUI.Button(new Rect(50,460,100,30),"Start Game")) {
 				// save settings
 				PlayerPrefs.SetInt("Server MaxPlayers", maxPlayers);
 				PlayerPrefs.SetString("Server Name", serverName);
