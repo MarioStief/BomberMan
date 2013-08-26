@@ -10,7 +10,7 @@ namespace AssemblyCSharp
 		private Parcel currentCell;	// current Parcel
 		private float xpos, zpos;	// Player's position in the current Parcel
 		
-		private const float MAXSPEED = 0.8f;
+		private const float MAXSPEED = 0.72f;
 		private const float MINDELAY = 0.04f;
 		private const float MAXDELAY = 0.28f;
 		private const int MAXFLAMEPOWER = 10;
@@ -120,7 +120,7 @@ namespace AssemblyCSharp
 				}
 			} else if (type == PowerupType.PLAYER_SPEED_UP) {
 				if (speed < MAXSPEED) {
-					speed += 0.05f;
+					speed += 0.04f;
 				}
 			} else if (type == PowerupType.PLAYER_SPEED_DOWN) {
 				if (speed > 1.0f) {
@@ -264,7 +264,7 @@ namespace AssemblyCSharp
 				Parcel[][] gameArea = Static.gameArea;
 				for (int i = 0; i < gameArea.Length; i++) {
 					for (int j = 0; j < gameArea[i].Length; j++) {
-						if (gameArea[i][j].getType() == 0) {
+						if (gameArea[i][j].getType() == 0 && !gameArea[i][j].hasExplosion()) {
 							parcelPool.Add(gameArea[i][j]);
 						}
 					}

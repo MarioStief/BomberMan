@@ -36,6 +36,7 @@ public class InputHandler : MonoBehaviour {
 	private GameObject cam;
 	private GameObject sun;
 	
+	private Parcel oldCell;
 	private Parcel currCell;
 	
 	float verticalMovement;
@@ -159,7 +160,9 @@ public class InputHandler : MonoBehaviour {
 			bpos = startBpos;
 			
 			currCell = Static.rink.gameArea[lpos][bpos];
+			oldCell = currCell;
 			Static.player.setCurrentParcel(currCell);
+			oldCell = currCell;
 		}
 	}
 	
@@ -319,6 +322,19 @@ public class InputHandler : MonoBehaviour {
 				transform.localScale = new Vector3(0.25f, 0.25f, 0.25f);
 				GetComponentInChildren<Animation>().CrossFade("land");
 			}
+		}
+		
+		if (oldCell != currCell) {
+			// Leertaste gedrückt halten -> Dauerfeuer
+			if (Input.GetKeyDown(KeyCode.Space) || Input.GetButtonDown("Fire1"))
+				if (!Menu.showGUI)
+					dropBomb();
+
+			if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift) || Input.GetButtonDown("Fire2"))
+				if (!Menu.showGUI)
+					extra();
+			
+			oldCell = currCell;
 		}
 		
 		// Gegner drehen mit dem Planeten..!

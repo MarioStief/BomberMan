@@ -20,12 +20,12 @@ namespace AssemblyCSharp
 			
 			if (Input.GetAxis("Mouse ScrollWheel") > 0) {
 				if (camera.fieldOfView > 20)
-					camera.fieldOfView--;
+					camera.fieldOfView -= 2;
 			}
 			
 			if (Input.GetAxis("Mouse ScrollWheel") < 0) {
-				if (camera.fieldOfView < 82)
-					camera.fieldOfView++;
+				if (camera.fieldOfView < 60)
+					camera.fieldOfView += 2;
 			}
 
 			if (!rotatable)
@@ -39,7 +39,9 @@ namespace AssemblyCSharp
 				float newA = Vector3.Angle(Vector3.Cross(player.transform.up, transform.right*-1), transform.forward) + h;
 				if (newA > 0 && newA <= 60)
 					transform.RotateAround(player.transform.position, transform.right, h);
-			}
+			} else
+				if (transform.localPosition != Vector3.zero)
+					transform.localPosition /= 2;
 			
 			// middle click
 			if (Input.GetButtonDown("Fire3")) {

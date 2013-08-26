@@ -33,11 +33,11 @@ public class MouseLook : MonoBehaviour {
 		
 		if (Input.GetAxis("Mouse ScrollWheel") > 0) {
 			if (camera.fieldOfView > 45)
-				camera.fieldOfView -= 1;
+				camera.fieldOfView -= 2;
 		}
 		if (Input.GetAxis("Mouse ScrollWheel") < 0) {
 			if (camera.fieldOfView < 82)
-				camera.fieldOfView += 1;
+				camera.fieldOfView += 2;
 		}
 
 		Plane playerPlane = new Plane(Vector3.up, player.transform.position);
