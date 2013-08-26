@@ -20,6 +20,7 @@ public class Menu : MonoBehaviour {
 	private int expDetail;
 	private int chestDensity;
 	private int mouseSensitivity;
+	private int roundsToWin;
 	private string chat = "";
 	
 	private static Dictionary<NetworkPlayer,string> playerList = new Dictionary<NetworkPlayer, string>();
@@ -48,7 +49,7 @@ public class Menu : MonoBehaviour {
 		expDetail = Preferences.getExplosionDetail(); // 0 (off) - 3 (max)
 		chestDensity = Preferences.getChestDensity(); // 5 - 50
 		mouseSensitivity = Preferences.getMouseSensitivity(); // 0f - 1f
-
+		roundsToWin = Preferences.getRoundsToWin();
 
 		nickname = PlayerPrefs.GetString("Player Name", nickname);
 		serverName = PlayerPrefs.GetString("Server Name", serverName);
@@ -381,7 +382,7 @@ public class Menu : MonoBehaviour {
 		    GUI.skin.label.alignment = TextAnchor.MiddleRight;
 			GUI.Label(new Rect(width-15,105,50,20), "Max");
 			expDetail = (int)GUI.HorizontalSlider (new Rect (25, 100, width, 20), (float)expDetail, 0.0f, 3.0f);
-						string detailLevel = "";
+			string detailLevel = "";
 			switch (expDetail) {
 			case 0:
 				GUI.skin.label.normal.textColor = Color.grey;
@@ -419,16 +420,24 @@ public class Menu : MonoBehaviour {
 		    GUI.skin.label.alignment = TextAnchor.MiddleLeft;
 			mouseSensitivity = (int) GUI.HorizontalSlider (new Rect (25, 220, width, 20), mouseSensitivity, 1, 10);
 			
+			GUI.Label(new Rect(25,260,width,20), "Rounds To Win: " + roundsToWin);
+			GUI.Label(new Rect(25,285,50,20), "Min");
+		    GUI.skin.label.alignment = TextAnchor.MiddleRight;
+			GUI.Label(new Rect(width-15,285,50,20), "Max");
+		    GUI.skin.label.alignment = TextAnchor.MiddleLeft;
+			roundsToWin = (int) GUI.HorizontalSlider (new Rect (25, 280, width, 20), roundsToWin, 1, 10);
+			
 			Preferences.setExplosionDetail(expDetail);
 			Preferences.setChestDensity(chestDensity);
 			Preferences.setMouseSensitivity(mouseSensitivity);
+			Preferences.setRoundsToWin(roundsToWin);
 		
 			// SERVER NAME
-			GUI.Label(new Rect(25,250,width,20), "Server Name:");
-			serverName = GUI.TextField(new Rect(25,270,width,20), serverName, 30);
+			GUI.Label(new Rect(25,310,width,20), "Server Name:");
+			serverName = GUI.TextField(new Rect(25,330,width,20), serverName, 30);
 			
 			// MAX PLAYERS
-			if (GUI.Button(new Rect(25, 290, width, 20), "Max. Players: "+maxPlayers)) {
+			if (GUI.Button(new Rect(25, 350, width, 20), "Max. Players: "+maxPlayers)) {
 				showMaxPlayers = !showMaxPlayers;
 		    }
 		    if (showMaxPlayers) {
@@ -437,7 +446,7 @@ public class Menu : MonoBehaviour {
 					int p = (int)Mathf.Pow(2,i);
 					if (Network.connections.Length+1 > p)
 						continue;
-					if (GUI.Button(new Rect(25, 290+(20*i), width, 20), p.ToString())) {
+					if (GUI.Button(new Rect(25, 350+(20*i), width, 20), p.ToString())) {
 						showMaxPlayers = false;
 						maxPlayers = p;
 						Network.maxConnections = maxPlayers-1;
@@ -446,21 +455,21 @@ public class Menu : MonoBehaviour {
 		    } else {
 				// SOME SETTINGS
 				bool pe = Preferences.getNegativePowerups();
-				if (pe != GUI.Toggle(new Rect(25,320,width,20), pe, "negative Powerups")) {
+				if (pe != GUI.Toggle(new Rect(25,380,width,20), pe, "negative Powerups")) {
 					Preferences.setNegative(!pe);
 				}
 				pe = Preferences.getDestroyablePowerups();
-				if (pe != GUI.Toggle(new Rect(25,340,width,20), pe, "destroyable Powerups")) {
+				if (pe != GUI.Toggle(new Rect(25,400,width,20), pe, "destroyable Powerups")) {
 					Preferences.setDestroyablePowerups(!pe);
 				}
 				bool pee = Preferences.getExplodingPowerups();
-				if (pe && pee != GUI.Toggle(new Rect(25,360,width,20), pee, "exploding Powerups")) {
+				if (pe && pee != GUI.Toggle(new Rect(25,420,width,20), pee, "exploding Powerups")) {
 					Preferences.setExplodingPowerups(!pee);
 				}
 			}
 			
 		    // START GAME
-			if (GUI.Button(new Rect(50,420,100,30),"Start Game")) {
+			if (GUI.Button(new Rect(50,480,100,30),"Start Game")) {
 				// save settings
 				PlayerPrefs.SetInt("Server MaxPlayers", maxPlayers);
 				PlayerPrefs.SetString("Server Name", serverName);

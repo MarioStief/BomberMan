@@ -12,6 +12,7 @@ namespace AssemblyCSharp
 		private static int chestDensity = 5; // 1 = low ... 5 = high
 		private static float volume = 0.7f; // 0f - 1f
 		private static int mouseSensitivity = 5; // 0f - 1f
+		private static int roundsToWin = 3;
 	
 		public static void load() {
 			destroyablePowerups = (PlayerPrefs.GetInt("Destroyable Powerups",(destroyablePowerups ? 1 : 0)) == 1 ? true : false);
@@ -20,6 +21,7 @@ namespace AssemblyCSharp
 			explosionDetail = PlayerPrefs.GetInt("Explosion Detail", explosionDetail);
 			chestDensity = PlayerPrefs.GetInt("Chest Density", chestDensity);
 			mouseSensitivity = PlayerPrefs.GetInt("Mouse Sensitivity", mouseSensitivity);
+			roundsToWin = PlayerPrefs.GetInt("Rounds TO Win", roundsToWin);
 			volume = PlayerPrefs.GetFloat("Volume",volume);
 		}
 		
@@ -80,6 +82,17 @@ namespace AssemblyCSharp
 			if (md != mouseSensitivity) {
 				mouseSensitivity = md;
 				PlayerPrefs.SetInt("Mouse Sensitivity", mouseSensitivity);
+			}
+		}
+		
+		public static int getRoundsToWin() {
+			return roundsToWin;
+		}
+		
+		public static void setRoundsToWin(int r) {
+			if (r!= roundsToWin) {
+				roundsToWin = r;
+				PlayerPrefs.SetInt("Rounds To Win", roundsToWin);
 			}
 		}
 		

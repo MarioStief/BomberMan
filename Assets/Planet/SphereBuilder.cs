@@ -51,9 +51,13 @@ public class SphereBuilder : MonoBehaviour {
 			int L_Pos = n_L/2-1;
 			int B_Pos = n_B/4;
 			gameArea.getGameArea()[L_Pos][B_Pos].setType(0);
-			foreach (Parcel c in gameArea.getGameArea()[L_Pos][B_Pos].getNeighbours()) {
+			foreach (Parcel c in gameArea.getGameArea()[L_Pos][B_Pos].getNeighbours())
 				c.setType(0);
-			}
+			// Darum Kisten oder Steine setzen, um auuch wirklich ein Kreuz zu haben
+			gameArea.getGameArea()[L_Pos-1][B_Pos-1].setType(Random.Range(1, 2));
+			gameArea.getGameArea()[L_Pos-1][B_Pos+1].setType(Random.Range(1, 2));
+			gameArea.getGameArea()[L_Pos+1][B_Pos-1].setType(Random.Range(1, 2));
+			gameArea.getGameArea()[L_Pos+1][B_Pos+1].setType(Random.Range(1, 2));
 			Instantiate(playerPrefab, pos, transform.rotation);
 		} else {
 			Network.Instantiate(playerPrefab, pos, transform.rotation, 1);
