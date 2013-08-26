@@ -41,7 +41,7 @@ namespace AssemblyCSharp
 			Static.setRink(this);
 			PowerupPool.createPool(1);
 			
-			Static.player.setCurrentParcel(gameArea[0][0]);
+			//Static.player.setCurrentParcel(gameArea[0][0]);
 		}
 		
 		// <summary>
@@ -75,7 +75,7 @@ namespace AssemblyCSharp
 				int a = (int)(Random.value*height);
 				int b = (int)(Random.value*width);
 				if (gameArea[a][b].getType() == 0)
-					gameArea[a][b].setType(1);	
+					gameArea[a][b].setType(1);
 			}
 			
 			for (int i = 0; i < height; i++) {

@@ -26,6 +26,7 @@ public class Menu : MonoBehaviour {
 	private static Dictionary<NetworkPlayer,Color> playerColorList = new Dictionary<NetworkPlayer, Color>();
 	public static Dictionary<NetworkPlayer,int[]> spawns = new Dictionary<NetworkPlayer, int[]>();
 	
+	public static int rSeed;
 	public static bool showGUI = true;
 	
 	public static Menu instance = null;
@@ -218,6 +219,7 @@ public class Menu : MonoBehaviour {
 		playerList = new Dictionary<NetworkPlayer,string>();
 		playerColorList = new Dictionary<NetworkPlayer,Color>();
 		// delete all Players
+		Static.inputHandler.lockCursor(false);
 		foreach (var p in GameObject.FindGameObjectsWithTag("Player")) {
 			Destroy(p);
 		}
@@ -665,19 +667,22 @@ public class Menu : MonoBehaviour {
 		playerList.Remove(p);
 		playerColorList.Remove(p);
 	}
-	
+
 	[RPC]
 	public void startGame(int seed, int chestDensity) {
+		rSeed = seed;
 		Random.seed = seed;
 		Static.player.setPlayers(new List<NetworkPlayer>(spawns.Keys));
 		Preferences.setChestDensity(chestDensity);
 		Application.LoadLevel("SphereCreate");
-		Random.seed = seed;
 		showGUI = false;
 		chat = "";
 		incomingChatMessage("Game started. Have Fun!");
 	}
 	public void startRound() {
+		Random.seed = rSeed;
+		rSeed += (int) Random.Range(Mathf.NegativeInfinity, Mathf.Infinity);
+		Random.seed = rSeed;
 		Static.player.setPlayers(new List<NetworkPlayer>(spawns.Keys));
 		foreach (var p in GameObject.FindGameObjectsWithTag("Player"))
 			Destroy(p);
