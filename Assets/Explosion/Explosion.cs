@@ -83,6 +83,7 @@ public class Explosion : MonoBehaviour
 			}
 			cell.setGameObject(bomb);
 		}
+		Random.seed = Menu.rSeed;
 		//cell.setExplosion(this);
 		//cell.setBomb(true);
 	}

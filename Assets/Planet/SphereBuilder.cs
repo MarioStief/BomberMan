@@ -33,9 +33,6 @@ public class SphereBuilder : MonoBehaviour {
 		
 		adjSouthPole = n_L-2;
 		
-		if (Random.seed != Menu.rSeed)
-			Debug.LogError("Seed is "+Random.seed+" but should be: "+Menu.rSeed);
-		
 		gameArea = new Rink(n_B, n_L);
 		//GameObject.Find("Player").GetComponent<InputHandler>().rink = gameArea;
 		
