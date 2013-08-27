@@ -663,7 +663,7 @@ public class Menu : MonoBehaviour {
 			chat = chat.Substring(chat.IndexOf('\n'));
 		}
 		if (!showGUI)
-			Invoke("removeChatLine", 4f);
+			Invoke("removeChatLine", 10);
 	}
 	public void removeChatLine() {
 		if (chat.IndexOf('\n',1) > 0) {
