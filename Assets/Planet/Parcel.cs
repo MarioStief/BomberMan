@@ -132,8 +132,8 @@ namespace AssemblyCSharp
 		public Parcel getNeighbour(int dir) {
 			switch (dir) {
 				case 0: return right;
-				case 2: return up;
-				case 1: return left;
+				case 1: return up;
+				case 2: return left;
 				case 3: return down;
 			}
 			return null;

@@ -648,7 +648,9 @@ public class Menu : MonoBehaviour {
 		return Color.white;
 	}
 	public static string getPlayerNick(NetworkPlayer p) {
-		return playerList[p];
+		if (playerList.ContainsKey(p))
+			return playerList[p];
+		return "";
 	}
 	public static bool isInGame() {
 		return !showGUI;
@@ -666,7 +668,7 @@ public class Menu : MonoBehaviour {
 			Invoke("removeChatLine", 10);
 	}
 	public void removeChatLine() {
-		if (chat.IndexOf('\n',1) > 0) {
+		if (chat.Length > 1 && chat.IndexOf('\n',1) > 0) {
 			chat = chat.Substring(chat.IndexOf('\n',1));
 		} else {
 			chat = "";
