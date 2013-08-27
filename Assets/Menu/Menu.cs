@@ -468,7 +468,7 @@ public class Menu : MonoBehaviour {
 		    } else {
 				// SOME SETTINGS
 				bool pe = Preferences.getNegativePowerups();
-				if (pe != GUI.Toggle(new Rect(25,350,width,20), pe, "negative Powerups")) {
+				if (pe != GUI.Toggle(new Rect(25,350,width,20), pe, "Powerdowns")) {
 					Preferences.setNegative(!pe);
 				}
 				pe = Preferences.getDestroyablePowerups();

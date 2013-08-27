@@ -154,26 +154,26 @@ public class Explosion : MonoBehaviour
 				}
 				foreach (ExplosionField explosionField in explosionChain) {
 					bool stillRunning = false;
-					if (explosionField.getDelay() == 0 && !explosionField.getCell().isExploding()) {
-						Vector3 position = explosionField.getCell().getCenterPos();
+					Parcel explodingCell = explosionField.getCell();
+					if (explosionField.getDelay() == 0 && !explodingCell.isExploding()) {
+						Vector3 position = explodingCell.getCenterPos();
 						GameObject explosion = GameObject.Instantiate(Static.explosionPrefab, position, Quaternion.identity) as GameObject;
 						explosion.transform.position = new Vector3(position.x + 0.05f, position.y + 0.05f, position.z + 0.05f);
 						//explosion.GetComponent<Detonator>().size = 10f;
 						Detonator detonator = explosion.GetComponent<Detonator>();
-						explosionField.getCell().decreaseHeight();
+						explodingCell.decreaseHeight();
                         if (superbomb) // superbomb
                         {
-							explosionField.getCell().decreaseHeight();
-							explosionField.getCell().decreaseHeight();
+							explodingCell.decreaseHeight();
+							explodingCell.decreaseHeight();
 						}
 						float explosionSize = 300f;
 						detonator.setSize(explosionSize);
 						
-						if (explosionField.getCell().getType() == 2 && explosionField.getCell().getHeight() > 1.0f) // kleine Explosion in den Steinblöcken
+						if (explodingCell.getType() == 2 && explodingCell.getHeight() > 1.0f) // kleine Explosion in den Steinblöcken
 							detonator.setSize(explosionSize*4); // in Wirklichkeit geviertelt
 						
 						detonator.setDuration(15f);
-						Parcel explodingCell = explosionField.getCell();
 						/*
 						DetonatorComponent detonatorComponent = explosion.GetComponent<DetonatorComponent>();
 						detonatorComponent.force = explodingCell.getSurroundingCell(explodingCell.getLpos(),explodingCell.getBpos()).getCenterPos();
@@ -189,7 +189,7 @@ public class Explosion : MonoBehaviour
 						audioSource.volume /= 6*distance;
 						audioSource.Play();
 						//Debug.Log ("Explosion Volume: " + (100/(2*distance)) + " %");
-						Debug.Log ("Distanz: " + distance + ", Explosion Volume: " + audioSource.volume);
+						//Debug.Log ("Distanz: " + distance + ", Explosion Volume: " + audioSource.volume);
 						
 						// Besonders hervorheben
 						if (superbomb) {
@@ -205,27 +205,34 @@ public class Explosion : MonoBehaviour
 						}
 						
 						detonator.Explode();
-						explosionField.getCell().setExploding(true);
-						//explosionField.getCell().colorCell(Color.black);
+						explodingCell.setExploding(true);
+						//explodingCell.colorCell(Color.black);
 						
 						// Powerup hochjagen
 						if (PowerupPool.getDestroyable()) {
-							if (explosionField.getCell().hasPowerup()) {
-								if (Preferences.getExplodingPowerups() == true) {
-									float flameDelay = 0.2f;
-									int flameReach = explosionField.getCell().getPowerupValue();
-										flameDelay = 0.15f;
+							if (explodingCell.hasPowerup() && explodingCell.getGameObject().GetComponent<Active>().isActive()) {
+								if (Preferences.getExplodingPowerups()) {
+									float flameDelay;
+									int flameReach = explodingCell.getPowerupValue();
 									bool superPowerup = false;
-									if (flameReach == 10) {
+									switch (flameReach) {
+									case 10:
 										flameDelay = 0.1f;
 										superPowerup = true;
+										break;
+									case 5:
+										flameDelay = 0.15f;
+										break;
+									default:
+										flameDelay = 0.2f;
+										break;
 									}
-									GameObject ex = Network.Instantiate(Resources.Load("Prefabs/Bombe"), explosionField.getCell().getCenterPos(), Quaternion.identity, 0) as GameObject;
-									ex.networkView.RPC("createExplosionOnCell", RPCMode.All, explosionField.getCell().getLpos(), explosionField.getCell().getBpos(), 
+									GameObject ex = Network.Instantiate(Resources.Load("Prefabs/Bombe"), explodingCell.getCenterPos(), Quaternion.identity, 0) as GameObject;
+									ex.networkView.RPC("createExplosionOnCell", RPCMode.All, explodingCell.getLpos(), explodingCell.getBpos(), 
 									                   flameReach, flameDelay, superPowerup, 0, false, false);
 									//ex.startExplosion(false);
 								}
-								explosionField.getCell().destroyPowerup(false, true);
+								explodingCell.destroyPowerup(false, true);
 							}
 						}
 						
@@ -275,9 +282,9 @@ public class Explosion : MonoBehaviour
 							}
 						}
 
-                        if (explosionField.getCell().getType() == 1 || (explosionField.getCell().getType() == 2 && explosionField.getCell().getHeight() == 1f))
+                        if (explodingCell.getType() == 1 || (explodingCell.getType() == 2 && explodingCell.getHeight() == 1f))
                         {
-                            explosionField.getCell().setType(0);
+                            explodingCell.setType(0);
                             explodingCell.getMeshManipulator().updateCoordinates();
                         }   
 						
@@ -285,8 +292,8 @@ public class Explosion : MonoBehaviour
 
 						
 					} else if ((explosionField.getDelay() * delay) < -0.3f) { // Zellen sind wieder betretbar nach 300 ms
-						explosionField.getCell().setExploding(false);
-						//explosionField.getCell().colorCell(Color.green);
+						explodingCell.setExploding(false);
+						//explodingCell.colorCell(Color.green);
 					}
 
 					explosionField.decrement(); // Zähle Delay-Ticker runter

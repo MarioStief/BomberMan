@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using System.Collections;
 
 namespace AssemblyCSharp
 {
@@ -47,13 +48,11 @@ namespace AssemblyCSharp
 			height = 1.0f;
 		}
 		
-		public Parcel (int type)
-		{
+		public Parcel (int type) {
 			setType(type);
 		}
 		
-		public Parcel (float height, GameObject obj)
-		{
+		public Parcel (float height, GameObject obj) {
 			this.height = height;
 			this.obj = obj;
 		}
@@ -209,7 +208,7 @@ namespace AssemblyCSharp
 			obj.transform.Find("child").gameObject.GetComponent<PowerupTexture>().setType(powerupType);
 			powerupExplodingValue = powerup.getValue();
 			powerupAudio = powerup.getAudioClip();
-			powerupOnCell = true;	
+			powerupOnCell = true;
 		}
 
 		public PowerupType destroyPowerup(bool collected, bool shatter) {
