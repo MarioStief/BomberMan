@@ -41,7 +41,8 @@ public static class PowerupPool
 					pool.Add(new Powerup(PowerupType.DELAY_SPEED_DOWN));
 			}
 		}
-
+		
+		Random.seed = Menu.rSeed;
 		pool = shuffleList(pool);
 		
 		// DEBUG: show pool content
