@@ -401,13 +401,17 @@ namespace AssemblyCSharp
 		
 		public void setPlayers(List<NetworkPlayer> players) {
 			playerAlive = players;
-			if (playerWins.Count == 0)
-				foreach (NetworkPlayer p in players)
+			foreach (NetworkPlayer p in players)
+				if (!playerWins.ContainsKey(p))
 					playerWins.Add(p,0);
+		}
+		public void resetPlayers() {
+			playerWins.Clear();
 		}
 		
 		public void imOut(NetworkPlayer p) {
-			playerAlive.Remove(p);
+			if (playerAlive.Contains(p))
+				playerAlive.Remove(p);
 			// round ended
 			if (playerAlive.Count <= 1) {
 				if (playerAlive.Count == 1) {
@@ -416,8 +420,10 @@ namespace AssemblyCSharp
 				} else {
 					Static.menuHandler.incomingChatMessage("Round draw!");
 				}
-				if (playerWins.Values.Max() == 10) {
-					Static.menuHandler.setScreen("start");
+				if (playerWins.Values.Max() == Preferences.getRoundsToWin()) {
+					Static.menuHandler.incomingChatMessage(Menu.getPlayerNick(playerAlive[0]) + " has won this match!");
+					Static.menuHandler.incomingChatMessage("Game over. You'll return to menu in 15 seconds.");
+					Static.menuHandler.Invoke("returnToMenu", 15);
 				} else {
 					inGame.startCounter(5);
 					Static.menuHandler.Invoke("startRound", 5);
@@ -436,12 +442,9 @@ namespace AssemblyCSharp
     		});
 			List<string> re = new List<string>();
 			foreach (var it in pl)
-				re.Add(Menu.getPlayerNick(it.Key) + ": " + it.Value);
+				if (Menu.getPlayerNick(it.Key) != "")
+					re.Add(Menu.getPlayerNick(it.Key) + ": " + it.Value);
 			return re;
-		}
-		
-		public void resetGame() {
-			resetStats();
 		}
 	}
 }

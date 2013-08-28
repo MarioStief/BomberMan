@@ -29,6 +29,7 @@ public class Menu : MonoBehaviour {
 	
 	public static int rSeed;
 	public static bool showGUI = true;
+	public static bool gameStarted = false;
 	
 	public static Menu instance = null;
 	public void Awake() {
@@ -180,20 +181,19 @@ public class Menu : MonoBehaviour {
 		}
 		screen = s;
 	}
-	
+	public void returnToMenu() {
+		setScreen("disconnect");
+	}
 	
 	void OnLevelWasLoaded() {
 		bool state = Application.loadedLevelName == "StartMenu";
 		for (int i=1; i<transform.childCount; i++)
 			transform.GetChild(i).gameObject.SetActive(state);
-		if (Application.loadedLevelName == "SphereCreate" && !Network.isServer)
-			Network.SetReceivingEnabled(Network.player, 1, true);
 	}
 	
 	
 	// CLIENT SIDE ONLY
 	void OnConnectedToServer() {
-		
 		chat = "Welcome to Bomberman Galaxy.";
 		// tell the others my nick and color
 		networkView.RPC("newPlayer", RPCMode.OthersBuffered, Network.player, nickname, playerColor.r, playerColor.g, playerColor.b);
@@ -224,6 +224,7 @@ public class Menu : MonoBehaviour {
 		playerColorList = new Dictionary<NetworkPlayer,Color>();
 		// delete all Players
 		Static.inputHandler.lockCursor(false);
+		Static.player.resetPlayers();
 		foreach (var p in GameObject.FindGameObjectsWithTag("Player")) {
 			Destroy(p);
 		}
@@ -239,14 +240,18 @@ public class Menu : MonoBehaviour {
 			networkView.RPC("incomingChatMessage", RPCMode.All, playerList[p] + " leaved");
 			playerList.Remove(p);
 			playerColorList.Remove(p);
+			spawns.Remove(p);
+			Static.player.imOut(p);
 		}
 	}
 	void OnPlayerConnected(NetworkPlayer p) {
 		int L_pos = Random.Range(1, Static.sphereHandler.n_L-2);
 		int B_pos = Random.Range(1, Static.sphereHandler.n_B-1);
 		networkView.RPC("tellSpawnPoint", RPCMode.AllBuffered, L_pos, B_pos, p);
-		if (Application.loadedLevelName == "SphereCreate")
-			Network.SetReceivingEnabled(p, 1, false);
+				
+		if (gameStarted) {
+			networkView.RPC("tooLate", p);
+		}
 	}
 	
 	
@@ -496,14 +501,15 @@ public class Menu : MonoBehaviour {
 				PlayerPrefs.SetFloat("PlayerBlue", playerColor.b);
 				
 				showGUI = false;
+				gameStarted = true;
 				
 				CancelInvoke("refreshServerName");
-				
+
 				// spawn-points
 				int L_pos = Random.Range(1, Static.sphereHandler.n_L-2);
 				int B_pos = Random.Range(1, Static.sphereHandler.n_B-1);
 				networkView.RPC("tellSpawnPoint", RPCMode.AllBuffered, L_pos, B_pos, Network.player);
-				networkView.RPC("startGame",RPCMode.All, Mathf.FloorToInt(Random.value*100000), Preferences.getChestDensity(), Preferences.getRoundsToWin());
+				networkView.RPC("startGame",RPCMode.AllBuffered, Mathf.FloorToInt(Random.value*100000), Preferences.getChestDensity(), Preferences.getRoundsToWin());
 			}
 		}
 		GUI.EndGroup();
@@ -691,6 +697,12 @@ public class Menu : MonoBehaviour {
 	public void removePlayer(NetworkPlayer p) {
 		playerList.Remove(p);
 		playerColorList.Remove(p);
+		spawns.Remove(p);
+		Static.player.imOut(p);
+	}
+	[RPC]
+	public void tooLate() {
+		gameStarted = true;
 	}
 
 	[RPC]

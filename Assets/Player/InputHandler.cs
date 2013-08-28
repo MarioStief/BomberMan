@@ -127,8 +127,15 @@ public class InputHandler : MonoBehaviour {
 		
 		Static.rink.renderAll();
 		Static.player.resetStats();
+
 		
 		if (Application.loadedLevelName != "StartMenu") {
+			if (Menu.gameStarted && !Network.isServer) { // I'm too late for this round
+				Static.player.setDead(true, networkView);
+				networkView.RPC("removePlayer", RPCMode.AllBuffered, Network.player);
+				Menu.gameStarted = false;
+			}
+			
 			int startLpos = Menu.spawns[Network.player][0];
 			int startBpos = Menu.spawns[Network.player][1];
 			

@@ -5,6 +5,7 @@ using AssemblyCSharp;
 public class inGame : MonoBehaviour {
 	
 	public static int counter = -1;
+	private bool showScore = false;
 	
 	void Update () {
 		if (Application.loadedLevelName != "SphereCreate")
@@ -21,6 +22,10 @@ public class inGame : MonoBehaviour {
 				Static.camera.GetComponent<MouseLookGame>().setRotatable(true);
 			}
 		}
+		if (Input.GetKeyDown(KeyCode.Tab))
+			showScore = true;
+		if (Input.GetKeyUp(KeyCode.Tab))
+			showScore = false;
 	}
 	
 	public static bool focusToChat = true;
@@ -28,11 +33,11 @@ public class inGame : MonoBehaviour {
 		if (Application.loadedLevelName != "SphereCreate")
 			return;
 		
-		if (Static.player.isDead() || Menu.showGUI) {
-			int left = Screen.width/2 - 50;
+		if (Static.player.isDead() || Menu.showGUI || showScore) {
+			int left = Screen.width/2 - 200;
 			int i = 0;
 			foreach (string p in Static.player.getWins()) {
-				GUI.Label(new Rect(left, 20*i++, 100,20), p);
+				GUI.Label(new Rect(left, 20*i++, 400,20), p);
 			}
 		}
 	    GUI.skin.label.alignment = TextAnchor.MiddleRight;
@@ -63,6 +68,9 @@ public class inGame : MonoBehaviour {
 			focusToChat = !focusToChat;
 		}
 		Menu.instance.chatArea();
+		
+		if (Event.current.keyCode == KeyCode.Tab || Event.current.character == '\t')
+   			Event.current.Use();
 	}
 	
 	public static void startCounter(int c) {
