@@ -337,7 +337,7 @@ public class InputHandler : MonoBehaviour {
 		}
 		
 		// Gegner drehen mit dem Planeten..!
-		if (Network.peerType != NetworkPeerType.Disconnected && !networkView.isMine && Static.rink != null) {
+		if (Network.peerType != NetworkPeerType.Disconnected && !networkView.isMine) {
 			
 			if (vertAngleM != 0) { // an Wänden hängen bleiben..
 				float vm;

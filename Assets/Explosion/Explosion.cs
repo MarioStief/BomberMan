@@ -143,12 +143,13 @@ public class Explosion : MonoBehaviour
 					// Zerstöre Bombe
 					if (contactMine) {
 						cell.setContactMine(false);
-						Static.player.removeContactMine();
+						if (networkView.isMine)
+							Static.player.removeContactMine();
 					}
 					cell.setBomb(false);
 					if (createBomb)
 						cell.destroyGameObject();
-					if (self && extra == 0) {
+					if (self && extra == 0 && networkView.isMine) {
 						Static.player.removeBomb();
 					}
 					bombDestroyed = true;
