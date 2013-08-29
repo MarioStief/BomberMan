@@ -13,6 +13,7 @@ namespace AssemblyCSharp
 		private const float MAXSPEED = 0.72f;
 		private const float MINDELAY = 0.04f;
 		private const float MAXDELAY = 0.28f;
+		private const int MAXBOMBS = 10;
 		private const int MAXFLAMEPOWER = 10;
 		private bool SUPERBOMB = false;
 		
@@ -98,7 +99,9 @@ namespace AssemblyCSharp
 		public void powerupCollected(PowerupType type)
 		{
 			if (type == PowerupType.BOMB_UP) {
-				bombs++;
+				if (bombs < MAXBOMBS) {
+					bombs++;
+				}
 			} else if (type == PowerupType.BOMB_DOWN) {
 				if (bombs > 1) {
 					bombs--;

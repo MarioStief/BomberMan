@@ -44,7 +44,7 @@ namespace AssemblyCSharp
 		
 		private PowerupType powerupType;
 		
-		public Parcel (){
+		public Parcel () {
 			height = 1.0f;
 		}
 		

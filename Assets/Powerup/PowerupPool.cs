@@ -14,30 +14,30 @@ public static class PowerupPool
 	{
 		for (int i = 0; i < size; i++)
 		{
-			for (int j = 0; j < 10; j++)
+			for (int j = 0; j < 20; j++)
 				pool.Add(new Powerup(PowerupType.BOMB_UP));
-			for (int j = 0; j < 10; j++)
+			for (int j = 0; j < 20; j++)
 				pool.Add(new Powerup(PowerupType.FLAME_UP));
-			for (int j = 0; j < 10; j++)
+			for (int j = 0; j < 20; j++)
 				pool.Add(new Powerup(PowerupType.PLAYER_SPEED_UP));
-			for (int j = 0; j < 10; j++)
+			for (int j = 0; j < 20; j++)
 				pool.Add(new Powerup(PowerupType.DELAY_SPEED_UP));
 			for (int j = 0; j < 1; j++)
 				pool.Add(new Powerup(PowerupType.GOLDEN_FLAME));
 			for (int j = 0; j < 1; j++)
 				pool.Add(new Powerup(PowerupType.SUPERBOMB));
-			for (int j = 0; j < 5; j++)
+			for (int j = 0; j < 10; j++)
 				pool.Add(new Powerup(PowerupType.TRIGGERBOMB));
-			for (int j = 0; j < 5; j++)
+			for (int j = 0; j < 10; j++)
 				pool.Add(new Powerup(PowerupType.CONTACTMINE));
 			if (negative) {
-				for (int j = 0; j < 3; j++)
+				for (int j = 0; j < 5; j++)
 					pool.Add(new Powerup(PowerupType.BOMB_DOWN));
-				for (int j = 0; j < 3; j++)
+				for (int j = 0; j < 5; j++)
 					pool.Add(new Powerup(PowerupType.FLAME_DOWN));
-				for (int j = 0; j < 3; j++)
+				for (int j = 0; j < 5; j++)
 					pool.Add(new Powerup(PowerupType.PLAYER_SPEED_DOWN));
-				for (int j = 0; j < 3; j++)
+				for (int j = 0; j < 5; j++)
 					pool.Add(new Powerup(PowerupType.DELAY_SPEED_DOWN));
 			}
 		}
