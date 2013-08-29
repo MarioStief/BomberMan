@@ -46,7 +46,7 @@ public class InputHandler : MonoBehaviour {
 	int diffh = 0;
 	
 	bool autoMove = false;
-	bool running = false;
+	static bool running = false;
 	
 	private float playerRadius = 3.5f * Mathf.Deg2Rad;
 	
@@ -340,19 +340,22 @@ public class InputHandler : MonoBehaviour {
 		if (Network.peerType != NetworkPeerType.Disconnected && !networkView.isMine) {
 			
 			if (vertAngleM != 0) { // an Wänden hängen bleiben..
-				float vm;
+				//float vm;
 				//if (Static.player.isDead()) {
-					vm = vertAngleM;
-					vertAngleM = 0;
+					//vm = vertAngleM;
+					//vertAngleM = 0;
 				/*} else {
 					vm = Static.player.getSpeed() * Input.GetAxis("Vertical") * Time.deltaTime;
 					vm = determineVerticalParcelPosition(Input.GetAxis("Vertical"), vm);
 				}*/
-				verticalAngle += vm;
-				//verticalAngle = verticalAngle % (Mathf.PI*2);
+				if (verticalAngle != vertAngle) {
+					float vm = vertAngle - verticalAngle;
+					verticalAngle = vertAngle;
+					//verticalAngle = verticalAngle % (Mathf.PI*2);
 
-				Vector3 axis = Vector3.Cross(Vector3.forward, transform.position);
-				transform.RotateAround(Vector3.zero, axis, vm * Mathf.Rad2Deg);
+					Vector3 axis = Vector3.Cross(Vector3.forward, transform.position);
+					transform.RotateAround(Vector3.zero, axis, vm * Mathf.Rad2Deg);
+				}
 			}
 			
 			return;
