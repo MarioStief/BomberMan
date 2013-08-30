@@ -4,8 +4,8 @@ namespace AssemblyCSharp
 {
 	public class PowerupTexture  : MonoBehaviour {
 		
-		public Material bombUp;
-		public Material bombDown;
+		public Material dynamiteUp;
+		public Material dynamiteDown;
 		public Material flameUp;
 		public Material flameDown;
 		public Material playerSpeedUp;
@@ -29,9 +29,9 @@ namespace AssemblyCSharp
 		public void setType (PowerupType type) {
 			Material material = null;
 			if	(type == PowerupType.BOMB_UP) {
-				material = bombUp;
+				material = dynamiteUp;
 			} else if (type == PowerupType.BOMB_DOWN) {
-				material = bombDown;
+				material = dynamiteDown;
 			} else if (type == PowerupType.FLAME_UP) {
 				material = flameUp;
 			} else if (type == PowerupType.FLAME_DOWN) {

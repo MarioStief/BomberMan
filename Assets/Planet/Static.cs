@@ -45,6 +45,7 @@ namespace AssemblyCSharp
 		public static AudioClip superPowerupSoundEffect;
 		public static AudioClip extraPowerupSoundEffect;
 		public static AudioClip playerDeadSoundEffect;
+		public static AudioClip superExplosionSoundEffect;
 		
 		/*
 		 * if needed: the static ones:
@@ -102,6 +103,7 @@ namespace AssemblyCSharp
 			superPowerupSoundEffect = Resources.Load("Sounds/super") as AudioClip;
 			extraPowerupSoundEffect = Resources.Load("Sounds/extra") as AudioClip;
 			playerDeadSoundEffect = Resources.Load("Sounds/dead") as AudioClip;
+			superExplosionSoundEffect = Resources.Load("Sounds/superExplosion") as AudioClip;
 		}
 		
 		public static void setSphereBuilder(SphereBuilder s) {
