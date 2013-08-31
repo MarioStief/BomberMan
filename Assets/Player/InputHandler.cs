@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using AssemblyCSharp;
+using System.IO;
 
 // <summary>
 // InputHandler nimmt jeglichen relevanten Input entgegen und verarbeitet diesen
@@ -13,6 +14,8 @@ public class InputHandler : MonoBehaviour {
 	bool DEBUGPLAYERPOSITION = false;
 	
 	float angle = 0f;
+	
+	private int count = 0;
 	
 	private int n_L;				// Anzahl Längen und Breitengeraden
 	private int n_B;
@@ -444,12 +447,42 @@ public class InputHandler : MonoBehaviour {
 				if (!Menu.showGUI)
 					extra();
 			
+			if (Input.GetKeyDown(KeyCode.Print) || Input.GetKey(KeyCode.P))
+	            StartCoroutine(ScreenshotEncode());
+
 		} else {
 			// vor Scham im Boden versinken lassen ;)
 			transform.position -= 0.023f * transform.position.normalized * Time.deltaTime;
 			moveCharacter();
 		}
 	}
+			
+	IEnumerator ScreenshotEncode()
+    {
+        // wait for graphics to render
+        yield return new WaitForEndOfFrame();
+ 
+        // create a texture to pass to encoding
+        Texture2D texture = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, false);
+ 
+        // put buffer into texture
+        texture.ReadPixels(new Rect(0, 0, Screen.width, Screen.height), 0, 0);
+        texture.Apply();
+ 
+        // split the process up--ReadPixels() and the GetPixels() call inside of the encoder are both pretty heavy
+        yield return 0;
+ 
+        byte[] bytes = texture.EncodeToPNG();
+ 
+        // save our test image (could also upload to WWW)
+        File.WriteAllBytes(Application.dataPath + "/../Screenshot-" + count + ".png", bytes);
+        count++;
+ 
+        // Added by Karl. - Tell unity to delete the texture, by default it seems to keep hold of it and memory crashes will occur after too many screenshots.
+        DestroyObject( texture );
+ 
+        Debug.Log( Application.dataPath + "/../Screenshot-" + count + ".png" );
+    }
 	
 	public void dropBomb() {
 		if (!currCell.hasExplosion() && !Static.player.isDead() && !autoMove) {
