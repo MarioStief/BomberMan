@@ -1,4 +1,4 @@
-using UnityEngine;
+0using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +10,8 @@ namespace AssemblyCSharp
 		private Parcel currentCell;	// current Parcel
 		private float xpos, zpos;	// Player's position in the current Parcel
 		
-		private const float MAXSPEED = 0.72f;
+		private const float MAXSPEED = 0.7f;
+		private const float MINSPEED = 0.3f;
 		private const float MINDELAY = 0.04f;
 		private const float MAXDELAY = 0.28f;
 		private const int MAXBOMBS = 10;
@@ -27,8 +28,8 @@ namespace AssemblyCSharp
 		private int contactminesActive = 0;
 
 		private int flamePower = 1;
-		private float speed = 0.4f;
-		private float delay = 0.2f;
+		private float speed = 0.38f; // Startet auf Stufe 3 von 11
+		private float delay = 0.2f; // Startet auf Stufe 4 von 12
 		
 		private bool dead = false;
 		
@@ -126,8 +127,8 @@ namespace AssemblyCSharp
 					speed += 0.04f;
 				}
 			} else if (type == PowerupType.PLAYER_SPEED_DOWN) {
-				if (speed > 1.0f) {
-					speed -= 0.05f;
+				if (speed > MINSPEED) {
+					speed -= 0.04f;
 				}
 			} else if (type == PowerupType.DELAY_SPEED_UP) {
 				if (delay > MINDELAY) {
