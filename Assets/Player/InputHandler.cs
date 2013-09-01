@@ -555,9 +555,12 @@ public class InputHandler : MonoBehaviour {
 		vertAngleM = 0;
 		if (Input.GetAxis("Vertical") != 0 || Input.GetAxis("Horizontal") != 0 || autoMove || Static.player.isDead()) {
 		
+			float vM = Input.GetAxis("Vertical");
+			float hM = Input.GetAxis("Horizontal");
+			
 			if (!autoMove) {
-				verticalMovement = Input.GetAxis("Vertical");
-				horizontalMovement = Input.GetAxis("Horizontal");
+				verticalMovement = vM;
+				horizontalMovement = hM;
 			}
 			
 			if (Static.camera != null && !Static.camera.GetComponent<MouseLookGame>().birdview) {
@@ -663,6 +666,13 @@ public class InputHandler : MonoBehaviour {
 						verticalMovement =  1f;
 						horizontalMovement = -1f;
 						break;
+				}
+				if (vM != 0) {
+					verticalMovement *= Mathf.Abs(vM);
+					horizontalMovement *= Mathf.Abs(vM);
+				} else if (hM != 0) {
+					verticalMovement *= Mathf.Abs(hM);
+					horizontalMovement *= Mathf.Abs(hM);
 				}
 			}
 			
