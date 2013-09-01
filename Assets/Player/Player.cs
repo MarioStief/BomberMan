@@ -114,7 +114,7 @@ namespace AssemblyCSharp
 				if (flamePower < MAXFLAMEPOWER) {
 					flamePower++;
 				}
-				if (flamePower < MAXFLAMEPOWER) {
+				if (flamePower == MAXFLAMEPOWER) {
 					Static.setGoldenFlame(true);
 				}
 			} else if (type == PowerupType.FLAME_DOWN) {

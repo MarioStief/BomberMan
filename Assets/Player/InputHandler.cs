@@ -439,7 +439,7 @@ public class InputHandler : MonoBehaviour {
 			if (Input.GetKeyDown(KeyCode.Print) || Input.GetKey(KeyCode.P))
 	            StartCoroutine(ScreenshotEncode());
 
-		} else {
+		} else if (Static.player.isDead()) {
 			// vor Scham im Boden versinken lassen ;)
 			transform.position -= 0.023f * transform.position.normalized * Time.deltaTime;
 			moveCharacter();
