@@ -64,20 +64,24 @@ namespace AssemblyCSharp
 			 */
 
 			icons = new Texture2D[] {
-				Static.bombIconPrefab,
+				Static.dynamiteIconPrefab,
 				Static.playerSpeedIconPrefab,
 				Static.flameIconPrefab,
 				Static.delaySpeedIconPrefab,
-				SUPERBOMB ? Static.superBombIconPrefab : null,
-				Static.extraIconPrefab
+				Static.extraIconPrefab,
+				SUPERBOMB ? Static.superBombIconPrefab : null
 			};
+			
+			string extra;
+			extra = triggerbombs > 0 ? triggerbombs.ToString() + "x" : "";
+			extra = contactmines > 0 ? contactmines.ToString() + "x" : "";
 			
 			iconText = new string[]{
 				bombs + "x",
-				(speed*1000) + " km/h",
+				(int) Mathf.Round(speed*1000) + " m/h",
 				flamePower.ToString(),
-				(delay*1000) + " ms",
-				"", ""
+				(int) Mathf.Round(delay*1000) + " ms",
+				extra, ""
 			};
 		}
 		
@@ -131,7 +135,7 @@ namespace AssemblyCSharp
 				}
 			} else if (type == PowerupType.DELAY_SPEED_DOWN) {
 				if (delay < MAXDELAY) {
-					speed += 0.02f;
+					delay += 0.02f;
 				}
 			} else if (type == PowerupType.GOLDEN_FLAME) {
 				flamePower = MAXFLAMEPOWER;
@@ -151,8 +155,9 @@ namespace AssemblyCSharp
 					triggerbombs = 0;
 					Static.setExtra(2);
 				}
+				updateMenuStats();
 			}
-			Debug.Log("bombs: " + bombs + ", flamePower: " + flamePower + ", speed: " + speed*1000 + " ms, delay: " + delay*1000 + " ms");
+			Debug.Log("dynamite: " + bombs + ", flamePower: " + flamePower + ", speed: " + speed*1000 + " ms, delay: " + delay*1000 + " ms");
 			updateMenuStats();
 		}
 		
@@ -289,11 +294,11 @@ namespace AssemblyCSharp
 					parcelPool.RemoveAt(0);
 					flamePower--;
 				}
-				while (speed > 0.4f && parcelPool.Count > 0) {
+				while (speed > 0.38f && parcelPool.Count > 0) {
 					nv.RPC("addPowerup", RPCMode.Others, parcelPool[0].getLpos(), parcelPool[0].getBpos(), (int)PowerupType.PLAYER_SPEED_UP);
 					parcelPool[0].addPowerup(new Powerup(PowerupType.PLAYER_SPEED_UP));
 					parcelPool.RemoveAt(0);
-					speed -= 0.05f;
+					speed -= 0.04f;
 				}
 				while (delay < 0.2f && parcelPool.Count > 0) {
 					nv.RPC("addPowerup", RPCMode.Others, parcelPool[0].getLpos(), parcelPool[0].getBpos(), (int)PowerupType.DELAY_SPEED_UP);
@@ -301,6 +306,8 @@ namespace AssemblyCSharp
 					parcelPool.RemoveAt(0);
 					delay += 0.02f;
 				}
+				// update Menu
+				updateMenuStats();
 			}
 		}
 		
@@ -359,7 +366,7 @@ namespace AssemblyCSharp
 			contactmines = 0;
 			contactminesActive = 0;
 			flamePower = 1;
-			speed = 0.4f;
+			speed = 0.38f;
 			delay = 0.2f;
 			dead = false;
 		}

@@ -25,7 +25,7 @@ public static class Static
 
 	public static Shader transparentDiffuseShader;
 
-	public static Texture2D bombIconPrefab;
+	public static Texture2D dynamiteIconPrefab;
 	public static Texture2D playerSpeedIconPrefab;
 	public static Texture2D delaySpeedIconPrefab;
 
@@ -78,7 +78,7 @@ public static class Static
 		extraIconPrefab = Resources.Load("Textures/Menu/empty") as Texture2D;
 
 		//again: dynamic:
-		bombIconPrefab = Resources.Load("Textures/Menu/bomb") as Texture2D;
+		dynamiteIconPrefab = Resources.Load("Textures/Menu/dynamite") as Texture2D;
 		playerSpeedIconPrefab = Resources.Load("Textures/Menu/playerSpeed") as Texture2D;
 		flameIconPrefab = Resources.Load("Textures/Menu/flame") as Texture2D;
 
