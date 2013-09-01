@@ -69,7 +69,36 @@ public class Menu : MonoBehaviour {
 	}
 	
 	public void playSound(AudioClip clip, bool loop) {
-		AudioSource audioSource = GetComponent<AudioSource>() != null ? GetComponent<AudioSource>() : gameObject.AddComponent<AudioSource>();
+		if (loop) { // background music
+			bool first = true;
+			// clean sound devices
+			foreach (AudioSource audioIterator in GetComponents<AudioSource>()) {
+				if (first) {
+					if (Preferences.getBackgroundMusic())
+						audioIterator.enabled = true;
+					else
+						audioIterator.enabled = false;
+					first = false;
+				}
+				else
+					Destroy(audioIterator);
+			}
+		}
+		/*	
+		AudioSource audioSource;
+		if (GetComponent<AudioSource>() != null) {
+			audioSource = GetComponent<AudioSource>();
+			audioSource.enabled = true;
+			Debug.Log ("found");
+		}
+		else {
+			audioSource = gameObject.AddComponent<AudioSource>();
+			Debug.Log ("not found. dreating new");
+		}
+		*/
+		
+		AudioSource audioSource = GetComponent<AudioSource>();
+
 		if (audioSource.isPlaying && !loop) {
 			// neue Soundsource dazu
 			foreach (AudioSource audioIterator in GetComponents<AudioSource>()) {

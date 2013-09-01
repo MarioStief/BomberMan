@@ -64,9 +64,6 @@ public class InputHandler : MonoBehaviour {
 		} else { // Ingame
 			DontDestroyOnLoad(gameObject);
 			lockCursor(true);
-			// clean sound devices
-			foreach (AudioSource audioIterator in Static.menuHandler.transform.gameObject.GetComponents<AudioSource>())
-				Destroy(audioIterator);
 			// play bg-music
 			if (Preferences.getBackgroundMusic()) {
 				Static.menuHandler.playSound(Static.selectRandomMusic(), true);
