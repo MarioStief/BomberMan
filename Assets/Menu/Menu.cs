@@ -65,6 +65,7 @@ public class Menu : MonoBehaviour {
 		playSound(Static.selectRandomMusic(), true);
 		gameObject.GetComponent<AudioSource>().volume = 0.7f;
 		//gameObject.GetComponent<AudioSource>().volume = Preferences.getVolume();
+		Static.player.updateMenuStats();
 	}
 	
 	public void playSound(AudioClip clip, bool loop) {
@@ -509,7 +510,7 @@ public class Menu : MonoBehaviour {
 				int L_pos = Random.Range(1, Static.sphereHandler.n_L-2);
 				int B_pos = Random.Range(1, Static.sphereHandler.n_B-1);
 				networkView.RPC("tellSpawnPoint", RPCMode.AllBuffered, L_pos, B_pos, Network.player);
-				networkView.RPC("startGame",RPCMode.AllBuffered, Mathf.FloorToInt(Random.value*100000), Preferences.getChestDensity(), Preferences.getRoundsToWin());
+				networkView.RPC("startGame",RPCMode.AllBuffered, Mathf.FloorToInt(Random.value*100000), Preferences.getChestDensity());
 			}
 		}
 		GUI.EndGroup();
@@ -706,24 +707,52 @@ public class Menu : MonoBehaviour {
 	}
 
 	[RPC]
-	public void startGame(int seed, int chestDensity, int rounds) {
+	public void startGame(int seed, int chestDensity) {
+		Static.player.resetStats();
+		foreach (var p in GameObject.FindGameObjectsWithTag("Player"))
+			Destroy(p);
+		Static.player.setPlayers(new List<NetworkPlayer>(spawns.Keys));
+		
 		rSeed = seed;
 		Random.seed = seed;
-		Static.player.setPlayers(new List<NetworkPlayer>(spawns.Keys));
 		Preferences.setChestDensity(chestDensity);
-		Preferences.setRoundsToWin(rounds);
 		Application.LoadLevel("SphereCreate");
 		showGUI = false;
 		chat = "";
 		incomingChatMessage("Game started. Have Fun!");
 	}
+	
+	// SERVER only
 	public void startRound() {
-		Static.player.resetStats();
-		foreach (var p in GameObject.FindGameObjectsWithTag("Player"))
-			Destroy(p);
-		
-		if (Network.isServer) {
-			networkView.RPC("startGame", RPCMode.All, Mathf.FloorToInt(Random.value*100000), Preferences.getChestDensity(), Preferences.getRoundsToWin());
+		List<NetworkPlayer> playerAlive = Static.player.getPlayersAlive();
+		if (playerAlive.Count == 1) {
+			NetworkPlayer winner = playerAlive[0];
+			networkView.RPC("incomingChatMessage",RPCMode.All,Menu.getPlayerNick(winner) + " has won this round!");
+			
+			bool gameOver = Static.player.getWinAmount(winner) == Preferences.getRoundsToWin() - 1;
+			if (gameOver) {
+				networkView.RPC("incomingChatMessage",RPCMode.All, getPlayerNick(winner) + " has won this match!");
+				networkView.RPC("incomingChatMessage",RPCMode.All, "Game over. You'll return to menu in 15 seconds.");
+			}
+			networkView.RPC("winner", RPCMode.AllBuffered, winner, gameOver, false);
+		} else {
+			networkView.RPC("incomingChatMessage", RPCMode.All, "Round draw!");
+			networkView.RPC("winner", RPCMode.AllBuffered, Network.player, false, true);
+		}
+	}
+	private void startNext() {
+		networkView.RPC("startGame", RPCMode.All, Mathf.FloorToInt(Random.value*100000), Preferences.getChestDensity());
+	}
+	
+	[RPC]
+	public void winner(NetworkPlayer p, bool gameOver, bool draw) {
+		if (!draw)
+			Static.player.setWinner(p);
+		if (gameOver)
+			Invoke("returnToMenu", 15);
+		else {
+			inGame.startCounter(5);
+			Invoke("startNext", 5);
 		}
 	}
 	

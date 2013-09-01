@@ -5,17 +5,17 @@ namespace AssemblyCSharp
 {
 	public class Active : MonoBehaviour {
 	
-		private bool active = false;
+		private bool activated = false;
 		private float createTime = Time.time;
 		
 		void Update () {
-			if (!active)
+			if (!activated)
 				if (Time.time - createTime > 1f)
-					active = true;
+					activated = true;
 		}
 		
 		public bool isActive() {
-			return active;
+			return activated;
 		}
 	}
 }

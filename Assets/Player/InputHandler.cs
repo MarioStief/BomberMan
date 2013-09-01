@@ -49,9 +49,10 @@ public class InputHandler : MonoBehaviour {
 	int diffh = 0;
 	
 	bool autoMove = false;
-	static bool running = false;
+	bool running = false;
 	
 	private float playerRadius = 3.5f * Mathf.Deg2Rad;
+	NetworkPlayer me;
 	
 	void Awake() {
 		Static.setInputHandler(this);
@@ -87,20 +88,6 @@ public class InputHandler : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		
-		// colorate the player
-		Texture2D illuminColor = Instantiate(Resources.Load("Textures/Player/astrod00d_selfillum") as Texture2D) as Texture2D;
-		Color[] color = illuminColor.GetPixels();
-		
-		Color pColor = Menu.getPlayerColor(networkView.owner);
-		for (int i = 0; i < color.Length; i++)
-			if (color[i] != color[0])
-				color[i] = pColor;
-		
-		illuminColor.SetPixels(color);
-		illuminColor.Apply();
-		
-		renderer.material.SetTexture("_SelfIllumin", illuminColor);
-		
 		if (Network.peerType != NetworkPeerType.Disconnected && !networkView.isMine) {
 			verticalAngle = vertAngle;
 			return;
@@ -133,6 +120,9 @@ public class InputHandler : MonoBehaviour {
 
 		
 		if (Application.loadedLevelName != "StartMenu") {
+			networkView.RPC("coloratePlayer", RPCMode.AllBuffered, Network.player, networkView.viewID);
+			me = Network.player;
+			
 			if (Menu.gameStarted && !Network.isServer) { // I'm too late for this round
 				Static.player.setDead(true, networkView);
 				networkView.RPC("removePlayer", RPCMode.AllBuffered, Network.player);
@@ -220,6 +210,11 @@ public class InputHandler : MonoBehaviour {
 			Vector3 p = transform.position;
 			stream.Serialize(ref p);
 			
+			float sva = vertAngle;
+			if (info.networkView.isMine)
+				sva = 0;
+			stream.Serialize(ref sva);
+			
 			float va = verticalAngle;
 			stream.Serialize(ref va);
 			
@@ -229,25 +224,34 @@ public class InputHandler : MonoBehaviour {
 			bool ir = running;
 			stream.Serialize(ref ir);
 		}
-		else {
+		else if (info.networkView.viewID == networkView.viewID) {
 			Vector3 fp = Vector3.zero;
 			stream.Serialize(ref fp);
 			
+			float sva = 0f; // der aktuelle Winkel des Servers
+			stream.Serialize(ref sva);
+			
 			float fva = 0f;
 			stream.Serialize(ref fva);
+			verticalAngle = fva;
 			
 			Quaternion fr = Quaternion.Euler(new Vector3(0, 0, 0));
 			stream.Serialize(ref fr);
 			transform.rotation = fr;
 			
-			transform.position = fp; // Spieler ist auf Äquator
-			Vector3 axis = Vector3.Cross(Vector3.forward, transform.position).normalized;
-			transform.RotateAround(Vector3.zero, axis, (verticalAngle * Mathf.Rad2Deg) + (-fva * Mathf.Rad2Deg));
+			transform.position = fp; // Spieler ist auf Äquator.. gar nicht wahr!
+			Vector3 axis = Vector3.Cross(transform.position, Vector3.forward).normalized;
+			
+			if (sva != 0) // anderer Client über Server..
+				transform.RotateAround(Vector3.zero, axis, (sva + -vertAngle) * Mathf.Rad2Deg);
+			else
+				transform.RotateAround(Vector3.zero, axis, (-vertAngle + verticalAngle) * Mathf.Rad2Deg);
 			
 			// Animate Player
 			bool fir = false;
 			stream.Serialize(ref fir);
-			if (fir)
+			running = fir;
+			if (running)
 				GetComponentInChildren<Animation>().CrossFade("runforward");
 			else
 				GetComponentInChildren<Animation>().CrossFade("idle");
@@ -343,22 +347,8 @@ public class InputHandler : MonoBehaviour {
 		if (Network.peerType != NetworkPeerType.Disconnected && !networkView.isMine) {
 			
 			if (vertAngleM != 0) { // an Wänden hängen bleiben..
-				//float vm;
-				//if (Static.player.isDead()) {
-					//vm = vertAngleM;
-					//vertAngleM = 0;
-				/*} else {
-					vm = Static.player.getSpeed() * Input.GetAxis("Vertical") * Time.deltaTime;
-					vm = determineVerticalParcelPosition(Input.GetAxis("Vertical"), vm);
-				}*/
-				if (verticalAngle != vertAngle) {
-					float vm = vertAngle - verticalAngle;
-					verticalAngle = vertAngle;
-					//verticalAngle = verticalAngle % (Mathf.PI*2);
-
-					Vector3 axis = Vector3.Cross(Vector3.forward, transform.position);
-					transform.RotateAround(Vector3.zero, axis, vm * Mathf.Rad2Deg);
-				}
+				Vector3 axis = Vector3.Cross(Vector3.forward, transform.position);
+				transform.RotateAround(Vector3.zero, axis, vertAngleM * Mathf.Rad2Deg);
 			}
 			
 			return;
@@ -378,7 +368,6 @@ public class InputHandler : MonoBehaviour {
 				RaycastHit hit;
 				Ray ray = cam.camera.ScreenPointToRay(Input.mousePosition);
 				if (Physics.Raycast(ray, out hit)) {
-					Debug.Log("HIT: "+hit.collider.gameObject.name);
 					if (hit.collider.gameObject.name == "create" || hit.collider.gameObject.name == "cServer")
 						s = "server";
 					else if (hit.collider.gameObject.name == "join" || hit.collider.gameObject.name == "jServer")
@@ -475,7 +464,7 @@ public class InputHandler : MonoBehaviour {
         byte[] bytes = texture.EncodeToPNG();
  
         // save our test image (could also upload to WWW)
-        File.WriteAllBytes(Application.dataPath + "/../Screenshot-" + count + ".png", bytes);
+        File.WriteAllBytes(Application.dataPath + "/../../Screenshot-" + count + ".png", bytes);
         count++;
  
         // Added by Karl. - Tell unity to delete the texture, by default it seems to keep hold of it and memory crashes will occur after too many screenshots.
@@ -533,15 +522,37 @@ public class InputHandler : MonoBehaviour {
 	
 	[RPC]
 	public void removePlayer(NetworkPlayer p) {
-		if (networkView.owner == p) {
+		if (me == p) {
 			transform.localScale = Vector3.zero;
 			Static.player.imOut(p);
+		}
+	}
+	
+	[RPC]
+	public void coloratePlayer(NetworkPlayer p, NetworkViewID id) {
+		if (networkView.viewID == id) {
+			// colorate the player
+			Texture2D illuminColor = Instantiate(Resources.Load("Textures/Player/astrod00d_selfillum") as Texture2D) as Texture2D;
+			Color[] color = illuminColor.GetPixels();
+			
+			Color pColor = Menu.getPlayerColor(p);
+			for (int i = 0; i < color.Length; i++)
+				if (color[i] != color[0])
+					color[i] = pColor;
+			
+			illuminColor.SetPixels(color);
+			illuminColor.Apply();
+			
+			renderer.material.SetTexture("_SelfIllumin", illuminColor);
+			
+			me = p;
 		}
 	}
 	
 	private void moveCharacter() {
 		
 		float vm = 0, m = 0;
+		vertAngleM = 0;
 		if (Input.GetAxis("Vertical") != 0 || Input.GetAxis("Horizontal") != 0 || autoMove || Static.player.isDead()) {
 		
 			if (!autoMove) {
@@ -687,7 +698,7 @@ public class InputHandler : MonoBehaviour {
 				
 				Static.sphereHandler.move(vm);
 			}
-			
+
 			if (horizontalMovement != 0) {
 				m = horizontalMovement*Time.deltaTime*Static.player.getSpeed()*(-2);
 				if (hDirection == 0) {

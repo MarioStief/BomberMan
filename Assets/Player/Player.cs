@@ -33,8 +33,8 @@ namespace AssemblyCSharp
 		
 		private bool dead = false;
 		
-		private UnityEngine.Object[] icons = new UnityEngine.Object[6];
-		private string[] iconText = new string[4];
+		private Texture2D[] icons = new Texture2D[6];
+		private string[] iconText = new string[6];
 		
 		private Dictionary<Parcel,GameObject> triggerbombList = new Dictionary<Parcel,GameObject>();
 		private Dictionary<NetworkPlayer,int> playerWins = new Dictionary<NetworkPlayer, int>();
@@ -63,32 +63,29 @@ namespace AssemblyCSharp
 			 * NOTE: icons are 32x32 and transparent
 			 */
 
-			icons[0] = Static.bombIconPrefab;
-			icons[1] = Static.playerSpeedIconPrefab;
-			icons[2] = Static.flameIconPrefab;
-			icons[3] = Static.delaySpeedIconPrefab;
-			icons[4] = Static.superBombIconPrefab;
-			icons[5] = Static.extraIconPrefab;
-			
-			//int extra = TRIGGERBOMB ? 1 : 0;
-			//String[] stats = {bombs.ToString(), ((int) speed*1000).ToString(), flamePower.ToString(), ((int) delay*1000).ToString(), SUPERBOMB ? 1 : 0, extra};
-			string[] iconText = {
-				bombs.ToString(),
-				((int) speed*1000).ToString() + " ms",
-				flamePower.ToString(),
-				((int) delay*1000).ToString() + " ms"
+			icons = new Texture2D[] {
+				Static.bombIconPrefab,
+				Static.playerSpeedIconPrefab,
+				Static.flameIconPrefab,
+				Static.delaySpeedIconPrefab,
+				SUPERBOMB ? Static.superBombIconPrefab : null,
+				Static.extraIconPrefab
 			};
 			
-			// UPDATE MENU BAR
-			// SomeStrangeMenu.updateStats(stats);
-			// SomeStrangeMenu.updatePrefabs(prefabs);
+			iconText = new string[]{
+				bombs + "x",
+				(speed*1000) + " km/h",
+				flamePower.ToString(),
+				(delay*1000) + " ms",
+				"", ""
+			};
 		}
 		
 		public string[] getIconText() {
 			return iconText;
 		}
 
-		public UnityEngine.Object[] getIcons() {
+		public Texture2D[] getIcons() {
 			return icons;
 		}
 
@@ -112,12 +109,10 @@ namespace AssemblyCSharp
 					flamePower++;
 				} else {
 					Static.setGoldenFlame(true);
-					updateMenuStats();
 				}
 			} else if (type == PowerupType.FLAME_DOWN) {
 				if (flamePower == MAXFLAMEPOWER) {
 					Static.setGoldenFlame(false);
-					updateMenuStats();
 				}
 				if (flamePower > 1) {
 					flamePower--;
@@ -141,27 +136,24 @@ namespace AssemblyCSharp
 			} else if (type == PowerupType.GOLDEN_FLAME) {
 				flamePower = MAXFLAMEPOWER;
 				Static.setGoldenFlame(true);
-				updateMenuStats();
 			} else if (type == PowerupType.SUPERBOMB) {
 				SUPERBOMB = true;
 				Static.setSuperbomb(true);
-				updateMenuStats();
 			} else if (type == PowerupType.TRIGGERBOMB) {
 				if (triggerbombs < 3) {
 					triggerbombs++;
 					contactmines = 0;
 					Static.setExtra(1);
-					updateMenuStats();
 				}
 			} else if (type == PowerupType.CONTACTMINE) {
 				if (contactmines < 3) {
 					contactmines++;
 					triggerbombs = 0;
 					Static.setExtra(2);
-					updateMenuStats();
 				}
 			}
 			Debug.Log("bombs: " + bombs + ", flamePower: " + flamePower + ", speed: " + speed*1000 + " ms, delay: " + delay*1000 + " ms");
+			updateMenuStats();
 		}
 		
 		// return "extra"
@@ -182,26 +174,6 @@ namespace AssemblyCSharp
 			}
 			return false;
 		}
-		
-		/*
-		public void addBomb() {
-			if (triggerbombs > triggerbombsActive) {
-				triggerbombsActive++;
-				addTriggerBomb(currentCell);
-				Explosion.createExplosionOnCell(currentCell, Static.player.getFlamePower(), Static.player.getDelay(), Static.player.getSuperbomb(), 1, true, true);
-			} else if (bombsActive < bombs) {
-				bombsActive++;
-				Explosion.createExplosionOnCell(currentCell, Static.player.getFlamePower(), Static.player.getDelay(), Static.player.getSuperbomb(), 0, true, true);
-			}
-		}
-		*/
-		
-		/*public void addContactMine() {
-			if (contactmines > contactminesActive) {
-				contactminesActive++;
-				Explosion.createExplosionOnCell(currentCell, Static.player.getFlamePower(), Static.player.getDelay(), Static.player.getSuperbomb(), 2, true, true);
-			}
-		}*/
 		
 		public void removeContactMine() {
 			contactminesActive--;
@@ -244,7 +216,6 @@ namespace AssemblyCSharp
 		
 		public void removeBomb() {
 			bombsActive--;
-			//Debug.Log ("Bombs: " + bombsActive + "/" + bombs);
 		}
 
 		public int getFlamePower() {
@@ -338,17 +309,7 @@ namespace AssemblyCSharp
 		}
 		
 		public void setCurrentParcel(Parcel parcel){
-			
-			/*
-			if (currentCell != null){
-				currentCell.hightlightColor(false);	
-			}
-			*/
-			
 			currentCell = parcel;	
-			
-			//currentCell.setColor(Color.cyan);
-			//currentCell.hightlightColor(true);
 		}
 		
 		public Parcel getCurrentParcel(){
@@ -417,26 +378,20 @@ namespace AssemblyCSharp
 			if (playerAlive.Contains(p))
 				playerAlive.Remove(p);
 			// round ended
-			if (playerAlive.Count <= 1) {
-				if (playerAlive.Count == 1) {
-					playerWins[playerAlive[0]]++;
-					Static.menuHandler.incomingChatMessage(Menu.getPlayerNick(playerAlive[0]) + " has won this round!");
-				} else {
-					Static.menuHandler.incomingChatMessage("Round draw!");
-				}
-				if (playerWins.Values.Max() == Preferences.getRoundsToWin()) {
-					Static.menuHandler.incomingChatMessage(Menu.getPlayerNick(playerAlive[0]) + " has won this match!");
-					Static.menuHandler.incomingChatMessage("Game over. You'll return to menu in 15 seconds.");
-					Static.menuHandler.Invoke("returnToMenu", 15);
-				} else {
-					inGame.startCounter(5);
-					Static.menuHandler.Invoke("startRound", 5);
-				}
+			if (Network.isServer && playerAlive.Count <= 1) {
+				Static.menuHandler.Invoke("startRound", 0.3f);
 			}
+		}
+		public void setWinner(NetworkPlayer p) {
+			playerWins[p]++;
 		}
 		
 		public List<NetworkPlayer> getPlayersAlive() {
 			return playerAlive;
+		}
+		
+		public int getWinAmount(NetworkPlayer p) {
+			return playerWins[p];
 		}
 		
 		public List<string> getWins() {

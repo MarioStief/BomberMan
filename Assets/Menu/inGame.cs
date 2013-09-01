@@ -4,7 +4,8 @@ using AssemblyCSharp;
 
 public class inGame : MonoBehaviour {
 	
-	public static int counter = -1;
+	public static bool focusToChat = true;
+	private static int counter = -1;
 	private bool showScore = false;
 	
 	void Update () {
@@ -28,11 +29,11 @@ public class inGame : MonoBehaviour {
 			showScore = false;
 	}
 	
-	public static bool focusToChat = true;
 	void OnGUI () {
 		if (Application.loadedLevelName != "SphereCreate")
 			return;
 		
+		// Scoreboard
 		if (Static.player.isDead() || Menu.showGUI || showScore) {
 			int left = Screen.width/2 - 200;
 			int i = 0;
@@ -40,9 +41,24 @@ public class inGame : MonoBehaviour {
 				GUI.Label(new Rect(left, 20*i++, 400,20), p);
 			}
 		}
+		// remaining enemies (top right)
 	    GUI.skin.label.alignment = TextAnchor.MiddleRight;
 		GUI.Label(new Rect(Screen.width-155,5,150,20), "remaining enemies: " + (Static.player.getPlayersAlive().Count-1));
+	    GUI.skin.label.alignment = TextAnchor.MiddleLeft;
 		
+		// collected powerups
+		Texture2D[] icons = Static.player.getIcons();
+		string[] text = Static.player.getIconText();
+		GUI.BeginGroup(new Rect(10,Screen.height-icons.Length*32-20,200,600));
+		for (int i=0; i<icons.Length; i++) {
+			if (icons[i] != null) {
+				GUI.DrawTexture(new Rect(0,i*32,32,32), icons[i]);
+				GUI.Label(new Rect(35,i*32,100,32), text[i]);
+			}
+		}
+		GUI.EndGroup();
+		
+		// Next Round Countdown
 		if (counter > 0) {
 	    	GUI.skin.label.alignment = TextAnchor.MiddleCenter;
 			int fs = GUI.skin.label.fontSize;
@@ -52,10 +68,11 @@ public class inGame : MonoBehaviour {
 		}
 	    GUI.skin.label.alignment = TextAnchor.MiddleLeft;
 		
+		// Menu-Button
 		if (GUI.Button(new Rect(10,10,80,20), "MENU")) {
 			Menu.showGUI = !Menu.showGUI;
 		}
-		
+		// Chat
 		if (Event.current.type == EventType.KeyDown && (
 				Event.current.keyCode == KeyCode.Return || Event.current.keyCode == KeyCode.KeypadEnter)) {
 			if (focusToChat) {
