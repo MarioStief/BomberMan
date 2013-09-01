@@ -72,9 +72,11 @@ namespace AssemblyCSharp
 				SUPERBOMB ? Static.superBombIconPrefab : null
 			};
 			
-			string extra;
-			extra = triggerbombs > 0 ? triggerbombs.ToString() + "x" : "";
-			extra = contactmines > 0 ? contactmines.ToString() + "x" : "";
+			string extra = "";
+			if (triggerbombs > 0)
+				extra = triggerbombs.ToString() + "x";
+			if (contactmines > 0)
+				extra = contactmines.ToString() + "x";
 			
 			iconText = new string[]{
 				bombs + "x",
@@ -111,7 +113,8 @@ namespace AssemblyCSharp
 			} else if (type == PowerupType.FLAME_UP) {
 				if (flamePower < MAXFLAMEPOWER) {
 					flamePower++;
-				} else {
+				}
+				if (flamePower < MAXFLAMEPOWER) {
 					Static.setGoldenFlame(true);
 				}
 			} else if (type == PowerupType.FLAME_DOWN) {
@@ -155,7 +158,6 @@ namespace AssemblyCSharp
 					triggerbombs = 0;
 					Static.setExtra(2);
 				}
-				updateMenuStats();
 			}
 			Debug.Log("dynamite: " + bombs + ", flamePower: " + flamePower + ", speed: " + speed*1000 + " ms, delay: " + delay*1000 + " ms");
 			updateMenuStats();
