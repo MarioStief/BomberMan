@@ -425,15 +425,19 @@ public class InputHandler : MonoBehaviour {
 			}
 			
 			// Leertaste -> Bombe legen
-			if (Input.GetKey(KeyCode.Space) || Input.GetButton("Fire1"))
-				if (!Menu.showGUI)
-					dropBomb();
+#if UNITY_IPHONE
+			if (Input.GetButtonUp("Fire1") && Input.touchCount < 2 && !Menu.showGUI)
+				dropBomb();
+#else
+			if (Input.GetButton("Fire1") && !Menu.showGUI)
+				dropBomb();
+#endif
 
-			if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift) || Input.GetButton("Fire2"))
+			if (Input.GetButtonDown("Fire2") || Input.touchCount == 2 && Input.GetTouch(1).phase == TouchPhase.Ended)
 				if (!Menu.showGUI)
 					extra();
 			
-			if (Input.GetKeyDown(KeyCode.Print) || Input.GetKey(KeyCode.P))
+			if (Input.GetKeyDown(KeyCode.Print) || Input.GetKeyDown(KeyCode.P))
 	            StartCoroutine(ScreenshotEncode());
 
 		} else if (Static.player.isDead()) {
@@ -550,10 +554,17 @@ public class InputHandler : MonoBehaviour {
 		
 		float vm = 0, m = 0;
 		vertAngleM = 0;
-		if (Input.GetAxis("Vertical") != 0 || Input.GetAxis("Horizontal") != 0 || autoMove || Static.player.isDead()) {
 		
-			float vM = Input.GetAxis("Vertical");
-			float hM = Input.GetAxis("Horizontal");
+		float vM = Input.GetAxis("Vertical");
+		float hM = Input.GetAxis("Horizontal");
+		
+		if (Mathf.Abs(Input.acceleration.x) > 0.1f)
+			hM = Mathf.Clamp(Input.acceleration.x*2f, -1f, 1f);
+		if (Mathf.Abs(Input.acceleration.y) > 0.1f)
+			vM = Mathf.Clamp(Input.acceleration.y*2f, -1f, 1f);
+		
+		if (vM != 0 || hM != 0 || autoMove || Static.player.isDead()) {
+		
 			
 			if (!autoMove) {
 				verticalMovement = vM;

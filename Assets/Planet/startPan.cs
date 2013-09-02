@@ -53,7 +53,7 @@ public class startPan : MonoBehaviour {
 		//if (Application.loadedLevelName != "StartMenu")
 		//	return;
 		
-		if (Input.anyKeyDown) {
+		if (Input.anyKeyDown || Input.GetAxis("Mouse ScrollWheel") != 0) {
 			transform.position = targetPos;
 			transform.rotation = Quaternion.Euler(targetRot);
 			camera.nearClipPlane = targetClip;

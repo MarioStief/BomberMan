@@ -31,6 +31,9 @@ public class Menu : MonoBehaviour {
 	public static bool showGUI = true;
 	public static bool gameStarted = false;
 	
+	public static int scrnWidth = 1024;
+	public static int scrnHeight = 768;
+	
 	public static Menu instance = null;
 	public void Awake() {
 	    if (instance == null) {
@@ -66,6 +69,10 @@ public class Menu : MonoBehaviour {
 		gameObject.GetComponent<AudioSource>().volume = 0.7f;
 		//gameObject.GetComponent<AudioSource>().volume = Preferences.getVolume();
 		Static.player.updateMenuStats();
+#if UNITY_IPHONE
+		scrnWidth = 800;
+		scrnHeight = 600;
+#endif
 	}
 	
 	public void playSound(AudioClip clip, bool loop) {
@@ -135,6 +142,12 @@ public class Menu : MonoBehaviour {
 	}
 
 	public void OnGUI () {
+
+#if UNITY_IPHONE
+		GUI.matrix = Matrix4x4.Scale(new Vector3((float)Screen.width/scrnWidth, (float)Screen.height/scrnHeight, 1f));
+#else
+		GUI.matrix = Matrix4x4.Scale(new Vector3((float)Screen.width/scrnWidth, (float)Screen.height/scrnHeight, 1f));
+#endif
 		
 		if (!showGUI) {
 			screen = "overlay";
@@ -201,9 +214,9 @@ public class Menu : MonoBehaviour {
 			
 			case "disconnect":
 				Network.Disconnect();
-				Application.LoadLevel("StartMenu");
 				foreach (GameObject p in GameObject.FindGameObjectsWithTag("Player"))
 					Destroy (p);
+				Application.LoadLevel("StartMenu");
 				s = "start";
 			break;
 
@@ -235,7 +248,6 @@ public class Menu : MonoBehaviour {
 	void OnDisconnectedFromServer(NetworkDisconnection info) {
         if (Network.isServer) {
 			MasterServer.UnregisterHost();
-            Debug.Log("Local server connection disconnected");
 			screen = "start";
 		} else {
             if (info == NetworkDisconnection.LostConnection) {
@@ -250,8 +262,9 @@ public class Menu : MonoBehaviour {
 		}
 		Application.LoadLevel("Menu");
 		showGUI = true;
-		playerList = new Dictionary<NetworkPlayer,string>();
-		playerColorList = new Dictionary<NetworkPlayer,Color>();
+		playerList.Clear();
+		playerColorList.Clear();
+		spawns.Clear();
 		// delete all Players
 		Static.inputHandler.lockCursor(false);
 		Static.player.resetPlayers();
@@ -287,7 +300,7 @@ public class Menu : MonoBehaviour {
 	
 	void joinScreen() {
 		var width = 150;
-		GUI.BeginGroup(new Rect(Screen.width/2-width/2,10,width+75,500));
+		GUI.BeginGroup(new Rect(scrnWidth/2-width/2,10,width+75,500));
 		
 		// REFRESH BUTTON
 	    if (GUI.Button(new Rect(0,10,width,20),"Refresh Serverlist")) {
@@ -308,9 +321,9 @@ public class Menu : MonoBehaviour {
 		}
 		GUI.color = c;
 		
-		// GRAPHIC-DETAILS
 		if (!colorPicker.activeSelf) {
 				
+			// GRAPHIC-DETAILS
 			GUI.Label(new Rect(0,120,width,20), "Bomb Shatter Detail:");
 			GUI.Label(new Rect(0,145,50,20), "Min");
 		    GUI.skin.label.alignment = TextAnchor.MiddleRight;
@@ -400,7 +413,7 @@ public class Menu : MonoBehaviour {
 		GUI.contentColor = c;
 		GUI.EndGroup();
 		
-		GUI.Box(new Rect(Screen.width/2-100, 50, 200, 24), "Waiting for server to start game");
+		GUI.Box(new Rect(scrnWidth/2-100, 50, 200, 24), "Waiting for server to start game");
 		chatArea();
 	}
 
@@ -408,15 +421,15 @@ public class Menu : MonoBehaviour {
 	private bool showMaxPlayers = false;
 	void serverScreen() {
 		int width = 150;
-		GUI.BeginGroup (new Rect(Screen.width/2-100, 50, 200, 900));
+		GUI.BeginGroup(new Rect(scrnWidth/2-200, 50, 200, 900));
 		// NICK
-		GUI.Label(new Rect(25,10,width,20), "Nickname:");
-		nickname = GUI.TextField(new Rect(25,30,width,20), nickname, 30);
+		GUI.Label(new Rect(25,0,width,20), "Nickname:");
+		nickname = GUI.TextField(new Rect(25,20,width,20), nickname, 30);
 		
 		// COLOR
 		Color c = GUI.color;
 		GUI.color = playerColor;
-		if (GUI.Button (new Rect(25,52, width,20), "Illumination Color")) {
+		if (GUI.Button (new Rect(25,40, width,20), "Illumination Color")) {
 			colorPicker.SetActive(!colorPicker.activeSelf);
 		}
 		GUI.color = c;
@@ -425,11 +438,11 @@ public class Menu : MonoBehaviour {
 		if (!colorPicker.activeSelf) {
 		
 			// GRAPHIC-DETAILS
-			GUI.Label(new Rect(25,80,width,20), "Bomb Shatter Detail:");
-			GUI.Label(new Rect(25,105,50,20), "Min");
+			GUI.Label(new Rect(25,70,width,20), "Bomb Shatter Detail:");
+			GUI.Label(new Rect(25,95,50,20), "Min");
 		    GUI.skin.label.alignment = TextAnchor.MiddleRight;
-			GUI.Label(new Rect(width-15,105,50,20), "Max");
-			expDetail = (int)GUI.HorizontalSlider (new Rect (25, 100, width, 20), (float)expDetail, 0.0f, 3.0f);
+			GUI.Label(new Rect(width-15,95,50,20), "Max");
+			expDetail = (int)GUI.HorizontalSlider (new Rect (25, 90, width, 20), (float)expDetail, 0.0f, 3.0f);
 			string detailLevel = "";
 			switch (expDetail) {
 			case 0:
@@ -450,51 +463,44 @@ public class Menu : MonoBehaviour {
 				break;
 			}
 		    GUI.skin.label.alignment = TextAnchor.MiddleCenter;
-			GUI.Label(new Rect(width/2,105,60,20), detailLevel);
+			GUI.Label(new Rect(width/2,95,60,20), detailLevel);
 			GUI.skin.label.normal.textColor = Color.white;
 		    GUI.skin.label.alignment = TextAnchor.MiddleLeft;
 
-			GUI.Label(new Rect(25,130,width,20), "Chest Density:");
-			GUI.Label(new Rect(25,155,50,20), "Min");
+			GUI.Label(new Rect(25,120,width,20), "Mouse Sensitivity:");
+			GUI.Label(new Rect(25,145,50,20), "Min");
 		    GUI.skin.label.alignment = TextAnchor.MiddleRight;
-			GUI.Label(new Rect(width-15,155,50,20), "Max");
+			GUI.Label(new Rect(width-15,145,50,20), "Max");
 		    GUI.skin.label.alignment = TextAnchor.MiddleLeft;
-			chestDensity = (int)GUI.HorizontalSlider (new Rect (25, 150, width, 20), (float)chestDensity, 1.0f, 5.0f);
-
-			GUI.Label(new Rect(25,180,width,20), "Mouse Sensitivity:");
-			GUI.Label(new Rect(25,205,50,20), "Min");
-		    GUI.skin.label.alignment = TextAnchor.MiddleRight;
-			GUI.Label(new Rect(width-15,205,50,20), "Max");
-		    GUI.skin.label.alignment = TextAnchor.MiddleLeft;
-			mouseSensitivity = (int) GUI.HorizontalSlider (new Rect (25, 200, width, 20), mouseSensitivity, 1, 10);
+			mouseSensitivity = (int) GUI.HorizontalSlider (new Rect (25, 140, width, 20), mouseSensitivity, 1, 10);
 			
-			GUI.Label(new Rect(25,230,width,20), "Rounds To Win: " + (roundsToWin == 0 ? "endless" : roundsToWin.ToString()));
-			GUI.Label(new Rect(25,255,50,20), "Min");
-		    GUI.skin.label.alignment = TextAnchor.MiddleRight;
-			GUI.Label(new Rect(width-15,255,50,20), "Max");
-		    GUI.skin.label.alignment = TextAnchor.MiddleLeft;
-			roundsToWin = (int) GUI.HorizontalSlider (new Rect (25, 250, width, 20), roundsToWin, 0, 10);
-			
-			Preferences.setExplosionDetail(expDetail);
-			Preferences.setChestDensity(chestDensity);
-			Preferences.setMouseSensitivity(mouseSensitivity);
-			Preferences.setRoundsToWin(roundsToWin);
+			bool pe = Preferences.getBackgroundMusic();
+			if (pe != GUI.Toggle(new Rect(25,180,width,20), pe, "Background Music")) {
+				Preferences.setBackgroundMusic(!pe);
+			}
+		}
+		GUI.EndGroup();
 		
-			// SERVER NAME
-			GUI.Label(new Rect(25,280,width,20), "Server Name:");
-			serverName = GUI.TextField(new Rect(25,300,width,20), serverName, 30);
-			
-			// MAX PLAYERS
-			if (GUI.Button(new Rect(25, 320, width, 20), "Max. Players: "+maxPlayers)) {
-				showMaxPlayers = !showMaxPlayers;
-		    }
+		
+		GUI.BeginGroup(new Rect(scrnWidth/2,50,200,900));
+		
+		// SERVER NAME
+		GUI.Label(new Rect(25,0,width,20), "Server Name:");
+		serverName = GUI.TextField(new Rect(25,20,width,20), serverName, 30);
+		
+		// MAX PLAYERS
+		if (GUI.Button(new Rect(25, 40, width, 20), "Max. Players: "+maxPlayers)) {
+			showMaxPlayers = !showMaxPlayers;
+	    }
+		
+		if (!colorPicker.activeSelf) {
 		    if (showMaxPlayers) {
 				
 				for (int i=1; i<5; i++) {
 					int p = (int)Mathf.Pow(2,i);
 					if (Network.connections.Length+1 > p)
 						continue;
-					if (GUI.Button(new Rect(25, 320+(20*i), width, 20), p.ToString())) {
+					if (GUI.Button(new Rect(25, 40+(20*i), width, 20), p.ToString())) {
 						showMaxPlayers = false;
 						maxPlayers = p;
 						Network.maxConnections = maxPlayers-1;
@@ -503,46 +509,62 @@ public class Menu : MonoBehaviour {
 		    } else {
 				// SOME SETTINGS
 				bool pe = Preferences.getNegativePowerups();
-				if (pe != GUI.Toggle(new Rect(25,350,width,20), pe, "Powerdowns")) {
+				if (pe != GUI.Toggle(new Rect(25,70,width,20), pe, "Powerdowns")) {
 					Preferences.setNegative(!pe);
 				}
 				pe = Preferences.getDestroyablePowerups();
-				if (pe != GUI.Toggle(new Rect(25,370,width,20), pe, "destroyable Powerups")) {
+				if (pe != GUI.Toggle(new Rect(25,90,width,20), pe, "destroyable Powerups")) {
 					Preferences.setDestroyablePowerups(!pe);
 				}
 				bool pee = Preferences.getExplodingPowerups();
-				if (pe && pee != GUI.Toggle(new Rect(25,390,width,20), pee, "exploding Powerups")) {
+				if (pe && pee != GUI.Toggle(new Rect(25,110,width,20), pee, "exploding Powerups")) {
 					Preferences.setExplodingPowerups(!pee);
 				}
-				pe = Preferences.getBackgroundMusic();
-				if (pe != GUI.Toggle(new Rect(25,410,width,20), pe, "Background Music")) {
-					Preferences.setBackgroundMusic(!pe);
-				}
 			}
-			
-		    // START GAME
-			if (GUI.Button(new Rect(50,470,100,30),"Start Game")) {
-				// save settings
-				PlayerPrefs.SetInt("Server MaxPlayers", maxPlayers);
-				PlayerPrefs.SetString("Server Name", serverName);
-				PlayerPrefs.SetString("Player Name", nickname);
-				PlayerPrefs.SetFloat("PlayerRed", playerColor.r);
-				PlayerPrefs.SetFloat("PlayerGreen", playerColor.g);
-				PlayerPrefs.SetFloat("PlayerBlue", playerColor.b);
-				
-				showGUI = false;
-				gameStarted = true;
-				
-				CancelInvoke("refreshServerName");
 
-				// spawn-points
-				int L_pos = Random.Range(1, Static.sphereHandler.n_L-2);
-				int B_pos = Random.Range(1, Static.sphereHandler.n_B-1);
-				networkView.RPC("tellSpawnPoint", RPCMode.AllBuffered, L_pos, B_pos, Network.player);
-				networkView.RPC("startGame",RPCMode.AllBuffered, Mathf.FloorToInt(Random.value*100000), Preferences.getChestDensity());
-			}
+			GUI.Label(new Rect(25,140,width,20), "Chest Density:");
+			GUI.Label(new Rect(25,165,50,20), "Min");
+		    GUI.skin.label.alignment = TextAnchor.MiddleRight;
+			GUI.Label(new Rect(width-15,165,50,20), "Max");
+		    GUI.skin.label.alignment = TextAnchor.MiddleLeft;
+			chestDensity = (int)GUI.HorizontalSlider (new Rect (25, 160, width, 20), (float)chestDensity, 1.0f, 5.0f);
+
+			GUI.Label(new Rect(25,190,width,20), "Rounds To Win: " + (roundsToWin == 0 ? "endless" : roundsToWin.ToString()));
+			GUI.Label(new Rect(25,215,50,20), "Min");
+		    GUI.skin.label.alignment = TextAnchor.MiddleRight;
+			GUI.Label(new Rect(width-15,215,50,20), "Max");
+		    GUI.skin.label.alignment = TextAnchor.MiddleLeft;
+			roundsToWin = (int) GUI.HorizontalSlider (new Rect (25, 210, width, 20), roundsToWin, 0, 10);
+			
+			Preferences.setExplosionDetail(expDetail);
+			Preferences.setChestDensity(chestDensity);
+			Preferences.setMouseSensitivity(mouseSensitivity);
+			Preferences.setRoundsToWin(roundsToWin);
+			
 		}
 		GUI.EndGroup();
+		
+	    // START GAME
+		if (!colorPicker.activeSelf && GUI.Button(new Rect(scrnWidth/2-50,300,100,30),"Start Game")) {
+			// save settings
+			PlayerPrefs.SetInt("Server MaxPlayers", maxPlayers);
+			PlayerPrefs.SetString("Server Name", serverName);
+			PlayerPrefs.SetString("Player Name", nickname);
+			PlayerPrefs.SetFloat("PlayerRed", playerColor.r);
+			PlayerPrefs.SetFloat("PlayerGreen", playerColor.g);
+			PlayerPrefs.SetFloat("PlayerBlue", playerColor.b);
+			
+			showGUI = false;
+			gameStarted = true;
+			
+			CancelInvoke("refreshServerName");
+
+			// spawn-points
+			int L_pos = Random.Range(1, Static.sphereHandler.n_L-2);
+			int B_pos = Random.Range(1, Static.sphereHandler.n_B-1);
+			networkView.RPC("tellSpawnPoint", RPCMode.AllBuffered, L_pos, B_pos, Network.player);
+			networkView.RPC("startGame",RPCMode.AllBuffered, Mathf.FloorToInt(Random.value*100000), Preferences.getChestDensity());
+		}
 		
 		// CONNECTED PLAYERS
 		GUI.BeginGroup(new Rect(10,50,250,400));
@@ -564,6 +586,7 @@ public class Menu : MonoBehaviour {
 				networkView.RPC("incomingChatMessage", RPCMode.All, p.Value + " was kicked");
 				playerList.Remove(p.Key);
 				playerColorList.Remove(p.Key);
+				spawns.Remove(p.Key);
 			}
 			GUI.color = Color.white;
 			j++;
@@ -580,11 +603,9 @@ public class Menu : MonoBehaviour {
 	    s.fontSize = 50;
 		s.alignment = TextAnchor.MiddleCenter;
 		s.normal.textColor = Color.white;
-		GUI.Label(new Rect(Screen.width/2-150, 100, 300, 100), "Server disconnected!", s);
-		playerList = new Dictionary<NetworkPlayer,string>();
-		playerColorList = new Dictionary<NetworkPlayer,Color>();
+		GUI.Label(new Rect(scrnWidth/2-150, 100, 300, 100), "Server disconnected!", s);
 		
-		if (GUI.Button(new Rect(Screen.width/2-50,270,100,30), "continue")) {
+		if (GUI.Button(new Rect(scrnWidth/2-50,270,100,30), "continue")) {
 			screen = "start";
 		}
 	}
@@ -592,8 +613,8 @@ public class Menu : MonoBehaviour {
 	void startScreen() {
 		var width = 150;
 		var height = 30;
-		var x = Screen.width/2 - width/2;
-		var y = Screen.height/2 - 2*height;
+		var x = scrnWidth/2 - width/2;
+		var y = scrnHeight/2 - 2*height;
 		
 		if (Network.peerType != NetworkPeerType.Disconnected) {
 			// we are ingame!
@@ -619,11 +640,11 @@ public class Menu : MonoBehaviour {
 	}
 	
 	void helpScreen() {
-		GUI.DrawTexture(new Rect(0,0,Screen.width,Screen.height), bgHelp, ScaleMode.StretchToFill, true, 10.0f);
+		GUI.DrawTexture(new Rect(0,0,scrnWidth,scrnHeight), bgHelp, ScaleMode.StretchToFill, true, 10.0f);
 	}
 	
 	void backButton() {
-		if (GUI.Button(new Rect(10,Screen.height-40,80,30), "Back") || Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Escape) {
+		if (GUI.Button(new Rect(10,scrnHeight-40,80,30), "Back") || Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Escape) {
 			if (colorPicker.activeSelf) {
 				colorPicker.SetActive(!colorPicker.activeSelf);
 			} else {
@@ -656,15 +677,15 @@ public class Menu : MonoBehaviour {
 	
 	private string chatMsg = "";
 	public void chatArea() {
-		int x = Screen.width - 230;
+		int x = scrnWidth - 230;
 		
 	    GUI.skin.label.alignment = TextAnchor.LowerLeft;
-		GUI.Label(new Rect(x,30,150,Screen.height-70), chat);
+		GUI.Label(new Rect(x,30,150,scrnHeight-70), chat);
 	    GUI.skin.label.alignment = TextAnchor.MiddleLeft;
 
 		GUI.SetNextControlName("chat");
-		chatMsg = GUI.TextField(new Rect(x,Screen.height-40,150,20), chatMsg);
-		if (((GUI.Button(new Rect(x+160,Screen.height-40,50,20), "Send")
+		chatMsg = GUI.TextField(new Rect(x,scrnHeight-40,150,20), chatMsg);
+		if (((GUI.Button(new Rect(x+160,scrnHeight-40,50,20), "Send")
 				|| Event.current.keyCode == KeyCode.Return || Event.current.keyCode == KeyCode.KeypadEnter))
 				&& chatMsg.Trim().Length > 0 && nickname.Trim().Length > 0) {
 			networkView.RPC("incomingChatMessage", RPCMode.All, nickname + ": " + chatMsg);
@@ -791,6 +812,5 @@ public class Menu : MonoBehaviour {
 			spawns.Remove(p);
 		spawns.Add(p, new int[] {l,b});
 	}
-
 
 }

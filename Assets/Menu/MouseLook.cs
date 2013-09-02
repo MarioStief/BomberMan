@@ -3,32 +3,22 @@ using System.Collections;
 
 public class MouseLook : MonoBehaviour {
 	
-	Vector3 position;
-	GameObject player;
+	private GameObject player;
+	private float pinchLength;
 	
 	void Start() {
-		//position = transform.position;
-		//step = transform.parent.position.normalized/10;
 		player = GameObject.FindGameObjectWithTag("Player");
 	}
 
 	void Update () {
-		
-		// Camera Movement
-		// left click
-		if (Input.GetMouseButton(0)) {
-			/*
-			Vector3 a = player.transform.rotation.eulerAngles;
-			a.x = -45;
-			player.transform.rotation = Quaternion.Euler(a);
-			*/
+
+		if (Input.touchCount == 2 && Input.GetTouch(1).phase == TouchPhase.Began) {
+			pinchLength = Vector2.Distance(Input.GetTouch(0).position, Input.GetTouch(1).position);
 		}
-		
-		// right click
-		if (Input.GetMouseButtonUp(1)) {
-		}
-		// middle click
-		if (Input.GetMouseButtonUp(2)) {
+		if (Input.touchCount == 2 && (Input.GetTouch(0).phase == TouchPhase.Moved || Input.GetTouch(1).phase == TouchPhase.Moved)) {
+			float deltaLength = Vector2.Distance(Input.GetTouch(0).position, Input.GetTouch(1).position);
+			camera.fieldOfView = Mathf.Clamp(camera.fieldOfView/pinchLength*deltaLength, 20, 60);
+			pinchLength = Vector2.Distance(Input.GetTouch(0).position, Input.GetTouch(1).position);
 		}
 		
 		if (Input.GetAxis("Mouse ScrollWheel") > 0) {
@@ -40,6 +30,7 @@ public class MouseLook : MonoBehaviour {
 				camera.fieldOfView += 2;
 		}
 
+		// Spieler auf Mauszeiger schauen lassen
 		Plane playerPlane = new Plane(Vector3.up, player.transform.position);
 	    Ray ray = camera.ScreenPointToRay(Input.mousePosition);
 	    float hitdist = 0;
