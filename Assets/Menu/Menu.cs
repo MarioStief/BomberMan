@@ -31,8 +31,8 @@ public class Menu : MonoBehaviour {
 	public static bool showGUI = true;
 	public static bool gameStarted = false;
 	
-	public static int scrnWidth = 1024;
-	public static int scrnHeight = 768;
+	public static int scrnWidth = 0;
+	public static int scrnHeight = 800;
 	
 	public static Menu instance = null;
 	public void Awake() {
@@ -72,6 +72,8 @@ public class Menu : MonoBehaviour {
 #if UNITY_IPHONE
 		scrnWidth = 800;
 		scrnHeight = 600;
+#else
+		scrnWidth = (int)((float)Screen.width/(float)Screen.height * (float)scrnHeight);
 #endif
 	}
 	
@@ -142,17 +144,13 @@ public class Menu : MonoBehaviour {
 	}
 
 	public void OnGUI () {
-
-#if UNITY_IPHONE
-		GUI.matrix = Matrix4x4.Scale(new Vector3((float)Screen.width/scrnWidth, (float)Screen.height/scrnHeight, 1f));
-#else
-		GUI.matrix = Matrix4x4.Scale(new Vector3((float)Screen.width/scrnWidth, (float)Screen.height/scrnHeight, 1f));
-#endif
 		
 		if (!showGUI) {
 			screen = "overlay";
 			return;
 		}
+		
+		GUI.matrix = Matrix4x4.Scale(new Vector3((float)Screen.width/scrnWidth, (float)Screen.height/scrnHeight, 1f));
 
 		switch (screen) {
 			case "join":
