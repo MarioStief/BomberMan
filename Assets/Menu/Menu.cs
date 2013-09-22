@@ -69,12 +69,12 @@ public class Menu : MonoBehaviour {
 		gameObject.GetComponent<AudioSource>().volume = 0.7f;
 		//gameObject.GetComponent<AudioSource>().volume = Preferences.getVolume();
 		Static.player.updateMenuStats();
+		
 #if UNITY_IPHONE
-		scrnWidth = 800;
-		scrnHeight = 600;
-#else
-		scrnWidth = (int)((float)Screen.width/(float)Screen.height * (float)scrnHeight);
+		//scrnWidth = 640;
+		scrnHeight = 360;
 #endif
+	    scrnWidth = (int)((float)Screen.width/(float)Screen.height * (float)scrnHeight);
 	}
 	
 	public void playSound(AudioClip clip, bool loop) {

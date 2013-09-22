@@ -371,8 +371,10 @@ public class InputHandler : MonoBehaviour {
 						s = "join";
 					else if (hit.collider.gameObject.name == "help")
 						s = "help";
+#if ! UNITY_IPHONE
 					else if (hit.collider.gameObject.name == "exit")
 						Application.Quit();
+#endif
 				}
 			}
 			if (currCell != Static.rink.gameArea[lpos][bpos] || s != "") {
@@ -382,8 +384,10 @@ public class InputHandler : MonoBehaviour {
 					s = "join";
 				else if (currCell.getLpos() < lpos)
 					s = "help";
+#if ! UNITY_IPHONE
 				else if (currCell.getLpos() > lpos)
 					Application.Quit();
+#endif
 				if (s != "") {
 					GameObject.Find("Menu").GetComponent<Menu>().setScreen(s);
 					Application.LoadLevel("Menu");
@@ -426,8 +430,11 @@ public class InputHandler : MonoBehaviour {
 			
 			// Leertaste -> Bombe legen
 #if UNITY_IPHONE
-			if (Input.GetButtonUp("Fire1") && Input.touchCount < 2 && !Menu.showGUI)
-				dropBomb();
+			if (Input.touchCount == 1 && !Menu.showGUI) {
+				Touch t = Input.GetTouch(0);
+ 				if (t.tapCount == 1 && t.phase == TouchPhase.Ended)
+					dropBomb();
+			}
 #else
 			if (Input.GetButton("Fire1") && !Menu.showGUI)
 				dropBomb();

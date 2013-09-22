@@ -56,6 +56,10 @@ public class SphereBuilder : MonoBehaviour {
 			gameArea.getGameArea()[L_Pos-1][B_Pos+1].setType(1);
 			gameArea.getGameArea()[L_Pos+1][B_Pos-1].setType(1);
 			gameArea.getGameArea()[L_Pos+1][B_Pos+1].setType(1);
+#if UNITY_IPHONE
+			gameArea.getGameArea()[L_Pos-2][B_Pos].setType(2); // hinter Exit auch eine Kiste setzen
+			GameObject.Find("exit").SetActive(false);
+#endif
 			Instantiate(playerPrefab, pos, transform.rotation);
 		} else {
 			Network.Instantiate(playerPrefab, pos, transform.rotation, 1);

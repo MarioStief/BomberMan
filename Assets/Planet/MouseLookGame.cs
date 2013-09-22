@@ -23,8 +23,8 @@ public class MouseLookGame : MonoBehaviour {
 		}
 		if (Input.touchCount == 2 && (Input.GetTouch(0).phase == TouchPhase.Moved || Input.GetTouch(1).phase == TouchPhase.Moved)) {
 			float deltaLength = Vector2.Distance(Input.GetTouch(0).position, Input.GetTouch(1).position);
-			camera.fieldOfView = Mathf.Clamp(camera.fieldOfView/pinchLength*deltaLength, 20, 60);
-			pinchLength = Vector2.Distance(Input.GetTouch(0).position, Input.GetTouch(1).position);
+			camera.fieldOfView = Mathf.Clamp(camera.fieldOfView/deltaLength*pinchLength, 20, 60);
+			pinchLength = deltaLength;
 		}
 		
 		if (Input.GetAxis("Mouse ScrollWheel") > 0) {
